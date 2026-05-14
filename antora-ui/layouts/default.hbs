@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{#if page.title}}{{page.title}} | {{/if}}{{site.title}}</title>
+    <style>
+      :root {
+        --ink: #101828;
+        --muted: #475467;
+        --paper: #fbf7ef;
+        --line: rgba(16, 24, 40, 0.12);
+        --accent: #a94824;
+        --panel: rgba(255, 255, 255, 0.78);
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Iowan Old Style", "Palatino Linotype", serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(169, 72, 36, 0.12), transparent 28%),
+          linear-gradient(180deg, #f6f0e4 0%, #ede3d0 100%);
+      }
+      a { color: var(--accent); }
+      .shell {
+        width: min(1100px, calc(100vw - 2rem));
+        margin: 0 auto;
+        padding: 2rem 0 4rem;
+      }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+      .brand {
+        color: var(--ink);
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-family: "Avenir Next Condensed", "Franklin Gothic Medium", sans-serif;
+      }
+      .badge {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 0.45rem 0.8rem;
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.55);
+        font-size: 0.92rem;
+      }
+      main {
+        border: 1px solid var(--line);
+        border-radius: 1.5rem;
+        background: var(--panel);
+        box-shadow: 0 28px 60px rgba(16, 24, 40, 0.12);
+        padding: 2rem;
+      }
+      h1, h2, h3, h4 { line-height: 1.05; }
+      h1 { font-size: clamp(2.4rem, 5vw, 4.5rem); margin-top: 0; }
+      p, li { line-height: 1.7; }
+      pre {
+        overflow-x: auto;
+        background: #171717;
+        color: #f6f6f6;
+        padding: 1rem;
+        border-radius: 0.9rem;
+      }
+      code {
+        font-family: "Berkeley Mono", "SFMono-Regular", monospace;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th, td {
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+        padding: 0.6rem 0.4rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <a class="brand" href="{{{siteRootPath}}}/index.html">{{site.title}}</a>
+        {{#if page.componentVersion.title}}
+        <span class="badge">{{page.componentVersion.title}}</span>
+        {{/if}}
+      </header>
+      <main>
+        {{{page.contents}}}
+      </main>
+    </div>
+  </body>
+</html>

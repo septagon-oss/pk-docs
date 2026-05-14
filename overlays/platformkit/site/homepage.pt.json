@@ -1,0 +1,304 @@
+{
+  "site": {
+    "contentProfile": "platformkit",
+    "homepageRenderer": "overlay_experience",
+    "blogRenderer": "product_journal"
+  },
+  "experience": {
+    "template": "atlas.template.html",
+    "styles": ["homepage.css"],
+    "scripts": ["homepage.js"],
+    "bodyClass": "overlay-homepage-platformkit"
+  },
+  "content": {
+    "metadata": {
+      "title": "PlatformKit — Plataforma de produção para SaaS AI-native em Go",
+      "description": "A PlatformKit ajuda builders de IA a transformar demos de agentes em produtos reais: tenants, permissões, billing, audit, admin, ferramentas MCP, traces, evals e workflows governados numa plataforma Go modular.",
+      "url": "https://platformkit.dev",
+      "keywords": "platformkit, saas ai native, saas agentic, framework saas go, servidor mcp, runtime de agentes ai, plataforma modular, workflows ai governados",
+      "image": "/images/overlays/platformkit/branding/og-image.png"
+    },
+    "branding": {
+      "logoUrl": "",
+      "logoWhiteUrl": "",
+      "logoAlt": "platformkit",
+      "imageHost": "",
+      "primaryColor": "#14b8a6",
+      "secondaryColor": "#2563eb",
+      "accentColor": "#f59e0b",
+      "fontFamily": "Inter",
+      "faviconUrl": "/images/overlays/platformkit/branding/favicon.ico",
+      "appleTouchIconUrl": "/images/overlays/platformkit/branding/apple-touch-icon.png",
+      "icon192Url": "/images/overlays/platformkit/branding/icon-192.png",
+      "icon512Url": "/images/overlays/platformkit/branding/icon-512.png"
+    },
+    "social": [
+      {"icon": "github", "url": "https://github.com/septagon-dev", "label": "GitHub"},
+      {"icon": "x-twitter", "url": "https://x.com/platformkit", "label": "X"},
+      {"icon": "linkedin", "url": "https://linkedin.com/company/platformkit", "label": "LinkedIn"}
+    ],
+    "map": {"enabled": false, "embedUrl": ""},
+    "home": {
+      "badge": "Para AI builders com utilizadores reais",
+      "textTitle": "Lance produtos agentic numa plataforma em que pode confiar.",
+      "subtitle": "AI builders avançam depressa até a demo precisar de tenants, permissões, billing, audit, admin, evals, acesso a tools e revisão humana. A PlatformKit dá às equipas Go essa camada de produção como módulos: inspecionável, substituível, MCP-ready e desenhada para agentes atuarem dentro de contratos claros.",
+      "joinHref": "#get-started",
+      "joinButton": "Obter PlatformKit",
+      "communityButton": "Ler arquitetura",
+      "visitHref": "/docs/architecture-index"
+    },
+    "navbar": {
+      "joinUsText": "Obter PlatformKit",
+      "contactHref": "#get-started",
+      "links": [
+        {"title": "Contrato", "href": "#enterprise"},
+        {"title": "Módulos", "href": "#modules"},
+        {"title": "Agentes", "href": "#agent-runtime"},
+        {"title": "Topologias", "href": "#integrations"},
+        {"title": "Preços", "href": "#pricing"},
+        {"title": "Docs", "href": "/docs"}
+      ]
+    },
+    "ui": {
+      "experienceSectionsTitle": "A camada de produção que AI builders normalmente descobrem tarde demais.",
+      "moduleFootprintTitle": "Grafo de plataforma pronto para agentes",
+      "contactTitle": "",
+      "contactDescription": "",
+      "modulesLabel": "Mapa de módulos",
+      "entitiesLabel": "Inventário runtime",
+      "statMembers": "Módulos carregados",
+      "statEvents": "Entidades",
+      "statYears": "Packs de prova",
+      "statRooms": "Planos",
+      "testimonialsTitle": "Packs de prova",
+      "testimonialsSubtitle": "Os mesmos contratos em produtos que precisam de workflows reais, tenants e evidência.",
+      "ctaTitle": "",
+      "ctaSubtitle": "",
+      "ctaPrimary": "",
+      "ctaSecondary": "",
+      "footerCompanyTitle": "platformkit",
+      "footerServices": "Produto",
+      "footerContact": "Contacto",
+      "footerTeam": "Recursos",
+      "footerCoworkTitle": "Verticais",
+      "footerSpace": "Módulos",
+      "footerPlans": "Preços",
+      "footerCommodities": "Docs",
+      "copyright": "© 2026 PlatformKit",
+      "flipToSocial": "",
+      "flipToContact": "",
+      "entitiesWord": "Entidades",
+      "featuresWord": "Features",
+      "perMonth": "",
+      "copiedToast": "Copiado!",
+      "chatTitle": "",
+      "chatSubtitle": "",
+      "chatWelcome": "",
+      "chatQ1": "",
+      "chatQ2": "",
+      "chatQ3": "",
+      "chatQ4": "",
+      "chatPlaceholder": "",
+      "chatSendLabel": "",
+      "chatQuickLabel": "",
+      "builderPrompt": "Quero construir",
+      "builderPlaceholder": "o produto que continua a voltar...",
+      "builderEmailLabel": "Enviar o primeiro workspace para",
+      "builderSubmit": "Começar a moldar",
+      "builderStatus": "Descreve o produto que continua a voltar."
+    },
+    "sections": [
+      {
+        "id": "boring-half",
+        "title": "A demo não é o produto.",
+        "subtitle": "Um agente funcional ainda precisa de utilizadores, organizações, roles, billing, audit, jobs em background, caminhos de resgate em admin, conteúdo, notificações e um sítio para política. A PlatformKit dá-lhe essa camada antes da reescrita começar.",
+        "background": "",
+        "textColor": "",
+        "buttonText": "Ler charter da plataforma",
+        "buttonHref": "/docs/architecture-01-introduction-and-goals",
+        "imageSrc": ""
+      },
+      {
+        "id": "two-topologies",
+        "title": "Construa uma vez. Mostre em todo o lado.",
+        "subtitle": "O mesmo grafo de módulos pode alimentar app pública, admin interno, docs portal, workflow em background, servidor MCP e superfície de agente governado. Deixa de reconstruir a mesma capacidade para cada interface.",
+        "background": "",
+        "textColor": "",
+        "buttonText": "Ver arquitetura",
+        "buttonHref": "/docs/architecture-index",
+        "imageSrc": ""
+      },
+      {
+        "id": "public-contracts",
+        "title": "Tools são contratos de produto.",
+        "subtitle": "Exponha capacidades por ports tipadas, eventos, manifests e ferramentas MCP em vez de glue frágil. Agentes podem inspecionar e agir, enquanto o produto mantém permissões, validação e auditoria.",
+        "background": "",
+        "textColor": "",
+        "buttonText": "Ler regras de módulos",
+        "buttonHref": "/docs/req-002-independently-deployable-modules",
+        "imageSrc": ""
+      },
+      {
+        "id": "agent-runtime",
+        "title": "Deixe agentes agir, mas deixe evidência.",
+        "subtitle": "O servidor MCP e o runtime governado usam o mesmo grafo que o produto executa, com limites de tools, policy gates, budgets, traces, hooks de eval, revisão humana e audit trails.",
+        "background": "",
+        "textColor": "",
+        "buttonText": "Ler governação de agentes",
+        "buttonHref": "/docs/req-017-platform-agent-principal-substitution",
+        "imageSrc": ""
+      },
+      {
+        "id": "client-overlays",
+        "title": "O taste pertence na edge.",
+        "subtitle": "Site de produto, pack vertical, camada de marca ou experiência admin pertencem ao overlay do cliente, ou ao design system quando passam a ser reutilizáveis. O core da plataforma fica limpo.",
+        "background": "",
+        "textColor": "",
+        "buttonText": "Inspecionar modelo de overlay",
+        "buttonHref": "/docs/adr-0002-surface-manifests-and-shell-profiles",
+        "imageSrc": ""
+      },
+      {
+        "id": "evidence",
+        "title": "Substitua partes sem perder o sistema.",
+        "subtitle": "Modelos vão mudar. Frameworks de agentes vão mudar. O contrato da sua plataforma deve sobreviver. A PlatformKit mantém módulos, migrações, eventos, governação de design system e prova operacional num grafo inspecionável.",
+        "background": "",
+        "textColor": "",
+        "buttonText": "Ler requisitos",
+        "buttonHref": "/docs/requirements",
+        "imageSrc": ""
+      }
+    ],
+    "gallery": {"title": "", "subtitle": "", "categories": [], "seeMoreText": "", "images": []},
+    "team": {"title": "", "description": "", "members": []},
+    "commodities": {
+      "title": "Um grafo, muitas superfícies AI",
+      "subtitle": "Sirva a mesma composição como app, consola admin, servidor MCP, docs portal, worker runtime, catálogo de módulos ou superfície vertical de cliente.",
+      "joinButton": "Ler ADR de topologia",
+      "buttonHref": "/docs/adr-0019-dual-path-transport-symmetry",
+      "items": [
+        {"icon": "topology", "label": "MCP tools"},
+        {"icon": "topology", "label": "Agent workflows"},
+        {"icon": "topology", "label": "Admin console"},
+        {"icon": "topology", "label": "Tenant data"},
+        {"icon": "topology", "label": "Audit trail"},
+        {"icon": "topology", "label": "Module catalog"},
+        {"icon": "topology", "label": "Human review"},
+        {"icon": "topology", "label": "Design system"}
+      ]
+    },
+    "event": {"title": "", "subtitle": "", "categories": [], "seeMoreText": "", "images": []},
+    "pricing": {
+      "title": "Comece aberto. Adicione a camada de produção quando o agente tiver utilizadores.",
+      "subtitle": "Use o source para entender o contrato. Compre a aceleração quando precisar de templates, módulos privados, blueprints de infraestrutura, profundidade de design system e suporte de implementação.",
+      "monthlyLabel": "Preços",
+      "yearlyLabel": "",
+      "taxLabel": "",
+      "unavailableWord": "-",
+      "featureTitles": [],
+      "plans": [
+        {
+          "name": "Community",
+          "nameMobile": "Community",
+          "subtext": "Leia o source, execute o grafo e teste o contrato de agente.",
+          "monthlyPrice": 0,
+          "yearlyPrice": 0,
+          "available": true,
+          "headerColor": "",
+          "cellColor": "",
+          "features": [],
+          "buttonText": "Começar grátis",
+          "buttonHref": "/docs/architecture-01-introduction-and-goals"
+        },
+        {
+          "name": "Team",
+          "nameMobile": "Team",
+          "subtext": "Templates, assets de design system, padrões MCP, blueprints de infraestrutura e workflows de produção.",
+          "monthlyPrice": 1490,
+          "yearlyPrice": 1490,
+          "available": true,
+          "headerColor": "",
+          "cellColor": "",
+          "features": [],
+          "buttonText": "Comparar planos",
+          "buttonHref": "#pricing"
+        },
+        {
+          "name": "Enterprise",
+          "nameMobile": "Enterprise",
+          "subtext": "Módulos privados, workflows de compliance, revisão de segurança, engenharia nomeada e SLAs com contrato.",
+          "monthlyPrice": 0,
+          "yearlyPrice": 0,
+          "available": true,
+          "headerColor": "",
+          "cellColor": "",
+          "features": [],
+          "buttonText": "Marcar demo enterprise",
+          "buttonHref": "mailto:sales@platformkit.dev"
+        }
+      ]
+    },
+    "contact": {
+      "title": "Contacto",
+      "description": "A PlatformKit é desenvolvida e suportada pela Septagon. Fale connosco sobre módulos prontos para agentes, overlays privados ou adoção arquitetural.",
+      "email": "hello@platformkit.dev",
+      "phone": "",
+      "website": "https://platformkit.dev"
+    },
+    "footer": {
+      "description": "A PlatformKit é o substrato de produção para SaaS AI-native: um grafo de módulos, contratos, overlays, docs e tooling de agentes governados.",
+      "hours": "",
+      "hoursDetail": "",
+      "location": "",
+      "address": "",
+      "termsConditions": "Termos de Serviço",
+      "termsHref": "/page/terms",
+      "privacyPolicy": "Política de Privacidade",
+      "privacyHref": "/page/privacy"
+    },
+    "testimonials": [
+      {
+        "name": "COMUM Cowork",
+        "role": "Operação coworking real",
+        "quote": "Uma superfície de operações onde agentes podem raciocinar sobre bookings, billing, comunidade, mail e controlos de tenant sem contornar o contrato da plataforma.",
+        "image": "",
+        "rating": 5
+      },
+      {
+        "name": "Incomum",
+        "role": "Blueprint de educação",
+        "quote": "Turmas, visibilidade para encarregados, progresso de alunos e storytelling público com trilhos de evidência que uma equipa humana ainda consegue confiar.",
+        "image": "",
+        "rating": 5
+      },
+      {
+        "name": "Velora",
+        "role": "Blueprint de wellness",
+        "quote": "Agenda, memberships, conteúdo com consentimento e auditoria tenant-safe para workflows assistidos por IA com governação tipo saúde.",
+        "image": "",
+        "rating": 5
+      },
+      {
+        "name": "Record",
+        "role": "Blueprint de estudo clínico",
+        "quote": "Captura de dados audit-first onde cada alteração de formulário, assinatura, aprovação e ação de agente pode ser reproduzida como evidência.",
+        "image": "",
+        "rating": 5
+      },
+      {
+        "name": "Apex",
+        "role": "Composição para operações de edifícios",
+        "quote": "Workflows de portefólio onde agentes podem triar anomalias, SLAs de fornecedores e reporting de compliance em frotas de edifícios.",
+        "image": "",
+        "rating": 5
+      },
+      {
+        "name": "CutOut",
+        "role": "Composição para comércio customizado",
+        "quote": "Comércio orientado a configurador onde lógica de produto, precisão de orçamento e operações de storefront tenant-isoladas continuam inspecionáveis.",
+        "image": "",
+        "rating": 5
+      }
+    ]
+  }
+}

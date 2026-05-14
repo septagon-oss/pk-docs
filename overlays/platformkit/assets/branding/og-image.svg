@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="112" y1="48" x2="1040" y2="582" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#14b8a6"/>
+      <stop offset="0.55" stop-color="#f97316"/>
+      <stop offset="1" stop-color="#f59e0b"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(918 110) rotate(137.6) scale(354.9 312.1)">
+      <stop stop-color="rgba(255,255,255,0.36)"/>
+      <stop offset="1" stop-color="rgba(255,255,255,0)"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" rx="36" fill="#0f172a"/>
+  <rect x="24" y="24" width="1152" height="582" rx="28" fill="url(#bg)"/>
+  <circle cx="940" cy="118" r="220" fill="url(#glow)"/>
+  <rect x="78" y="74" width="148" height="148" rx="42" fill="rgba(255,255,255,0.14)" stroke="rgba(255,255,255,0.28)" stroke-width="4"/>
+  <text x="152" y="171" text-anchor="middle" font-family="'Inter','Space Grotesk','IBM Plex Sans',sans-serif" font-size="74" font-weight="800" letter-spacing="-4" fill="#ffffff">P</text>
+  <text x="78" y="286" font-family="'Inter','Space Grotesk','IBM Plex Sans',sans-serif" font-size="28" font-weight="700" letter-spacing="0.2em" fill="rgba(255,255,255,0.78)">PLATFORMKIT</text>
+  <text x="78" y="360" font-family="'Inter','Space Grotesk','IBM Plex Sans',sans-serif" font-size="62" font-weight="800" letter-spacing="-2.5" fill="#ffffff">platformkit —</text>
+  <text x="78" y="432" font-family="'Inter','Space Grotesk','IBM Plex Sans',sans-serif" font-size="62" font-weight="800" letter-spacing="-2.5" fill="#ffffff">Composable Go SaaS</text>
+  <text x="78" y="504" font-family="'Inter','Space Grotesk','IBM Plex Sans',sans-serif" font-size="62" font-weight="800" letter-spacing="-2.5" fill="#ffffff">Platform</text>
+  <text x="78" y="540" font-family="'Inter','Space Grotesk','IBM Plex Sans',sans-serif" font-size="28" font-weight="500" fill="rgba(255,255,255,0.88)">Composable Go platform for shipping SaaS</text>
+  <text x="78" y="576" font-family="'Inter','Space Grotesk','IBM Plex Sans',sans-serif" font-size="28" font-weight="500" fill="rgba(255,255,255,0.88)">products with built-in modules, server-rendered</text>
+  <text x="78" y="612" font-family="'Inter','Space Grotesk','IBM Plex Sans',sans-serif" font-size="28" font-weight="500" fill="rgba(255,255,255,0.88)">admin surfaces, and MCP-aware tooling.</text>
+</svg>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="40" y1="32" x2="460" y2="480" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#14b8a6"/>
+      <stop offset="0.52" stop-color="#f97316"/>
+      <stop offset="1" stop-color="#f59e0b"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="120" fill="url(#bg)"/>
+  <rect x="54" y="54" width="404" height="404" rx="96" fill="rgba(255,255,255,0.10)" stroke="rgba(255,255,255,0.38)" stroke-width="4"/>
+  <circle cx="256" cy="148" r="32" fill="rgba(255,255,255,0.88)"/>
+  <text x="256" y="322" text-anchor="middle" font-family="'Inter','Space Grotesk','IBM Plex Sans',sans-serif" font-size="156" font-weight="800" letter-spacing="-8" fill="#ffffff">P</text>
+  <rect x="128" y="360" width="256" height="18" rx="9" fill="rgba(255,255,255,0.72)"/>
+</svg>

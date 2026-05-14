@@ -1,0 +1,112 @@
+{{ define "platformkit.molecule.metrics" }}
+<div class="pk-metrics" aria-label="Platform metrics">
+  <article>
+    <span>{{ .UI.StatMembers }}</span>
+    <strong>{{ index .Stats "modules" }}</strong>
+  </article>
+  <article>
+    <span>{{ .UI.StatEvents }}</span>
+    <strong>{{ index .Stats "entities" }}</strong>
+  </article>
+  <article>
+    <span>{{ .UI.StatYears }}</span>
+    <strong>{{ len .Testimonials }}</strong>
+  </article>
+  <article>
+    <span>{{ .UI.StatRooms }}</span>
+    <strong>{{ len .Pricing.Plans }}</strong>
+  </article>
+</div>
+{{ end }}
+
+{{ define "platformkit.molecule.hero_panel" }}
+<aside class="pk-hero-panel">
+  <header class="pk-hero-panel__header">
+    <span>{{ .UI.EntitiesLabel }}</span>
+    <strong>platformkit.compose</strong>
+  </header>
+  <div class="pk-blueprint" aria-label="Platform composition map">
+    <div class="pk-blueprint__source">
+      <span>{{ .Hero.Badge }}</span>
+      <strong>{{ .UI.ModuleFootprintTitle }}</strong>
+    </div>
+    <div class="pk-blueprint__rail">
+      <span>{{ .UI.ModulesLabel }}</span>
+      <span>{{ .UI.EntitiesLabel }}</span>
+      <span>{{ .Commodities.Title }}</span>
+    </div>
+    <ol class="pk-blueprint__steps">
+      {{ range $index, $section := .Sections }}
+        {{ if lt $index 3 }}
+        <li>
+          <span>{{ $section.ID }}</span>
+          <strong>{{ $section.Title }}</strong>
+          <em>{{ nonEmpty $section.ID $section.ButtonText }}</em>
+        </li>
+        {{ end }}
+      {{ end }}
+    </ol>
+    <div class="pk-blueprint__output">
+      {{ range $index, $item := .Commodities.Items }}
+        {{ if lt $index 4 }}<span>{{ $item.Label }}</span>{{ end }}
+      {{ end }}
+    </div>
+    <div class="pk-blueprint__modules">
+      {{ range $index, $module := .Modules }}
+        {{ if lt $index 7 }}<span>{{ $module.ModuleID }}</span>{{ end }}
+      {{ end }}
+    </div>
+  </div>
+</aside>
+{{ end }}
+
+{{ define "platformkit.molecule.module_card" }}
+{{ if lt .Index 8 }}
+<article class="pk-module">
+  <span>{{ .Module.Category }}</span>
+  <h3>{{ .Module.Title }}</h3>
+  <p>{{ .Module.EntityCount }} {{ .Root.UI.EntitiesWord }} / {{ .Module.FeatureCount }} {{ .Root.UI.FeaturesWord }}</p>
+</article>
+{{ end }}
+{{ end }}
+
+{{ define "platformkit.molecule.capability_card" }}
+<article class="pk-capability-card"{{ if .Section.ID }} id="{{ .Section.ID }}"{{ end }}>
+  <header class="pk-capability-card__head">
+    <span>{{ .Section.ID }}</span>
+    <h3>{{ .Section.Title }}</h3>
+  </header>
+  <p class="pk-capability-card__copy">{{ .Section.Subtitle }}</p>
+  {{ if .Section.ButtonText }}
+    <a class="pk-capability-card__link" href="{{ link .Section.ButtonHref }}">{{ .Section.ButtonText }}</a>
+  {{ end }}
+</article>
+{{ end }}
+
+{{ define "platformkit.molecule.integration_chip" }}
+<li class="pk-integration-chip"><span></span>{{ .Label }}</li>
+{{ end }}
+
+{{ define "platformkit.molecule.pricing_card" }}
+<article class="pk-pricing-card{{ if .Featured }} is-featured{{ end }}">
+  <header>
+    <span>{{ .Plan.Name }}</span>
+    <strong>{{ price .Plan }}</strong>
+    {{ if .Root.UI.PerMonth }}<small>{{ .Root.UI.PerMonth }}</small>{{ end }}
+  </header>
+  <p>{{ nonEmpty .Plan.Subtext .Root.Pricing.TaxLabel }}</p>
+  {{ if .Plan.ButtonText }}
+    <a href="{{ link .Plan.ButtonHref }}">{{ .Plan.ButtonText }}</a>
+  {{ end }}
+</article>
+{{ end }}
+
+{{ define "platformkit.molecule.proof_card" }}
+<article class="pk-proof-card">
+  <header>
+    <strong>{{ .Name }}</strong>
+    <span>{{ .Role }}</span>
+  </header>
+  <p>{{ .Quote }}</p>
+</article>
+{{ end }}

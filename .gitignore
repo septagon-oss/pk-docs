@@ -1,0 +1,6 @@
+node_modules/
+.cache/
+.generated/
+apps/web/dist/
+apps/antora/dist/
+.tmp-npm-cache/

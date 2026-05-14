@@ -1,0 +1,27 @@
+{
+  "name": "pk-docs",
+  "private": false,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "docs:sync": "node ./scripts/docs-sync.mjs",
+    "docs:build": "node ./scripts/docs-build.mjs",
+    "docs:dev": "node ./scripts/docs-dev.mjs",
+    "docs:antora:sync": "node ./scripts/docs-antora-sync.mjs",
+    "docs:antora:build": "node ./scripts/docs-antora-build.mjs",
+    "docs:antora:dev": "node ./scripts/docs-antora-dev.mjs",
+    "docs:test": "node --test ./packages/*/test/*.test.mjs ./apps/*/test/*.test.mjs"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "dependencies": {
+    "yaml": "2.8.3"
+  },
+  "devDependencies": {
+    "antora": "3.1.12"
+  }
+}

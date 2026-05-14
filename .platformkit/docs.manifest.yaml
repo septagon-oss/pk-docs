@@ -1,0 +1,281 @@
+schema_version: 2
+component_id: platformkit-docs
+title: PlatformKit Documentation
+federation:
+  assemblers:
+    - antora
+    - techdocs
+  reference_sources:
+    - openapi
+    - asyncapi
+    - jsonschema
+
+# v2: collections define top-level tabs in the rendered docs site.
+# sidebar_strategy is consumed by content_management when routing
+# /docs/<collection>/... requests; keep values in sync with
+# handleCollectionIndex in features/articles/public_handler.go.
+collections:
+  - id: architecture
+    title: Architecture
+    sidebar_strategy: arc42_ordered
+    required: true
+  - id: adr
+    title: Decisions
+    sidebar_strategy: adr_index
+    required: true
+  - id: validation
+    title: Validation
+    sidebar_strategy: category
+    required: false
+  - id: api
+    title: API Reference
+    sidebar_strategy: grouped_by_module
+    required: false
+
+# Architecture topics follow arc42 (§1..§12). The 12 sections +
+# index cover the full template; any new section lands as an edit
+# to the existing file, never as a stub.
+repo_topics:
+  # Architecture (arc42) — the 12 canonical sections plus index.
+  - id: architecture-index
+    title: PlatformKit Architecture
+    path: architecture/index.md
+    dita_type: concept
+    diataxis: explanation
+    collection: architecture
+    arc42_section: 0
+    authoring: authored
+  - id: architecture-01-introduction-and-goals
+    title: 01 Introduction and Goals
+    path: architecture/01-introduction-and-goals.md
+    dita_type: concept
+    diataxis: explanation
+    collection: architecture
+    arc42_section: 1
+    authoring: authored
+  - id: architecture-02-architecture-constraints
+    title: 02 Architecture Constraints
+    path: architecture/02-architecture-constraints.md
+    dita_type: concept
+    diataxis: explanation
+    collection: architecture
+    arc42_section: 2
+    authoring: authored
+  - id: architecture-03-system-scope-and-context
+    title: 03 System Scope and Context
+    path: architecture/03-system-scope-and-context.md
+    dita_type: concept
+    diataxis: explanation
+    collection: architecture
+    arc42_section: 3
+    authoring: authored
+  - id: architecture-04-solution-strategy
+    title: 04 Solution Strategy
+    path: architecture/04-solution-strategy.md
+    dita_type: concept
+    diataxis: explanation
+    collection: architecture
+    arc42_section: 4
+    authoring: authored
+  - id: architecture-05-building-block-view
+    title: 05 Building Block View
+    path: architecture/05-building-block-view.md
+    dita_type: concept
+    diataxis: explanation
+    collection: architecture
+    arc42_section: 5
+    authoring: authored
+  - id: architecture-06-runtime-view
+    title: 06 Runtime View
+    path: architecture/06-runtime-view.md
+    dita_type: concept
+    diataxis: explanation
+    collection: architecture
+    arc42_section: 6
+    authoring: authored
+  - id: architecture-07-deployment-view
+    title: 07 Deployment View
+    path: architecture/07-deployment-view.md
+    dita_type: concept
+    diataxis: explanation
+    collection: architecture
+    arc42_section: 7
+    authoring: authored
+  - id: architecture-08-cross-cutting-concepts
+    title: 08 Cross-cutting Concepts
+    path: architecture/08-cross-cutting-concepts.md
+    dita_type: concept
+    diataxis: explanation
+    collection: architecture
+    arc42_section: 8
+    authoring: authored
+  - id: architecture-09-architecture-decisions
+    title: 09 Architecture Decisions
+    path: architecture/09-architecture-decisions.md
+    dita_type: concept
+    diataxis: explanation
+    collection: architecture
+    arc42_section: 9
+    authoring: authored
+  - id: architecture-10-quality-requirements
+    title: 10 Quality Requirements
+    path: architecture/10-quality-requirements.md
+    dita_type: concept
+    diataxis: explanation
+    collection: architecture
+    arc42_section: 10
+    authoring: authored
+  - id: architecture-11-risks-and-technical-debt
+    title: 11 Risks and Technical Debt
+    path: architecture/11-risks-and-technical-debt.md
+    dita_type: concept
+    diataxis: explanation
+    collection: architecture
+    arc42_section: 11
+    authoring: authored
+  - id: architecture-12-glossary
+    title: 12 Glossary
+    path: architecture/12-glossary.md
+    dita_type: concept
+    diataxis: explanation
+    collection: architecture
+    arc42_section: 12
+    authoring: authored
+
+  # Conventions — house rules that follow from the ADRs.
+  - id: conventions
+    title: PlatformKit Conventions
+    path: conventions.md
+    dita_type: reference
+    diataxis: reference
+    collection: architecture
+    authoring: authored
+
+  # ADRs — accepted decisions. Template, proposed ADRs, and retired ADRs excluded.
+  - id: adr-0001-interaction-architecture
+    title: Interaction architecture
+    path: adr/0001-interaction-architecture.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 1
+  - id: adr-0002-surface-manifests-and-shell-profiles
+    title: Surface manifests and shell profiles
+    path: adr/0002-surface-manifests-and-shell-profiles.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 2
+  - id: adr-0003-component-token-extractor-pattern
+    title: Component token extractor pattern
+    path: adr/0003-component-token-extractor-pattern.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 3
+  - id: adr-0004-typed-design-token-dsl
+    title: Typed design token DSL
+    path: adr/0004-typed-design-token-dsl.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 4
+  - id: adr-0005-error-handling-discipline
+    title: Error handling discipline
+    path: adr/0005-error-handling-discipline.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 5
+  - id: adr-0006-transactional-atomicity-for-multi-entity-state
+    title: Transactional atomicity for multi-entity state
+    path: adr/0006-transactional-atomicity-for-multi-entity-state.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 6
+  - id: adr-0007-transactional-outbox-for-event-delivery
+    title: Transactional outbox for event delivery
+    path: adr/0007-transactional-outbox-for-event-delivery.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 7
+  - id: adr-0008-async-goroutine-context-semantics
+    title: Async goroutine context semantics
+    path: adr/0008-async-goroutine-context-semantics.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 8
+  - id: adr-0009-ports-only-cross-module-communication
+    title: Ports-only cross-module communication
+    path: adr/0009-ports-only-cross-module-communication.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 9
+  # ADRs 0010-0014 retired 2026-04-24; content moved to conventions.md (C-01..C-05).
+  - id: adr-0015-module-tiering
+    title: Module tiering
+    path: adr/0015-module-tiering.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 15
+  - id: adr-0016-module-sets-and-preset-composition
+    title: Module sets and preset composition
+    path: adr/0016-module-sets-and-preset-composition.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 16
+  - id: adr-0017-fx-dependency-injection-as-composition
+    title: FX dependency injection as composition
+    path: adr/0017-fx-dependency-injection-as-composition.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 17
+  - id: adr-0018-event-contracts-are-declared
+    title: Event contracts are declared
+    path: adr/0018-event-contracts-are-declared.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 18
+  - id: adr-0019-dual-path-transport-symmetry
+    title: Dual-path transport symmetry
+    path: adr/0019-dual-path-transport-symmetry.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 19
+  # ADR 0020 retired 2026-04-24; content moved to conventions.md (C-06).
+  - id: adr-0021-interface-contract-test-suites
+    title: Interfaces with multiple implementations share a test suite
+    path: adr/0021-interface-contract-test-suites.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 21
+  - id: adr-0022-pkds-cue-authored-design-system-pipeline
+    title: The design system is CUE-authored end to end
+    path: adr/0022-pkds-cue-authored-design-system-pipeline.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 22
+  - id: adr-0028-domain-owned-security-and-delivery-capabilities
+    title: Domain modules own security decisions and delivery modules deliver messages
+    path: adr/0028-domain-owned-security-and-delivery-capabilities.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 28
+
+# This repo hosts no Go modules — pilot_modules intentionally empty.
+pilot_modules: []
+module_docs:
+  manifest_path: ""
+  required_diataxis: []

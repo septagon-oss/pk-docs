@@ -1,0 +1,254 @@
+{
+  "hero": {
+    "badge": "PlatformKit pricing",
+    "title": "PlatformKit pricing",
+    "subtitle": "Community, Design, Code, Infra, Bundle, and Enterprise. Start free, then buy the exact layer your team needs.",
+    "primaryCta": {
+      "kind": "link",
+      "label": "Compare tiers",
+      "href": "#compare"
+    },
+    "secondaryCta": {
+      "kind": "link",
+      "label": "Read the docs",
+      "href": "/docs"
+    }
+  },
+  "tiers": [
+    {
+      "tier": "community",
+      "name": "Community",
+      "tagline": "Run the stack on your own.",
+      "description": "The full open-source PlatformKit runtime. No commercial assets, but every module, every contract, every test.",
+      "bullets": [
+        "All 49 production-grade modules",
+        "Apache-2.0 source code",
+        "Self-hosted deploy guides",
+        "Community Discord support"
+      ],
+      "priceUnit": "always free",
+      "cta": {
+        "kind": "link",
+        "label": "Install Community",
+        "href": "/docs/architecture-01-introduction-and-goals"
+      }
+    },
+    {
+      "tier": "design",
+      "name": "Design",
+      "tagline": "The Figma file behind the platform.",
+      "description": "Every component, every variant, every token: the actual production design system as a Figma library.",
+      "bullets": [
+        "115+ Figma components",
+        "Light + dark + brand themes",
+        "Variables across 4 modes",
+        "Component to Code Connect mappings"
+      ],
+      "priceUnit": "one-time",
+      "cta": {
+        "kind": "checkout",
+        "label": "Buy Design"
+      }
+    },
+    {
+      "tier": "code",
+      "name": "Code",
+      "tagline": "Production code, not a tutorial.",
+      "description": "Commercial templates: complete-saas-monolith, microservices, vertical archetypes. Same code we run.",
+      "bullets": [
+        "Flagship + 6 vertical templates",
+        "Pre-wired CI / Kubernetes",
+        "Module presets per archetype",
+        "Major-version upgrade scripts"
+      ],
+      "priceUnit": "one-time",
+      "featured": true,
+      "cta": {
+        "kind": "checkout",
+        "label": "Buy Code"
+      }
+    },
+    {
+      "tier": "infra",
+      "name": "Infra",
+      "tagline": "Pulumi blueprints + paved-road delivery.",
+      "description": "The Terraform / Pulumi catalog and Kubernetes delivery artifacts that ship the templates above.",
+      "bullets": [
+        "Pulumi + Terraform catalogs",
+        "Kustomize delivery overlays",
+        "GitHub Actions release flows",
+        "DR + observability runbooks"
+      ],
+      "priceUnit": "one-time",
+      "cta": {
+        "kind": "checkout",
+        "label": "Buy Infra"
+      }
+    },
+    {
+      "tier": "enterprise",
+      "name": "Enterprise",
+      "tagline": "Tailored deployments + commercial support.",
+      "description": "SLAs, white-label, private modules, dedicated migration help. We meet you where the procurement spreadsheet lives.",
+      "bullets": [
+        "All paid tiers included",
+        "Private commercial modules",
+        "Named engineering support",
+        "On-call SLA + DPA"
+      ],
+      "priceUnit": "talk to us",
+      "cta": {
+        "kind": "mailto",
+        "label": "Talk to sales",
+        "href": "mailto:sales@platformkit.dev"
+      }
+    }
+  ],
+  "bundle": {
+    "title": "Complete PlatformKit bundle.",
+    "description": "Design + Code + Infra as one bundle. Same lifetime upgrades, one purchase, less friction.",
+    "includedTierKeys": ["design", "code", "infra"],
+    "cta": {
+      "kind": "checkout",
+      "label": "Buy Bundle"
+    }
+  },
+  "comparison": {
+    "rows": [
+      {
+        "feature": "Open-source modules",
+        "cells": {
+          "community": {"kind": "yes"},
+          "design": {"kind": "yes"},
+          "code": {"kind": "yes"},
+          "infra": {"kind": "yes"},
+          "bundle": {"kind": "yes"},
+          "enterprise": {"kind": "yes"}
+        }
+      },
+      {
+        "feature": "Figma design library",
+        "cells": {
+          "community": {"kind": "no"},
+          "design": {"kind": "yes"},
+          "code": {"kind": "no"},
+          "infra": {"kind": "no"},
+          "bundle": {"kind": "yes"},
+          "enterprise": {"kind": "yes"}
+        }
+      },
+      {
+        "feature": "Commercial templates",
+        "cells": {
+          "community": {"kind": "no"},
+          "design": {"kind": "no"},
+          "code": {"kind": "yes"},
+          "infra": {"kind": "no"},
+          "bundle": {"kind": "yes"},
+          "enterprise": {"kind": "yes"}
+        }
+      },
+      {
+        "feature": "Pulumi / Terraform catalog",
+        "cells": {
+          "community": {"kind": "no"},
+          "design": {"kind": "no"},
+          "code": {"kind": "no"},
+          "infra": {"kind": "yes"},
+          "bundle": {"kind": "yes"},
+          "enterprise": {"kind": "yes"}
+        }
+      },
+      {
+        "feature": "Major-version upgrades",
+        "cells": {
+          "community": {"kind": "text", "text": "self-serve"},
+          "design": {"kind": "yes"},
+          "code": {"kind": "yes"},
+          "infra": {"kind": "yes"},
+          "bundle": {"kind": "yes"},
+          "enterprise": {"kind": "text", "text": "named engineer"}
+        }
+      },
+      {
+        "feature": "Support channel",
+        "cells": {
+          "community": {"kind": "text", "text": "Discord"},
+          "design": {"kind": "text", "text": "Email"},
+          "code": {"kind": "text", "text": "Email"},
+          "infra": {"kind": "text", "text": "Email"},
+          "bundle": {"kind": "text", "text": "Priority email"},
+          "enterprise": {"kind": "text", "text": "SLA + on-call"}
+        }
+      },
+      {
+        "feature": "Private commercial modules",
+        "cells": {
+          "community": {"kind": "no"},
+          "design": {"kind": "no"},
+          "code": {"kind": "no"},
+          "infra": {"kind": "no"},
+          "bundle": {"kind": "no"},
+          "enterprise": {"kind": "yes"}
+        }
+      },
+      {
+        "feature": "Seats included",
+        "cells": {
+          "community": {"kind": "limit", "text": "unlimited"},
+          "design": {"kind": "limit", "text": "3"},
+          "code": {"kind": "limit", "text": "5"},
+          "infra": {"kind": "limit", "text": "5"},
+          "bundle": {"kind": "limit", "text": "10"},
+          "enterprise": {"kind": "limit", "text": "custom"}
+        }
+      }
+    ]
+  },
+  "faq": [
+    {
+      "anchor": "what-is-included",
+      "question": "What exactly do I get when I buy a tier?",
+      "answer": "Each paid tier ships a separate downloadable artifact: Design ships a Figma file, Code ships a git bundle of the templates, Infra ships the Pulumi + Terraform catalog. All artifacts include lifetime upgrades for the major version you bought."
+    },
+    {
+      "anchor": "is-this-a-subscription",
+      "question": "Is this a subscription?",
+      "answer": "No. Every paid tier is a one-time purchase. Major-version upgrades are included; if we ship PlatformKit 2.0 and you bought 1.x, you get 2.0 in your portal."
+    },
+    {
+      "anchor": "license-terms",
+      "question": "How does the license work?",
+      "answer": "Per-organization license, internal use, unlimited seats unless the comparison matrix says otherwise. You can ship the resulting product to your customers; you cannot resell the templates themselves."
+    },
+    {
+      "anchor": "refund-policy",
+      "question": "What's the refund policy?",
+      "answer": "30-day money-back guarantee on every paid tier. Open a ticket and we refund the original payment instrument; we do not require a reason."
+    },
+    {
+      "anchor": "enterprise-difference",
+      "question": "When should I pick Enterprise?",
+      "answer": "When you need a signed DPA, named engineering support, or private commercial modules that are not on the public catalog. We schedule a 30-minute discovery call and quote."
+    },
+    {
+      "anchor": "can-i-use-just-community",
+      "question": "Can I run the platform on Community alone?",
+      "answer": "Yes. Community is the entire open-source runtime. The paid tiers add design assets, commercial templates, and the production infra catalog; none of those are required to ship."
+    }
+  ],
+  "ctaStrip": {
+    "title": "Ready to ship?",
+    "subtitle": "Start with the free Community tier, or pay once for the layer you need.",
+    "primaryCta": {
+      "kind": "link",
+      "label": "Install Community",
+      "href": "/docs/architecture-01-introduction-and-goals"
+    },
+    "secondaryCta": {
+      "kind": "mailto",
+      "label": "Talk to sales",
+      "href": "mailto:sales@platformkit.dev"
+    }
+  }
+}
