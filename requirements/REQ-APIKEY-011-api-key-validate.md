@@ -146,7 +146,7 @@ the key being usable.
   responsibility (typically the HTTP middleware).
 - **Permission-token validation failure on read.** A row
   whose persisted permissions cannot be normalised (a
-  legacy-format token) returns `Valid: false` rather than
+  deprecated-format token) returns `Valid: false` rather than
   surfacing the malformation.
 - **User-bound key with deleted user.** The key still
   validates if its own `Status` is active; the user

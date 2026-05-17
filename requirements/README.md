@@ -14,6 +14,13 @@ auditors. It survives implementation changes — swapping an auth
 provider or changing the persistence engine doesn't change the REQ;
 it changes the ADR that satisfies it.
 
+Requirements are PlatformKit's public promises. They are not a
+feature wishlist and they are not implementation notes. A strong REQ
+states a property worth preserving across repos, modules, deployment
+models, and Pro/private extensions. If the property is not valuable
+enough to test, audit, or cite from code, it probably does not belong
+in this catalog.
+
 ## How requirements relate to ADRs and conventions
 
 Three layers of governance, each with a clear purpose:

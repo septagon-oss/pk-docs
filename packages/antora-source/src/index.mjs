@@ -268,7 +268,8 @@ export function markdownToAsciiDoc(markdown, title = "") {
         titleSkipped = true;
         continue;
       }
-      lines.push(`${"=".repeat(headingMatch[1].length)} ${headingText}`);
+      const level = Math.max(2, headingMatch[1].length);
+      lines.push(`${"=".repeat(level)} ${headingText}`);
       continue;
     }
 

@@ -2,15 +2,25 @@
 
 ## Goal
 
-Build one human-facing docs portal that composes module docs, API reference, and executable product walkthroughs without making module repos own a website framework.
+Build one public docs portal that composes framework narrative, module docs,
+API reference, and verified product walkthrough evidence from source-owned
+artifacts.
+
+The portal should make PlatformKit's public contract inspectable: what the core
+promises, what modules contribute, what apps compose, which requirements govern
+the behavior, and which generated evidence proves the claim.
 
 ## Non-Negotiable Rules
 
-1. Modules own source contracts, not final rendered pages.
+1. Modules own source contracts and contribution metadata, not final rendered
+   pages.
 2. The backend app owns the canonical Huma OpenAPI document.
 3. The docs portal is built centrally at build time.
-4. Docs-only augmentation stays separate from runtime API registration whenever possible.
+4. Docs-only augmentation stays separate from runtime API registration whenever
+   possible.
 5. Renderer choice is an adapter, not the source of truth.
+6. Requirements, ADRs, module bundles, API slices, and showcase evidence remain
+   traceable after composition.
 
 ## Recommended Stack
 
@@ -44,7 +54,7 @@ Owns:
 - `docs/adr/*.md`
 - `docs/bundle.json`
 - optional `docs/openapi.overlay.yaml`
-- optional showcase narration metadata later
+- optional showcase narration metadata
 
 Does not own:
 
@@ -52,7 +62,7 @@ Does not own:
 - global navigation
 - cross-module site composition
 
-### `platformkit-backend-kit` and app repos
+### Runtime and app repos
 
 Own:
 
@@ -64,7 +74,7 @@ Own:
   - `x-platformkit-permissions`
   - `x-platformkit-showcase-id`
 
-### `platformkit-tests`
+### `pk-testkit` and downstream test repos
 
 Owns:
 
@@ -91,7 +101,7 @@ pk-modules
 backend app
   -> dist/openapi/openapi.json
 
-platformkit-tests
+pk-testkit or downstream tests
   -> showcase artifacts
 
 pk-docs composer
@@ -212,17 +222,13 @@ This lets the portal say:
 - here is the verified user journey
 - here are the endpoints behind it
 
-## Transition From Current State
+## Build Discipline
 
-Current state:
-
-- bundles are generated in `pk-modules`
-- provider output is also generated there for validation
-
-Target state:
-
-- keep bundle generation in modules
-- treat provider output in module repos as transitional only
-- move final rendering into `pk-docs`
-
-The current provider output can remain temporarily as a regression oracle while the central portal is built.
+- Keep bundle generation in modules.
+- Keep final rendering in `pk-docs`.
+- Keep generated provider artifacts as validation references until the central
+  page model covers the same assertions.
+- Make every module page reproducible from bundle data, OpenAPI metadata,
+  overlays, and showcase artifacts.
+- Prefer explicit extensions such as `x-platformkit-module-id` over path or
+  naming inference.

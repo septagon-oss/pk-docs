@@ -69,8 +69,8 @@ correctness rests on three properties documented in RFC 6238:
    `ReplayGuardedSecretStore` interface is how the platform
    honours that mandate without forcing every implementation
    to wire counter-tracking. Stores that opt in get full
-   replay protection; stores that don't keep the legacy
-   permissive behaviour with no compile-break.
+   replay protection; stores that do not opt in keep permissive
+   replay semantics with no compile-break.
 
 The activation side-effect (flipping `enabled=true` on first
 successful verification) is what completes the two-step
@@ -90,10 +90,10 @@ on that first successful verification.
   matched counter is at or below the stored
   last-accepted-counter for the user is rejected even if
   the math succeeds.
-- **AC-4 — Replay tolerance (legacy store).** Stores that
+- **AC-4 — Replay tolerance (unguarded store).** Stores that
   do not satisfy the optional interface continue to accept
   codes within the drift band on replay (the documented
-  legacy behaviour); operators must wire a guarded store
+  permissive behaviour); operators must wire a guarded store
   to close the gap.
 - **AC-5 — No-secret refusal.** A `Verify` call against a
   user with no persisted secret returns the typed

@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { renderMarkdown } from "../src/markdown.mjs";
-import { renderHomePage, renderModulePage } from "../src/site-template.mjs";
+import { renderContentIndexPage, renderContentPage, renderHomePage, renderModulePage } from "../src/site-template.mjs";
 
 test("renderMarkdown preserves fenced code language classes", () => {
   const html = renderMarkdown("```mermaid\nflowchart LR\n  A --> B\n```");
@@ -199,4 +199,39 @@ test("renderModulePage outputs API and showcase sections", () => {
   assert.match(html, /Canonical Huma surface/);
   assert.match(html, /Executable evidence/);
   assert.match(html, /translations-page/);
+});
+
+test("renderContentIndexPage outputs hosted documentation links", () => {
+  const html = renderContentIndexPage([
+    {
+      title: "01 Introduction and Goals",
+      slug: "architecture-01-introduction-and-goals",
+      route: "/docs/architecture-01-introduction-and-goals",
+      collection: "architecture",
+      excerpt: "PlatformKit architecture.",
+      sourcePath: "architecture/01-introduction-and-goals.md",
+      content: "# 01 Introduction and Goals",
+    },
+  ]);
+
+  assert.match(html, /PlatformKit Docs/);
+  assert.match(html, /href="\/docs\/architecture-01-introduction-and-goals"/);
+});
+
+test("renderContentPage renders a hosted documentation content entry", () => {
+  const html = renderContentPage(
+    {
+      title: "04 Solution Strategy",
+      slug: "architecture-04-solution-strategy",
+      route: "/docs/architecture-04-solution-strategy",
+      collection: "architecture",
+      excerpt: "Strategy.",
+      sourcePath: "architecture/04-solution-strategy.md",
+      content: "See ADR 0009.",
+      contentHtml: '<p>See <a href="/docs/adr-0009-ports-only-cross-module-communication">ADR 0009</a>.</p>',
+    },
+    [],
+  );
+
+  assert.match(html, /href="\/docs\/adr-0009-ports-only-cross-module-communication"/);
 });

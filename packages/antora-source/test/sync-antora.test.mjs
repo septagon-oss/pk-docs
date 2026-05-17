@@ -20,6 +20,16 @@ echo hi
   assert.doesNotMatch(result, /^= Sample/m);
 });
 
+test("markdownToAsciiDoc demotes unmatched page titles to sections", () => {
+  const result = markdownToAsciiDoc(`# Source title
+
+Body.
+`, "Rendered title");
+
+  assert.match(result, /^== Source title/m);
+  assert.doesNotMatch(result, /^= Source title/m);
+});
+
 test("syncWorkspaceAntora generates an antora content source from feature-local docs", async () => {
   const root = await fs.mkdtemp(path.join(process.cwd(), ".tmp-antora-test-"));
   const modulesRoot = path.join(root, "pk-modules");

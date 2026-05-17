@@ -144,7 +144,7 @@ ADR 0023 lays out seven phases. Status as of 2026-04-25:
   domain `arc42.md` files (governance is done).
 - **Phase 5 — Narrative fill.** Pending. Domain owners write the
   narrative slots for the modules in their domain.
-- **Phase 6 — Retire legacy.** Pending. Delete
+- **Phase 6 — Consolidate generated docs.** Pending. Delete
   `cmd/module-docs-generate`, the existing `<module>/README.md`
   stub, and `<module>/docs/{doc.go,README.md}` once the charter
   generator covers them.

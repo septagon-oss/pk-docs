@@ -17,7 +17,9 @@ await syncWorkspaceModules({
 const result = await buildSite({ workspaceRoot });
 
 console.log(
-  `Built ${result.moduleCount} module page${result.moduleCount === 1 ? "" : "s"} into ${path.relative(
+  `Built ${result.moduleCount} module page${result.moduleCount === 1 ? "" : "s"} and ${
+    result.documentCount
+  } documentation page${result.documentCount === 1 ? "" : "s"} into ${path.relative(
     workspaceRoot,
     result.distRoot,
   )}.`,

@@ -96,8 +96,8 @@ result of a long line of CVE-class mistakes:
   `RefreshAccessToken`.
 - **AC-5 — Default token-type fallback.** When the request
   omits the `TokenType` field, the verifier defaults to
-  `access` rather than failing — the documented backwards-
-  compatible behaviour for older clients.
+  `access` rather than failing — the documented compatibility
+  behaviour for existing clients.
 - **AC-6 — Expired token.** A token whose `exp` is in the past
   is rejected with the typed expiry error; the user-status
   cache is not consulted because the verdict is cryptographic.

@@ -46,8 +46,8 @@ package charter
 
 #Identity: {
 	// name is the canonical module id (snake_case, ends with
-	// `_management` by convention but not enforced — some legacy
-	// modules don't).
+	// `_management` by convention but not enforced for every existing
+	// module).
 	name: =~"^[a-z][a-z0-9_]*$"
 
 	// description is a single sentence shown in the catalog tile,

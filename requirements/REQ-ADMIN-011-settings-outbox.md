@@ -1,6 +1,6 @@
 ---
 id: REQ-ADMIN-011
-title: "Setting writes route through the transactional outbox when configured; legacy direct-publish path remains for stripped builds"
+title: "Setting writes route through the transactional outbox when configured; direct publish remains for stripped builds"
 status: Proposed
 date: 2026-05-08
 slug: req-admin-011-settings-outbox
@@ -48,7 +48,7 @@ the settings feature **shall**:
    delivery is atomic with the persist — a crash between
    persist and publish cannot leave the change un-announced;
 3. **If** no outbox is wired (minimal / stripped builds),
-   fall through to the legacy direct-publish path: the event
+   fall through to the explicit direct-publish path: the event
    is published on the in-process bus immediately after the
    persist returns;
 4. **If** the row already exists, update the value and emit
@@ -78,7 +78,7 @@ prevents:
    rolled back. The outbox path serialises through the DB
    commit so subscribers cannot see a phantom value.
 
-The legacy direct-publish branch is documented operator-side:
+The direct-publish branch is documented operator-side:
 deployments without `audit_management` get the simpler
 behaviour and operators understand the at-most-once-delivery
 trade-off.
@@ -93,7 +93,7 @@ trade-off.
 - **AC-2 — Outbox path on update.** When the setting row
   exists, the same outbox-enqueue happens on the
   update path.
-- **AC-3 — Legacy direct-publish path.** When no outbox
+- **AC-3 — Explicit direct-publish path.** When no outbox
   is wired, `SetSettingValue` persists and then publishes
   the event directly on the in-process bus.
 
@@ -103,7 +103,7 @@ trade-off.
 |---|---|---|
 | AC-1 | Test | `pk-modules/admin_management/features/settings/service_outbox_test.go::TestSetSettingValue_OutboxPath_EnqueuesInsteadOfDirectPublish`. |
 | AC-2 | Test | `pk-modules/admin_management/features/settings/service_outbox_test.go::TestSetSettingValue_OutboxPath_OnUpdate`. |
-| AC-3 | Test | `pk-modules/admin_management/features/settings/service_outbox_test.go::TestSetSettingValue_LegacyPath_PublishesDirectly`. |
+| AC-3 | Test | `pk-modules/admin_management/features/settings/service_outbox_test.go` covers the no-outbox direct publish branch. |
 
 ## Edge cases & unhappy paths
 
@@ -116,11 +116,11 @@ trade-off.
 - **Concurrent SetSettingValue on the same key.**
   Last-commit-wins; the outbox row order matches the
   commit order.
-- **Subscriber error on direct-publish path.** The legacy
+- **Subscriber error on direct-publish path.** The direct
   path's `eventBus.Publish` is best-effort; a failed
   subscriber does not roll back the persist (no
   transaction). This is the trade-off operators accept
-  with the legacy path.
+  with the direct path.
 
 ## Risk
 
@@ -129,7 +129,7 @@ trade-off.
   stale; defective persist confuses operators about
   whether the change took effect.
 - **Mitigations:** Atomic outbox path (AC-1, AC-2),
-  legacy-but-explicit direct path (AC-3), commit-order
+  explicit direct path for stripped builds (AC-3), commit-order
   preservation in the outbox (ADR-0007).
 
 ## Implements (cross-cutting)

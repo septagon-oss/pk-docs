@@ -204,7 +204,7 @@ caught in review.
   the feature.
 - Not a guard here — `check-module-route-registration-audit`
   tracks the separate typed-routing migration
-  (normalised/hybrid/legacy classification), not route placement.
+  (normalised/hybrid/manual classification), not route placement.
 - Not a guard here — `check-module-capability-matrix` tracks
   per-module summaries, not individual routes.
 - Gap — no static analyzer rejects `huma.Register(...)` /
@@ -574,8 +574,8 @@ runtime failures to logs/observers and return them from `run`.
   failure boundary and no process-termination helper calls (`os.Exit`,
   `log.Fatal`) below it.
 - Gap — no static analyzer enforces this repo-wide yet. The follow-up is
-  to add one `legacy-startup` check in `platformkit-backend-kit` for
-  `go vet`-style static enforcement.
+  to add one `runtime-startup-boundary` check in
+  `platformkit-backend-kit` for `go vet`-style static enforcement.
 
 ---
 

@@ -3,7 +3,8 @@ import path from "node:path";
 
 import { composeSiteModel } from "../../../packages/composer/src/index.mjs";
 import { loadGeneratedBundles } from "../../../packages/module-source/src/index.mjs";
-import { renderHomePage, renderModulePage, renderStyles } from "./site-template.mjs";
+import { collectDocumentationContent } from "./docs-source.mjs";
+import { renderContentIndexPage, renderContentPage, renderHomePage, renderModulePage, renderStyles } from "./site-template.mjs";
 
 export async function buildSite({ workspaceRoot }) {
   const generatedRoot = path.join(workspaceRoot, ".generated");
@@ -11,6 +12,7 @@ export async function buildSite({ workspaceRoot }) {
   const overlay = await loadPlatformKitOverlay({ workspaceRoot });
   const bundles = await loadGeneratedBundles({ generatedRoot });
   const site = await composeSiteModel({ bundles, generatedRoot });
+  const contentEntries = await collectDocumentationContent({ workspaceRoot });
 
   await fs.rm(distRoot, { recursive: true, force: true });
   await fs.mkdir(path.join(distRoot, "assets"), { recursive: true });
@@ -20,11 +22,24 @@ export async function buildSite({ workspaceRoot }) {
   }
   await fs.writeFile(path.join(distRoot, "index.html"), renderHomePage(site, overlay));
   await fs.writeFile(path.join(distRoot, "site-model.json"), JSON.stringify(site, null, 2) + "\n");
+  await fs.mkdir(path.join(distRoot, "docs"), { recursive: true });
+  await fs.writeFile(path.join(distRoot, "docs", "index.html"), renderContentIndexPage(contentEntries, { overlay }));
+  await fs.writeFile(
+    path.join(distRoot, "docs", "content-index.json"),
+    JSON.stringify(contentEntries.map(contentIndexRecord), null, 2) + "\n",
+  );
+
+  for (const entry of contentEntries) {
+    const documentRoot = path.join(distRoot, "docs", entry.slug);
+    await fs.mkdir(documentRoot, { recursive: true });
+    await fs.writeFile(path.join(documentRoot, "index.html"), renderContentPage(entry, contentEntries, { overlay }));
+    await fs.writeFile(path.join(documentRoot, "page-model.json"), JSON.stringify(entry, null, 2) + "\n");
+  }
 
   for (const module of site.modules) {
     const moduleRoot = path.join(distRoot, "modules", module.id);
     await fs.mkdir(moduleRoot, { recursive: true });
-    await fs.writeFile(path.join(moduleRoot, "index.html"), renderModulePage(module));
+    await fs.writeFile(path.join(moduleRoot, "index.html"), renderModulePage(module, { overlay }));
     await fs.writeFile(path.join(moduleRoot, "page-model.json"), JSON.stringify(module, null, 2) + "\n");
     if (module.api.document) {
       await fs.mkdir(path.join(moduleRoot, "api"), { recursive: true });
@@ -35,7 +50,13 @@ export async function buildSite({ workspaceRoot }) {
   return {
     distRoot,
     moduleCount: site.modules.length,
+    documentCount: contentEntries.length,
   };
+}
+
+function contentIndexRecord(entry) {
+  const { content, contentHtml, ...indexRecord } = entry;
+  return indexRecord;
 }
 
 async function loadPlatformKitOverlay({ workspaceRoot }) {

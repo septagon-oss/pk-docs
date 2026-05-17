@@ -32,8 +32,8 @@ audit against the tarball actually shipping to Claude Design:
 
 1. Button's `size` enum shipped nine aliased values
    (`xs`, `sm`, `small`, `md`, `medium`, `lg`, `large`, `xl`,
-   `2xl`) because the TypeScript source carried both a legacy
-   `_size` prop and a newer `size` prop, and Storybook's extractor
+   `2xl`) because the TypeScript source carried both an older
+   `_size` prop and the canonical `size` prop, and Storybook's extractor
    merged them silently.
 2. Button's `variant` enum mixed stylistic options (`primary`,
    `secondary`, `outline`, `ghost`, `link`) with semantic tones
@@ -205,7 +205,7 @@ the rest.
 3. **Phase 2 — Contract linter.** ✅ shipped. Encode the rules
    above. Paired fixtures — a "clean" IR passes every rule; a
    "dirty" IR replays each defect from the 2026-04-23 audit. No
-   legacy importer — PKDS has a single authoring path (CUE) and
+   secondary importer — PKDS has a single authoring path (CUE) and
    the linter operates only on compiled IR.
 4. **Phase 3 — Components in CUE.** ✅ shipped. Port the 108
    components; fix every defect while porting. `pkds lint` passes

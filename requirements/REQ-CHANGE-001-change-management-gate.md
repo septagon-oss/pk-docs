@@ -70,7 +70,7 @@ the discipline.
   `ApplyChange(ctx, request)` and updates `ChangeRecord.Status` to
   `applied` (or `apply_failed` on error).
 - **AC-5** When `change_management` is absent from a composition,
-  producers fall back to the legacy direct-apply path with audit
+  producers fall back to the audited direct-apply path with audit
   emission preserved (lean install).
 
 ## Verification

@@ -247,7 +247,7 @@ Five analyzers under `cmd/platformkit verify charter`, all run by
   `dependencies.go`. The same parity analyzer that today guards
   the catalog yaml extends to the charter.
 - `charter-narrative-completeness` — `MODULE.md` has all required
-  Diátaxis + Design Doc anchors present, no `TODO` markers, no
+  Diátaxis + Design Doc anchors present, no authoring-placeholder markers, no
   empty `## Goals` / `## Non-goals` / `## Worked example`
   sections. The analyzer runs only after `charter-cue-schema`
   passes — no narrative is checked against a broken charter.
@@ -304,9 +304,9 @@ Each phase has a binary exit criterion and is independently mergeable.
    skeleton `MODULE.cue` from existing metadata
    (`module.go` constants, `dependencies.go` ports, feature
    listings, event declarations). Generate skeleton `MODULE.md`
-   with narrative slots marked `<!-- TODO: author -->`. Exit:
+   with narrative slots marked `<!-- authoring-placeholder -->`. Exit:
    46 charter pairs exist; `cue vet` passes on all 46;
-   `charter-narrative-completeness` reports the open TODOs as
+   `charter-narrative-completeness` reports the open authoring placeholders as
    warnings, not errors, until Phase 5.
 5. **Phase 4 — Domain docs.** Author the eight domain
    `arc42.md` files. Each transcludes the modules in its domain
@@ -317,11 +317,11 @@ Each phase has a binary exit criterion and is independently mergeable.
    work is bounded — eight slots, none longer than two
    paragraphs. The `charter-narrative-completeness` analyzer
    becomes an error-level gate at the end of this phase.
-7. **Phase 6 — Retire legacy.** Delete the existing
+7. **Phase 6 — Consolidate generated docs.** Delete the superseded
    `cmd/module-docs-generate`, `cmd/module-docs-contract-check`,
    `<module>/README.md` (the generated stub),
    `<module>/docs/{doc.go,README.md}`. The charter generator
-   produces equivalents. Exit: legacy doc surfaces removed; the
+   produces equivalents. Exit: superseded doc surfaces removed; the
    six-framework stack is the only surface.
 
 ## Alternatives we rejected

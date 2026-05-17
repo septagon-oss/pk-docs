@@ -21,7 +21,7 @@ browser primitives under `assets/`. The skeleton is fine.
 
 The *behaviour* is the weak link. Today an interactive component can
 express its behaviour through any of four channels at once: raw inline
-`onclick` handlers, legacy inline state blobs embedded in render code,
+`onclick` handlers, inline state blobs embedded in render code,
 HTMX attributes sprinkled through page-specific Go, and duplicated
 shell logic that business modules re-invent instead of inheriting
 from the frontend kit. None of these channels talk to each other.

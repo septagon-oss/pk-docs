@@ -80,8 +80,8 @@ engineer reading any of the three understands the next one for free.
 │  Providers — platformkit-integrations/chat/<vendor>/                │
 │   memory     (in-process — tests + dev + showroom)                  │
 │   centrifugo (HTTP API + JWT — production)                          │
-│   nats       (TODO — JetStream)                                     │
-│   websocket  (TODO — single-node direct WS)                         │
+│   nats       (planned — JetStream)                                  │
+│   websocket  (planned — single-node direct WS)                      │
 │   noop       (in-tree backend-kit/communication/chat/providers/)    │
 └────────────────────────────────────────────────────────────────────┘
 ```
@@ -110,7 +110,7 @@ primitive.
 
 The canonical store stays the source of truth. Every `SendMessage`
 call writes to Postgres FIRST, then fans out to the internal
-`event.EventBus` (legacy listeners), then publishes through the
+`event.EventBus` (existing event subscribers), then publishes through the
 transport. Transport publish failures are logged and swallowed — a
 transient WebSocket hiccup must not block a persisted message.
 Connected clients reconcile on the next history replay; disconnected
@@ -171,7 +171,7 @@ clients catch up from the canonical store when they reconnect.
   round-trip on a saturated network) can push p99 latency into the
   hundreds of milliseconds. The transport publish is best-effort,
   but the event-bus publish is part of the synchronous path because
-  legacy listeners (notification fan-out, search indexer) depend
+  existing event subscribers (notification fan-out, search indexer) depend
   on it. We may eventually move the event-bus publish behind an
   outbox; doing so now would have widened the scope.
 
@@ -222,7 +222,7 @@ clients catch up from the canonical store when they reconnect.
   GuestSessionID: <uuid>, TenantID: <merchant>, Channels: [room]})`
   and gets back a JWT scoped to exactly one room. The transport
   enforces the channel allow-list; the canonical store stamps
-  `ActorKind=guest` on every message. No "fake user account" hack,
+  `ActorKind=guest` on every message. No fake user-account shortcut,
   no leaking user_management primitives into the support flow, no
   cross-visitor room mixing. Visitor identity is contract-level.
 
@@ -262,7 +262,7 @@ clients catch up from the canonical store when they reconnect.
   support widget reads to render bot avatars distinctly, the
   audit_management subscriber reads to filter on guest-originated
   events, and chat_management's domain layer reads to map from
-  the legacy senderType field. The streaming-update + threading
+  the stored senderType field. The streaming-update + threading
   conventions are documented in `INTEGRATION.md` once, not
   reinvented per consumer.
 
@@ -275,7 +275,7 @@ clients catch up from the canonical store when they reconnect.
   administration. Each command's handler is governed through the
   runtime-agent's existing executor.Registry, with full audit +
   budget + approval gates. Slash commands aren't a chat-domain
-  hack — they're a platform-wide extensibility surface that
+  shortcut — they're a platform-wide extensibility surface that
   happens to be invoked through chat.
 
 - **Fail-soft transport behaviour.** Transport publish errors
@@ -469,7 +469,7 @@ load-bearing; the secondary gaps are extensions.
     `optional:"true"` posture the chat consumer takes.
   - [ADR 0018 — Event contracts are declared](./0018-event-contracts-are-declared.md) — the
     `chat_management.chat.message_sent` semantic event remains the
-    contract for legacy listeners; the new transport schemas in
+    contract for existing event subscribers; the new transport schemas in
     `events.go` are the wire envelope, not a replacement.
 
 - Related conventions:

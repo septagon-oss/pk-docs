@@ -52,10 +52,10 @@ The loading order is:
 1. Shared shell CSS and runtime.
 2. Overlay shell assets, when a tenant overlay is active.
 3. Module-owned page stylesheets.
-4. Legacy extra stylesheet URLs, only for non-module escape hatches.
+4. Explicit extra stylesheet URLs, only for non-module escape hatches.
 5. Tenant route stylesheet overrides.
 6. Overlay scripts.
-7. Legacy extra classic scripts.
+7. Explicit extra classic scripts.
 8. Module-owned page ES modules.
 9. The site shell controller.
 

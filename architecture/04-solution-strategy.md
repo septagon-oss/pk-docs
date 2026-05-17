@@ -10,163 +10,181 @@ authoring: authored
 
 # 04 — Solution Strategy
 
-Every serious architecture distils to a handful of fundamental
-decisions. Everything else is consequence. PlatformKit's strategy
-rests on five.
+Every serious architecture has a product philosophy. PlatformKit's
+is direct: keep core small enough to trust, make extension points
+explicit, and let modules carry product capability.
 
-## 1. Composition over configuration — modules as first-class citizens
+The strategy rests on six decisions.
 
-An application isn't code; it's a **composition of modules**. Each
-module is a vertical slice (DB schema, domain logic, HTTP API,
-admin UI, declared contracts) that registers itself with fx. Apps
-pick modules through presets and sets, not by hand.
+## 1. Small Core, Explicit Extension Points
 
-```
-preset: coworking  →  catalog.Options(coworking)  →  fx.Options[N]  →  fx.New(...)
-```
+Core owns the vocabulary that every extension must share:
 
-The app developer writes one line of composition code; the rest
-falls out of the catalog. This scales cleanly: new modules arrive,
-presets evolve, apps upgrade by changing a preset declaration.
+- module identity, metadata, dependency declarations, and catalog
+  validation
+- deterministic registries for contributed contracts and manifests
+- provider-neutral authz policy vocabulary
+- entity descriptors and the permissions needed to render them
+- governed mutation intents and gate decisions
+- runtime conformance and health contracts
+
+Core does not own product workflows, browser automation, hosted
+operations, job scheduling, billing providers, database adapters, or
+tenant-specific UI. Those belong in modules, runtime packages,
+testkits, tools, apps, or downstream distributions.
+
+This keeps the base trustworthy. A primitive enters core only when it
+is necessary for independent modules to compose safely.
+
+## 2. Modules Own Capability
+
+A module is the unit of product meaning. It may contribute domain
+logic, contracts, API routes, admin surfaces, design tokens, component
+descriptors, translations, authz policies, entity metadata,
+requirements, fixtures, and tests.
+
+An app should not become a bucket of product code. It composes modules
+into customer workflows, sets policies and provider choices, and owns
+business-specific integration logic. When behavior is reusable, it
+moves down into a module. When a rule is universal, it moves down into
+core.
 
 **Motivating decisions.** The module system
 ([Convention C-02 — one module, one instance](../conventions.md#c-02-one-module-one-instance)),
 preset/set composition
 ([ADR 0016](../adr/0016-module-sets-and-preset-composition.md)),
-fx as the composition model
+and fx as the composition model
 ([ADR 0017](../adr/0017-fx-dependency-injection-as-composition.md)).
 
-## 2. Boundaries enforced at the import level — ports, not imports
+## 3. Contracts Before Integrations
 
-A module cannot reach into another module's implementation. The
-only legal cross-module imports are through a port in
-`pk-modules/ports/`, whose target is an interface
-declared in the provider's `contracts/provides/` package. The
-implementation is wired at the app layer; the consumer never sees
-it.
+A module cannot reach into another module's implementation. Cross-module
+behavior flows through public ports, events, registries, and
+shared descriptors. The implementation is wired at the app layer; the
+consumer sees the contract.
 
-This is not guidance. It's enforced by `check-pkvet` and the
-`importboundary` pkvet analyzer in CI. One exception breeds ten, so
-there are no exceptions — only two carve-outs that exist precisely
-to compose the graph: the catalog, and the app layer.
+This is how PlatformKit stays evolvable. A booking module can depend
+on an audit boundary without knowing which audit implementation an app
+chooses. A rendered entity can declare its read policy without
+coupling itself to a specific admin shell. A design contribution can
+declare tokens and components without choosing Tailwind, native UI,
+Storybook, or Figma.
 
 **Motivating decisions.**
 [ADR 0009 — modules only talk through ports](../adr/0009-ports-only-cross-module-communication.md),
+[ADR 0018 — every event has a declared contract](../adr/0018-event-contracts-are-declared.md),
+and
 [Convention C-04 — public contracts live away from their implementation](../conventions.md#c-04-public-contracts-live-away-from-their-implementation).
 
-## 3. One composition, two deployment topologies — dual-path transport
+## 4. One Composition, Multiple Runtime Shapes
 
-The same modules compose into a **monolith** (one binary, all
-modules in-process, cross-module calls are Go method calls) or
-into **microservices** (per-module deployables, cross-module calls
-over NATS). The choice is a wiring choice at the app layer, not a
-module-level change.
+The same module plan should be hostable as a compact monolith, a
+service-oriented topology, a local developer app, or a test harness.
+The module should not change because the deployment shape changes.
 
-For this promise to hold, every public port method has both an
-HTTP binding *and* an EventBus/NATS binding, with identical
-request/response shapes. `platformkit-module-bindings` supplies
-NATS-backed proxy clients that satisfy the port interfaces; a
-consumer's code doesn't know which transport it's talking to.
+That requires two disciplines:
 
-**Motivating decisions.**
-[ADR 0019 — every port works over HTTP and NATS](../adr/0019-dual-path-transport-symmetry.md),
-[ADR 0018 — every event has a declared contract](../adr/0018-event-contracts-are-declared.md).
-
-## 4. Correctness under failure — events through the outbox, writes in transactions
-
-Distributed systems fail. The architecture treats failure as the
-default case and pushes for strong guarantees where it matters.
-
-- **Multi-entity writes are atomic.** Use cases that touch more
-  than one entity wrap their work in
-  `repo.WithTransaction(ctx, fn)`. Rollback isn't "best effort";
-  it's the absence of a commit.
-- **Events cross the DB/bus boundary atomically.** Producers write
-  to the outbox in the same transaction as the domain state. A
-  worker drains the outbox to the bus with at-least-once
-  delivery. Subscribers are idempotent.
-- **Errors don't drop silently.** Every error in a production code
-  path propagates or logs. `_ = err` is a PR comment.
-- **Async work keeps its context.** Goroutines that outlive the
-  request use `context.WithoutCancel(ctx)` — inherit the trace,
-  drop the deadline.
+- public ports keep request and response contracts stable across
+  transport adapters
+- runtime packages host a composed plan through small, inspectable
+  contracts rather than private app conventions
 
 **Motivating decisions.**
-[ADR 0005](../adr/0005-error-handling-discipline.md),
-[ADR 0006](../adr/0006-transactional-atomicity-for-multi-entity-state.md),
-[ADR 0007](../adr/0007-transactional-outbox-for-event-delivery.md),
-[ADR 0008](../adr/0008-async-goroutine-context-semantics.md).
+[ADR 0019 — every port works over HTTP and NATS](../adr/0019-dual-path-transport-symmetry.md)
+and
+[ADR 0016 — apps compose from presets](../adr/0016-module-sets-and-preset-composition.md).
 
-## 5. Honest tier posture — modules advertise what they actually deliver
+## 5. Safety Is the Default Behavior
 
-Every module declares a tier in `module_contracts.yaml`:
+Distributed systems fail. Authorization providers time out. Event
+buses go down. Databases reject commits. Operators misconfigure
+tenants. PlatformKit treats those cases as part of the design, not as
+edge cases.
 
-- **core-certified** — strongest review posture, assurance-eligible,
-  included in `minimal` / `core` presets.
-- **supported** — production-ready with declared preset
-  compatibility.
-- **experimental** — fast-moving, no preset inclusion, `notes:`
-  required.
+- Multi-entity writes are transactional
+  ([ADR 0006](../adr/0006-transactional-atomicity-for-multi-entity-state.md)).
+- Events cross the DB/bus boundary atomically through an outbox
+  ([ADR 0007](../adr/0007-transactional-outbox-for-event-delivery.md)).
+- Errors propagate or log
+  ([ADR 0005](../adr/0005-error-handling-discipline.md)).
+- Async work preserves trace context
+  ([ADR 0008](../adr/0008-async-goroutine-context-semantics.md)).
+- Authz and entity rendering fail closed when ownership or permission
+  coverage is unclear
+  ([REQ-005](../requirements/REQ-005-authorisation-fails-closed.md),
+  [REQ-018](../requirements/REQ-018-permission-coverage-fail-closed.md)).
 
-Tier claims aren't aspirational. `check-module-maturity`,
-`check-module-contracts`, and `check-module-assurance-evidence`
-cross-check the claim against the module's actual substance —
-migrations present, test coverage matching the tier, evidence
-artifacts generated. A `supported` module with zero tests fails CI.
+Safety is not only runtime behavior. It is also build-time validation:
+duplicate registry entries fail, invalid dependency constraints fail,
+contract drift fails, and untested tier claims fail.
 
-Integrators see the tier and plan accordingly. Compliance teams
-see the evidence generator output and don't have to trust a README
-claim.
+## 6. Evidence Is Part of the Product
+
+PlatformKit does not treat requirements as prose outside the system.
+Requirements are the public promises the platform makes. ADRs explain
+how those promises are satisfied. Conventions make the discipline
+mechanical. Tests and generated evidence prove the claim.
+
+That evidence layer matters for community modules and Pro/private
+extensions alike. A downstream distribution can add private modules,
+providers, presets, deployment targets, and workflows, but it should
+prove them through the same requirements, conformance contracts, and
+flow coverage model used by OSS.
 
 **Motivating decisions.**
 [ADR 0015 — every module declares one of three tiers](../adr/0015-module-tiering.md),
-[ADR 0016 — apps compose from presets](../adr/0016-module-sets-and-preset-composition.md),
-[Convention C-06 — test coverage scales with tier](../conventions.md#c-06-test-coverage-scales-with-tier).
+[Convention C-06 — test coverage scales with tier](../conventions.md#c-06-test-coverage-scales-with-tier),
+and
+[REQ-015 — shared, deterministic test infrastructure](../requirements/REQ-015-test-infrastructure-shared.md).
 
 ## How the pillars reinforce each other
 
-The five pillars aren't independent — they compose into a single
+The six decisions are not independent. They compose into a single
 story about what the platform optimises for.
 
 ```mermaid
 flowchart TB
-    Modularity["1. Composition via modules"] --> Boundaries["2. Boundaries via ports"]
-    Boundaries --> DualPath["3. Dual-path transport"]
-    DualPath --> Failure["4. Correctness under failure"]
-    Modularity --> Tiers["5. Honest tier posture"]
-    Boundaries --> Tiers
-    Failure --> Tiers
-    Tiers --> DeploymentChoice["Monolith OR microservices<br/>— same modules"]
-    DualPath --> DeploymentChoice
+    Core["1. Small core contracts"] --> Modules["2. Module-owned capability"]
+    Core --> Contracts["3. Contracts before integrations"]
+    Contracts --> Runtime["4. Multiple runtime shapes"]
+    Contracts --> Safety["5. Safety defaults"]
+    Safety --> Evidence["6. Evidence as product"]
+    Modules --> Evidence
+    Runtime --> Evidence
+    Evidence --> Adoption["Community and Pro adoption"]
 ```
 
-A module that respects its port boundary (pillar 2) can ship as a
-microservice (pillar 3) without its consumers noticing. A module
-that uses the outbox for its events (pillar 4) can survive a bus
-outage in either topology. A module that claims `core-certified`
-must actually have the evidence to back it up (pillar 5) before it
-ships into a `core` preset (pillar 1).
+A small core makes module contributions reviewable. Contract-first
+integration lets modules evolve independently. Runtime-neutral plans
+let the same module set run in local, production, and test contexts.
+Safety defaults turn failure modes into designed behavior. Evidence
+lets adopters trust the claim without relying on narrative alone.
 
-Take any single pillar away and the whole story weakens. Remove
-dual-path transport and the monolith/microservices symmetry
-breaks. Remove tier posture honesty and integrators can't make
-informed adoption decisions. Remove the outbox and a core-certified
-module advertises delivery guarantees it can't back up.
+Take any single decision away and the architecture weakens. Put
+product workflows into core and every app inherits unnecessary
+surface area. Let modules import each other's implementations and
+the catalog stops being composable. Let requirements drift away from
+tests and the docs become decoration instead of governance.
 
 ## What follows from the strategy
 
-- **The module system is the app.** Nothing about a PlatformKit
-  app is app-specific; every feature ships as a module. This
-  forces the discipline that makes the strategy work.
-- **Contracts are first-class.** Ports, event schemas, port
-  signatures, and tier declarations are all typed, versioned, and
-  cross-checked. Contract drift is a CI failure, not a runtime
-  surprise.
-- **The runtime is uniform.** Every module uses the same fx
-  options shape; every app composes with `fx.New(...)`; every
-  migration appends; every event goes through the same bus.
-  Uniformity is the price of composition; it's a price worth
-  paying.
+- **Core should rarely grow.** New core primitives must improve
+  independent composition, validation, or safety for more than one
+  module.
+- **Registries are contracts.** They are deterministic contribution
+  catalogs with validation and diagnostics, not arbitrary global
+  maps.
+- **Modules should be self-describing.** A reader should discover
+  their dependencies, entities, permissions, design contribution,
+  requirements, and tests from the module boundary.
+- **Apps integrate, modules generalize.** Customer-specific flow glue
+  stays in apps. Reusable capability belongs in modules.
+- **Pro/private builds extend OSS first.** If a private distribution
+  needs a new core semantic, the public contract should be improved
+  before the private layer depends on it.
+- **Docs are part of the architecture.** Requirements, ADRs,
+  conventions, and conformance tests are how the framework keeps its
+  promises reviewable.
 
 ## Where to read next
 

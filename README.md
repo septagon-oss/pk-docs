@@ -2,7 +2,16 @@
 
 Public documentation source for PlatformKit OSS.
 
-This repository owns the docs-as-code source for:
+PlatformKit exists to make serious SaaS systems composable without making the
+hard parts informal. The OSS contract should make module boundaries,
+authorization, entity metadata, design tokens, runtime health, requirements,
+and conformance visible enough that a team can build a product, audit it, and
+extend it without forking the mental model.
+
+This repository turns that intent into docs-as-code. It is the public handbook
+for the framework and the source material consumed by the docs portal.
+
+It owns:
 
 - ADRs in `adr/`
 - architecture narrative in `architecture/`
@@ -11,9 +20,22 @@ This repository owns the docs-as-code source for:
 - documentation federation contracts in `.platformkit/` and `packages/`
 - the lightweight docs build and preview tooling in `apps/` and `scripts/`
 
-The public repo does not ship the private live-publish workflow. Downstream
-distributions can add deployment automation that publishes these sources to
-their preferred docs host or to PlatformKit's own content modules.
+The public repo does not include hosted publishing automation. Downstream
+distributions can publish these sources to their preferred docs host or compose
+them into PlatformKit content modules.
+
+## Reader Promise
+
+The docs should make the platform legible from first principles:
+
+- what belongs in core, modules, apps, shared packages, design, runtime, tools,
+  tests, and docs
+- why a boundary exists, linked to the ADR or requirement that justifies it
+- how a community module can extend PlatformKit without importing private
+  product code
+- how Pro/private distributions extend the OSS model through the same public
+  contracts
+- how requirements, tests, and generated evidence keep the architecture honest
 
 ## Repository Shape
 
@@ -32,6 +54,7 @@ pk-docs/
 ## Commands
 
 ```bash
+make verify
 npm run docs:sync
 npm run docs:build
 npm run docs:dev

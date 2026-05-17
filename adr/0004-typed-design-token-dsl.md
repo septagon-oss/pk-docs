@@ -61,7 +61,7 @@ Six rules follow:
    `.Compile()`.
 3. `guard-tokens` enforces the invariant. It refuses Tailwind
    utility patterns in `.go` source outside `tw/compile.go` (with
-   narrow allow-lists for legacy code during migration). It also
+   narrow migration allow-lists for code not yet converted). It also
    refuses string literals matching canonical variant names
    (`"primary"`, `"md"`, `"xs"`, `"pill"`) outside the typed
    constants.
@@ -80,8 +80,8 @@ Six rules follow:
 6. Variants and sizes are typed. `tw.Variant` / `tw.Size` /
    `tw.Shape` / `tw.State` replace raw strings in builder arguments.
    Component-level re-exports stay as `core.ComponentVariant` for
-   backward compatibility, but `VariantPrimary`, `SizeMedium`, etc.
-   are now anchored to the `tw` package.
+   source compatibility during adoption, but `VariantPrimary`,
+   `SizeMedium`, etc. are now anchored to the `tw` package.
 
 Three surfaces see the token change atomically. Implementation —
 components resolve via `style.go` + typed DSL. Design — the

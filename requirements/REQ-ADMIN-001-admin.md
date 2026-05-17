@@ -31,7 +31,7 @@ whose metadata declares an `AdminUI` block (with
 composing those into a single `ModuleSurfaceContribution`. The
 discovery + composition path **shall** be cached but
 re-derivable; modules that register a dedicated
-`AdminCapabilityProvider` (legacy path) take precedence so their
+`AdminCapabilityProvider` take precedence so their
 custom rendering does not double up with the auto-discovered
 entries.
 
@@ -42,7 +42,7 @@ via "every feature declares its AdminUI metadata + the admin
 module discovers and composes" means a new feature that ships an
 admin section appears automatically — there is no hand-maintained
 sidebar list to keep in sync. The de-duplication against
-dedicated providers lets the legacy module-by-module admin
+ dedicated providers lets the module-by-module admin
 providers coexist with the auto-discovered surface during the
 migration.
 

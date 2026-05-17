@@ -17,13 +17,11 @@ function renderOverlayHomePage(site, overlay) {
   const content = overlay.manifest.content;
   const metadata = content.metadata ?? {};
   const branding = content.branding ?? {};
-  const bodyClass = [
+  const bodyClass = joinClassNames([
     "overlay-public-shell",
     overlay.manifest.experience?.bodyClass,
     `overlay-homepage-${overlay.clientSlug}`,
-  ]
-    .filter(Boolean)
-    .join(" ");
+  ]);
 
   return `<!doctype html>
 <html lang="en">
@@ -66,17 +64,27 @@ function renderAtlasPage(content, site) {
 }
 
 function renderAtlasNav(content) {
+  return renderPublicNav(content);
+}
+
+function renderPublicNav(content, options = {}) {
   const navbar = content.navbar ?? {};
+  const anchorPrefix = options.anchorPrefix ?? "";
+  const activeHref = options.activeHref ?? "";
+  const navLinks = (navbar.links ?? []).map((item) => {
+    const href = resolvePublicShellHref(normalizePublicLink(item.href), anchorPrefix);
+    const active = activeHref && href === activeHref;
+    return `<a href="${escapeAttribute(href)}"${active ? ' class="is-active"' : ""}>${escapeHtml(item.title)}</a>`;
+  });
+  const ctaHref = resolvePublicShellHref(normalizePublicLink(navbar.contactHref || "#get-started"), anchorPrefix);
   return `
 <header class="pk-nav">
   <div class="pk-shell pk-nav__row">
     ${renderBrand(content)}
     <nav class="pk-nav__links" aria-label="Primary">
-      ${(navbar.links ?? []).map((item) => `<a href="${escapeAttribute(normalizePublicLink(item.href))}">${escapeHtml(item.title)}</a>`).join("")}
+      ${navLinks.join("")}
     </nav>
-    <a class="pk-nav__cta" href="${escapeAttribute(normalizePublicLink(navbar.contactHref || "#get-started"))}">${escapeHtml(
-      navbar.joinUsText || "Get PlatformKit",
-    )}</a>
+    <a class="pk-nav__cta" href="${escapeAttribute(ctaHref)}">${escapeHtml(navbar.joinUsText || "Get PlatformKit")}</a>
   </div>
 </header>`;
 }
@@ -376,6 +384,14 @@ function normalizePublicLink(link) {
   }
 }
 
+function resolvePublicShellHref(href, anchorPrefix) {
+  const raw = String(href ?? "").trim();
+  if (anchorPrefix && raw.startsWith("#")) {
+    return `${anchorPrefix}${raw}`;
+  }
+  return raw;
+}
+
 function externalURL(link) {
   const raw = String(link ?? "").trim();
   if (!raw) return "";
@@ -397,10 +413,11 @@ function escapeAttribute(value) {
   return escapeHtml(String(value ?? ""));
 }
 
-export function renderModulePage(module) {
+export function renderModulePage(module, options = {}) {
   return renderLayout({
     title: `${module.title} | PlatformKit Docs`,
     description: module.summary,
+    overlay: options.overlay,
     content: `
       <nav class="breadcrumb">
         <a href="/">PlatformKit Docs</a>
@@ -454,6 +471,83 @@ export function renderModulePage(module) {
     `,
   });
 }
+
+export function renderContentIndexPage(contentEntries, options = {}) {
+  const grouped = groupContentEntries(contentEntries);
+  return renderLayout({
+    title: "PlatformKit Docs",
+    description: "Architecture, requirements, and decisions for PlatformKit OSS.",
+    overlay: options.overlay,
+    activeHref: "/docs",
+    content: `
+      <section class="pk-docs-hero pk-shell">
+        <div>
+          <span class="pk-docs-kicker">Docs</span>
+          <h1>PlatformKit Docs</h1>
+          <p>Architecture, requirements, and decisions for a small trusted core, module-owned capability, and apps that compose business workflows.</p>
+        </div>
+      </section>
+
+      <div class="pk-docs-index-grid pk-shell">
+        ${renderContentGroup("Architecture", grouped.architecture)}
+        ${renderContentGroup("Requirements", grouped.requirements)}
+        ${renderContentGroup("ADRs", grouped.adr)}
+      </div>
+    `,
+  });
+}
+
+export function renderContentPage(entry, contentEntries = [], options = {}) {
+  return renderLayout({
+    title: `${entry.title} | PlatformKit Docs`,
+    description: entry.excerpt,
+    overlay: options.overlay,
+    activeHref: "/docs",
+    content: `
+      <nav class="pk-docs-breadcrumb pk-shell">
+        <a href="/">PlatformKit</a>
+        <span>/</span>
+        <a href="/docs">Docs</a>
+        <span>/</span>
+        <span>${escapeHtml(entry.title)}</span>
+      </nav>
+
+      <section class="pk-docs-hero pk-shell">
+        <div>
+          <span class="pk-docs-kicker">${escapeHtml(entry.collection || "docs")}</span>
+          <h1>${escapeHtml(entry.title)}</h1>
+          <p>${escapeHtml(entry.excerpt)}</p>
+          <dl class="pk-docs-meta">
+            <div><dt>Source</dt><dd>${escapeHtml(entry.sourcePath)}</dd></div>
+            <div><dt>Route</dt><dd>${escapeHtml(entry.route)}</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <div class="pk-docs-layout pk-shell">
+        <article class="pk-docs-panel pk-docs-article markdown-body">
+          ${entry.contentHtml || renderMarkdown(entry.content)}
+        </article>
+        <aside class="pk-docs-panel pk-docs-aside">
+          <div class="pk-docs-panel-head">
+            <span class="pk-docs-kicker">Nearby</span>
+            <h2>${escapeHtml(collectionTitle(entry.collection))}</h2>
+          </div>
+          <ul class="pk-docs-list">
+            ${contentEntries
+              .filter((item) => item.collection === entry.collection)
+              .slice(0, 24)
+              .map((item) => `<li><a href="${escapeAttribute(item.route)}">${escapeHtml(item.title)}</a></li>`)
+              .join("")}
+          </ul>
+        </aside>
+      </div>
+    `,
+  });
+}
+
+export const renderDocsIndexPage = renderContentIndexPage;
+export const renderDocsPage = renderContentPage;
 
 export function renderStyles() {
   return `
@@ -942,6 +1036,168 @@ th {
   margin-bottom: 1rem;
   color: var(--muted);
 }
+.pk-docs-main {
+  position: relative;
+  z-index: 1;
+  padding: clamp(2.5rem, 5vw, 5rem) 0 clamp(5rem, 8vw, 8rem);
+}
+.pk-docs-hero {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(3rem, 6vw, 6rem) 0 clamp(2.25rem, 5vw, 4rem);
+}
+.pk-docs-hero h1 {
+  max-width: 12ch;
+  margin: 0;
+  color: var(--pk-ink, var(--ink));
+  font-family: "Inter", "Avenir Next", "Segoe UI", sans-serif;
+  font-size: clamp(3.4rem, 10vw, 7.6rem);
+  font-weight: 820;
+  letter-spacing: 0;
+  line-height: 0.9;
+}
+.pk-docs-hero p {
+  max-width: 760px;
+  margin: 1.2rem 0 0;
+  color: var(--pk-ink-soft, var(--muted));
+  font-size: clamp(1.08rem, 1.8vw, 1.38rem);
+  line-height: 1.55;
+}
+.pk-docs-kicker {
+  display: inline-block;
+  margin-bottom: 0.85rem;
+  color: var(--pk-primary, var(--accent));
+  font-family: "Inter", "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 780;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+.pk-docs-index-grid,
+.pk-docs-layout {
+  display: grid;
+  gap: 1rem;
+}
+.pk-docs-index-grid {
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.35fr) minmax(0, 0.9fr);
+  align-items: start;
+}
+.pk-docs-layout {
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.34fr);
+  align-items: start;
+}
+.pk-docs-panel {
+  border: 1px solid var(--pk-line, var(--line));
+  background: color-mix(in srgb, var(--pk-panel, var(--card)) 84%, white 16%);
+  box-shadow: none;
+}
+.pk-docs-panel,
+.pk-docs-article {
+  padding: clamp(1.1rem, 2vw, 1.65rem);
+}
+.pk-docs-article {
+  min-width: 0;
+}
+.pk-docs-panel-head h2 {
+  margin: 0 0 1rem;
+  color: var(--pk-ink, var(--ink));
+  font-family: "Inter", "Avenir Next", "Segoe UI", sans-serif;
+  font-size: clamp(1.35rem, 2.4vw, 2rem);
+  letter-spacing: 0;
+  line-height: 1;
+}
+.pk-docs-list {
+  display: grid;
+  gap: 0;
+  max-height: min(72vh, 56rem);
+  margin: 0;
+  padding: 0;
+  overflow: auto;
+  list-style: none;
+}
+.pk-docs-list li {
+  border-top: 1px solid var(--pk-line, var(--line));
+}
+.pk-docs-list a {
+  display: block;
+  padding: 0.78rem 0;
+  color: var(--pk-ink-soft, var(--muted));
+  text-decoration: none;
+  line-height: 1.35;
+}
+.pk-docs-list a:hover {
+  color: var(--pk-ink, var(--ink));
+}
+.pk-docs-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.75rem;
+  max-width: 760px;
+  margin: 1.5rem 0 0;
+}
+.pk-docs-meta div {
+  border-top: 1px solid var(--pk-line, var(--line));
+  padding-top: 0.75rem;
+}
+.pk-docs-meta dt {
+  color: var(--pk-ink-faint, var(--muted));
+  font-size: 0.82rem;
+}
+.pk-docs-meta dd {
+  margin: 0.2rem 0 0;
+  overflow-wrap: anywhere;
+  color: var(--pk-ink, var(--ink));
+  font-weight: 720;
+}
+.pk-docs-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  color: var(--pk-ink-faint, var(--muted));
+  font-size: 0.95rem;
+}
+.pk-docs-breadcrumb a {
+  color: var(--pk-ink-soft, var(--muted));
+  text-decoration-color: color-mix(in srgb, var(--pk-primary, var(--accent)) 60%, transparent);
+  text-underline-offset: 4px;
+}
+.pk-docs-article.markdown-body {
+  color: var(--pk-ink, var(--ink));
+  font-family: "Inter", "Avenir Next", "Segoe UI", sans-serif;
+}
+.pk-docs-article.markdown-body h1,
+.pk-docs-article.markdown-body h2,
+.pk-docs-article.markdown-body h3 {
+  color: var(--pk-ink, var(--ink));
+  font-family: "Inter", "Avenir Next", "Segoe UI", sans-serif;
+  letter-spacing: 0;
+}
+.pk-docs-article.markdown-body h1 {
+  margin-top: 0;
+  font-size: clamp(2rem, 4vw, 3.6rem);
+  line-height: 1;
+}
+.pk-docs-article.markdown-body h2 {
+  margin-top: 2.2rem;
+  padding-top: 1.35rem;
+  border-top: 1px solid var(--pk-line, var(--line));
+  font-size: clamp(1.45rem, 2.4vw, 2.15rem);
+}
+.pk-docs-article.markdown-body p,
+.pk-docs-article.markdown-body li {
+  color: var(--pk-ink-soft, var(--muted));
+}
+.pk-docs-article.markdown-body table {
+  min-width: 0;
+}
+.pk-docs-article.markdown-body pre {
+  overflow: auto;
+  border: 1px solid var(--pk-line, var(--line));
+  background: var(--pk-dark, #0d1411);
+  color: #eef7f2;
+  padding: 1rem;
+}
 .footer {
   margin-top: 3rem;
   padding-top: 1rem;
@@ -952,6 +1208,8 @@ th {
 @media (max-width: 900px) {
   .hero,
   .section-grid,
+  .pk-docs-index-grid,
+  .pk-docs-layout,
   .section-kicker,
   .product-row,
   .readiness {
@@ -1156,7 +1414,10 @@ function renderEvents(module) {
   `;
 }
 
-function renderLayout({ title, description, content }) {
+function renderLayout({ title, description, content, overlay = null, activeHref = "" }) {
+  if (overlay?.manifest?.content) {
+    return renderPublicLayout({ title, description, content, overlay, activeHref });
+  }
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -1177,7 +1438,7 @@ function renderLayout({ title, description, content }) {
           </span>
         </a>
         <nav class="top-nav" aria-label="Primary navigation">
-          <a href="/#docs">Docs</a>
+          <a href="/docs">Docs</a>
           <a href="/#customers">Customers</a>
           <a href="/#compare">Compare</a>
           <a href="mailto:hello@septagon.dev">Contact</a>
@@ -1192,6 +1453,75 @@ function renderLayout({ title, description, content }) {
 </html>`;
 }
 
+function renderPublicLayout({ title, description, content, overlay, activeHref }) {
+  const overlayContent = overlay.manifest.content;
+  const metadata = overlayContent.metadata ?? {};
+  const branding = overlayContent.branding ?? {};
+  const bodyClass = joinClassNames([
+    "overlay-public-shell",
+    overlay.manifest.experience?.bodyClass,
+    `overlay-homepage-${overlay.clientSlug}`,
+  ]);
+
+  return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${escapeHtml(title)}</title>
+    <meta name="description" content="${escapeHtml(description)}" />
+    ${metadata.keywords ? `<meta name="keywords" content="${escapeHtml(metadata.keywords)}" />` : ""}
+    ${branding.faviconUrl ? `<link rel="icon" href="${escapeAttribute(branding.faviconUrl)}" />` : ""}
+    ${branding.appleTouchIconUrl ? `<link rel="apple-touch-icon" href="${escapeAttribute(branding.appleTouchIconUrl)}" />` : ""}
+    <link rel="stylesheet" href="/assets/site.css" />
+    ${(overlay.manifest.experience?.styles ?? [])
+      .map((style) => `<link rel="stylesheet" href="/assets/overlays/${overlay.clientSlug}/${escapeAttribute(style)}" />`)
+      .join("\n    ")}
+    <style>${renderOverlayTokens(branding)}</style>
+  </head>
+  <body class="${escapeAttribute(bodyClass)}">
+    <div class="pk-page pk-docs-page">
+      ${renderPublicNav(overlayContent, { activeHref, anchorPrefix: "/" })}
+      <main class="pk-docs-main">${content}</main>
+      ${renderAtlasFooter(overlayContent)}
+    </div>
+  </body>
+</html>`;
+}
+
 function renderStat(label, value) {
   return `<div><dt>${escapeHtml(label)}</dt><dd>${value}</dd></div>`;
+}
+
+function joinClassNames(values) {
+  return [...new Set(values.filter(Boolean).flatMap((value) => String(value).split(/\s+/)).filter(Boolean))].join(" ");
+}
+
+function groupContentEntries(contentEntries) {
+  return {
+    architecture: contentEntries.filter((entry) => entry.collection === "architecture"),
+    requirements: contentEntries.filter((entry) => entry.collection === "requirements"),
+    adr: contentEntries.filter((entry) => entry.collection === "adr"),
+  };
+}
+
+function renderContentGroup(title, entries) {
+  return `
+    <section class="pk-docs-panel">
+      <div class="pk-docs-panel-head">
+        <span class="pk-docs-kicker">${escapeHtml(title)}</span>
+        <h2>${entries.length} pages</h2>
+      </div>
+      <ul class="pk-docs-list">
+        ${entries.map((entry) => `<li><a href="${escapeAttribute(entry.route)}">${escapeHtml(entry.title)}</a></li>`).join("")}
+      </ul>
+    </section>
+  `;
+}
+
+function collectionTitle(collection) {
+  if (collection === "adr") return "Architecture Decisions";
+  if (collection === "requirements") return "Requirements";
+  if (collection === "architecture") return "Architecture";
+  return "Docs";
 }

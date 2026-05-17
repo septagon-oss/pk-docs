@@ -15,6 +15,12 @@ This is PlatformKit's architecture documentation, organised to the
 answer every question a new contributor, an integrator, or an
 auditor can reasonably have about how PlatformKit is built.
 
+The architecture has one thesis: core should be small enough to trust
+and explicit enough to extend. Modules add product capability through
+contracts, registries, design contributions, policies, requirements,
+and tests. Apps compose those modules into customer workflows.
+Pro/private distributions build on the same public model.
+
 If you came here looking for a specific decision rather than the
 whole architecture, jump to
 [section 09](./09-architecture-decisions.md) — that's the index of
@@ -34,7 +40,7 @@ all 16 ADRs and 6 conventions.
 | [08](./08-cross-cutting-concepts.md) | Cross-cutting Concepts | What concerns span multiple modules — error handling, events, async, design system? |
 | [09](./09-architecture-decisions.md) | Architecture Decisions | Where do the ADRs and conventions live? |
 | [10](./10-quality-requirements.md) | Quality Requirements | What quality goals does the architecture deliver, and how are they verified? |
-| [11](./11-risks-and-technical-debt.md) | Risks and Technical Debt | What's known to be rough, unfinished, or speculative? |
+| [11](./11-risks-and-technical-debt.md) | Risks and Technical Debt | What risks, gaps, and open decisions must be managed deliberately? |
 | [12](./12-glossary.md) | Glossary | What does *port*, *contract*, *outbox*, *PKDS* mean here? |
 
 ## How this docs system is organised

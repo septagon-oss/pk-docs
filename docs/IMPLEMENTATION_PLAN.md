@@ -21,7 +21,7 @@ Ship one maintainable docs platform with:
 Acceptance:
 
 - every module exports a valid bundle
-- no legacy generated docs files remain
+- no superseded generated docs files remain
 
 ### `platformkit-backend-kit`
 
