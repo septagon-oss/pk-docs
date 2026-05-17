@@ -33,7 +33,7 @@
       "icon512Url": "/images/overlays/platformkit/branding/icon-512.png"
     },
     "social": [
-      {"icon": "github", "url": "https://github.com/septagon-dev", "label": "GitHub"},
+      {"icon": "github", "url": "https://github.com/septagon-oss", "label": "GitHub"},
       {"icon": "x-twitter", "url": "https://x.com/platformkit", "label": "X"},
       {"icon": "linkedin", "url": "https://linkedin.com/company/platformkit", "label": "LinkedIn"}
     ],

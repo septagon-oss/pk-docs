@@ -93,7 +93,7 @@ test("renderHomePage outputs the PlatformKit product page and module catalog", (
           },
         ],
         contact: { email: "hello@platformkit.dev", website: "https://platformkit.dev" },
-        social: [{ label: "GitHub", url: "https://github.com/septagon-dev" }],
+        social: [{ label: "GitHub", url: "https://github.com/septagon-oss" }],
         footer: { description: "PlatformKit is the production substrate for AI-native SaaS." },
       },
     },
