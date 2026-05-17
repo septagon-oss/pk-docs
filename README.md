@@ -13,9 +13,10 @@ for the framework and the source material consumed by the docs portal.
 
 It owns:
 
-- ADRs in `adr/`
-- architecture narrative in `architecture/`
-- platform requirements in `requirements/`
+- release-ready public docs in `docs/`
+- ADR source material in `adr/`
+- architecture source material in `architecture/`
+- platform requirement source material in `requirements/`
 - the public PlatformKit page overlay in `overlays/platformkit/`
 - documentation federation contracts in `.platformkit/` and `packages/`
 - the lightweight docs build and preview tooling in `apps/` and `scripts/`
@@ -41,11 +42,11 @@ The docs should make the platform legible from first principles:
 
 ```text
 pk-docs/
-├── adr/                  architecture decision records
-├── architecture/         arc42-style platform architecture
-├── requirements/         canonical platform requirements
+├── docs/                 release-ready public docs
+├── adr/                  decision-record source material
+├── architecture/         architecture source material
+├── requirements/         requirement source material
 ├── overlays/platformkit/ public PlatformKit page content and assets
-├── docs/                 target docs-system architecture
 ├── apps/                 docs hosts and preview apps
 ├── packages/             docs composer/source packages
 └── .platformkit/         docs federation manifest
@@ -67,6 +68,10 @@ The OSS build expects sibling public repos, especially `../pk-modules`, when
 syncing module-owned docs bundles.
 
 ## Authoring
+
+Published docs live in `docs/` or opt in with `status: published` frontmatter.
+ADR, architecture, and requirement source material is available for rewrite
+work, but it is not published by default.
 
 Copy `adr/0000-template.md` for new ADRs and
 `requirements/0000-template.md` for new platform requirements. Keep source docs

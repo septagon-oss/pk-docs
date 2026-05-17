@@ -3,7 +3,17 @@ import path from "node:path";
 
 import { renderMarkdown } from "./markdown.mjs";
 
-const DOC_SECTIONS = ["architecture", "adr", "requirements"];
+const DOC_SECTIONS = ["docs", "architecture", "adr", "requirements"];
+const DEFAULT_PUBLIC_SECTION = "docs";
+const DOC_SOURCE_ORDER = new Map([
+  ["docs/ARCHITECTURE.md", 10],
+  ["docs/PLATFORMKIT_FORMULA.md", 20],
+  ["docs/IMPLEMENTATION_PLAN.md", 30],
+  ["docs/RELEASING.md", 40],
+  ["docs/RELEASE_NOTES_V0_0_0.md", 50],
+  ["docs/V0_0_0_RELEASE_AUDIT.md", 60],
+  ["docs/FIRST_SLICE.md", 70],
+]);
 
 export async function collectDocumentationContent({ workspaceRoot, locale = "en" }) {
   const files = [];
@@ -17,15 +27,18 @@ export async function collectDocumentationContent({ workspaceRoot, locale = "en"
       if (skipDocument(relPath)) {
         continue;
       }
-      files.push(file);
+      const parsed = parseMarkdownDocument(await fs.readFile(file, "utf8"));
+      if (!publishDocument(relPath, parsed.frontmatter)) {
+        continue;
+      }
+      files.push({ file, parsed });
     }
   }
-  files.sort();
+  files.sort((left, right) => left.file.localeCompare(right.file));
 
   const entries = [];
-  for (const file of files) {
+  for (const { file, parsed } of files) {
     const sourcePath = path.relative(workspaceRoot, file).split(path.sep).join("/");
-    const parsed = parseMarkdownDocument(await fs.readFile(file, "utf8"));
     const collection = parsed.frontmatter.collection || collectionFromPath(sourcePath);
     const slug = parsed.frontmatter.slug || deriveSlug(sourcePath);
     const title = parsed.frontmatter.title || titleFromSlug(slug);
@@ -121,6 +134,17 @@ function skipDocument(relPath) {
   return false;
 }
 
+function publishDocument(relPath, frontmatter) {
+  const status = String(frontmatter.status ?? "").trim().toLowerCase();
+  if (status === "published") {
+    return true;
+  }
+  if (status === "archived" || status === "draft") {
+    return false;
+  }
+  return relPath.startsWith(`${DEFAULT_PUBLIC_SECTION}/`);
+}
+
 function parseMarkdownDocument(source) {
   const normalized = String(source ?? "").replaceAll("\r\n", "\n");
   if (!normalized.startsWith("---\n")) {
@@ -166,6 +190,7 @@ function stripQuotes(value) {
 }
 
 function collectionFromPath(sourcePath) {
+  if (sourcePath.startsWith("docs/")) return "docs";
   if (sourcePath.startsWith("adr/")) return "adr";
   if (sourcePath.startsWith("architecture/")) return "architecture";
   if (sourcePath.startsWith("requirements/")) return "requirements";
@@ -173,7 +198,18 @@ function collectionFromPath(sourcePath) {
 }
 
 function deriveSlug(sourcePath) {
-  return sourcePath.replace(/\.md$/, "").replaceAll("/", "-").toLowerCase();
+  const withoutExtension = sourcePath.replace(/\.md$/, "");
+  if (withoutExtension.startsWith("docs/")) {
+    return slugify(withoutExtension.slice("docs/".length));
+  }
+  return slugify(withoutExtension);
+}
+
+function slugify(value) {
+  return String(value ?? "")
+    .replace(/[^A-Za-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .toLowerCase();
 }
 
 function deriveADRNumber(sourcePath) {
@@ -195,6 +231,7 @@ function numberOrNull(value) {
 }
 
 function sortOrder({ collection, sourcePath, adrNumber, arc42Section }) {
+  if (DOC_SOURCE_ORDER.has(sourcePath)) return DOC_SOURCE_ORDER.get(sourcePath);
   if (sourcePath === "architecture/index.md") return 0;
   if (collection === "architecture" && arc42Section !== null) return arc42Section;
   if (sourcePath === "requirements/README.md") return 2000;

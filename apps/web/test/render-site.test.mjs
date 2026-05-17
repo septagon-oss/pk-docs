@@ -69,14 +69,14 @@ test("renderHomePage outputs the PlatformKit product page and module catalog", (
             title: "The demo is not the product.",
             subtitle: "A working agent still needs users, organizations, roles, billing, audit, and admin.",
             buttonText: "Read the platform charter",
-            buttonHref: "/docs/architecture-01-introduction-and-goals",
+          buttonHref: "/docs/architecture",
           },
         ],
         commodities: {
           title: "One graph, many AI surfaces",
           subtitle: "Serve the same composition as an app, admin console, MCP server, docs portal, worker runtime, module catalog, or vertical client surface.",
           joinButton: "Read topology ADR",
-          buttonHref: "/docs/adr-0019-dual-path-transport-symmetry",
+          buttonHref: "/docs/platformkit-formula",
           items: [{ label: "MCP tools" }, { label: "Agent workflows" }],
         },
         pricing: {

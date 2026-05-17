@@ -1,3 +1,10 @@
+---
+title: First Slice
+slug: first-slice
+collection: docs
+status: published
+---
+
 # First Slice
 
 ## Pick

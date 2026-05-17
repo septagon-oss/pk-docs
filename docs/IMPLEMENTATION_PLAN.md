@@ -1,179 +1,80 @@
-# PlatformKit Docs Implementation Plan
+---
+title: v0.0.0 Implementation Plan
+slug: implementation-plan
+collection: docs
+status: published
+---
 
-## Outcome
+# v0.0.0 Implementation Plan
 
-Ship one maintainable docs platform with:
+The first OSS release should be small, coherent, and hard to misunderstand.
+It is not a full commercial platform release. It is the public kernel that
+proves the PlatformKit architecture can be extended without private coupling.
 
-- module-owned bundles
-- canonical API reference from Huma
-- integrated showcases from E2E evidence
-- one central preview/build system
+## Release Objective
 
-## Phase 1: Stabilize Contracts
+Ship a ten-repo backbone that lets a developer:
 
-### `pk-modules`
+1. read the architecture and composability model
+2. inspect the public block contracts
+3. run tests and static checks locally
+4. compose the example app
+5. publish docs from source-owned content
+6. understand where downstream/private extensions attach
 
-- keep `docs/bundle.json` as the neutral contract
-- add schema versioning and compatibility rules
-- add optional `docs/openapi.overlay.yaml`
-- keep current contract checks
+## Completion Criteria
 
-Acceptance:
+The release is ready when:
 
-- every module exports a valid bundle
-- no superseded generated docs files remain
+- every repo has a clean Apache-2.0 license policy
+- every repo passes `make verify`
+- Go repos pass `go test`, `go vet`, `staticcheck`, and `govulncheck`
+- `pk-docs` passes Node tests, builds the public docs site, and publishes only
+  release-ready docs
+- `pk-core` and `pk-design` expose machine-readable block manifests
+- block-manifest tests validate identity, ownership, status, and evidence
+- release notes and release steps are published
+- fresh-clone verification works in dependency order
+- annotated `v0.0.0` tags are created only after remote CI is green
 
-### `platformkit-backend-kit`
+## Public Contract Priority
 
-- stamp operations with authoritative PlatformKit ownership extensions
-- export canonical `openapi.json`
-- disable built-in Huma docs UI permanently
+v0.0.0 should stabilize only the backbone:
 
-Acceptance:
+- `pk-core/pkg/module`
+- `pk-core/pkg/registry`
+- `pk-core/pkg/authz`
+- `pk-core/pkg/entity`
+- `pk-core/pkg/mutation`
+- `pk-core/pkg/observability`
+- `pk-design/pkg/tokens`
+- `pk-design/pkg/themes`
+- `pk-design/pkg/components`
+- `pk-design/pkg/catalog`
+- `pk-runtime` host and guarded HTTP primitives
+- `pk-testkit` conformance and flow-test primitives
+- `pk-client` transport and error primitives
 
-- no operation ownership is inferred heuristically downstream
+Everything else can be useful without being declared stable. The release should
+say that clearly.
 
-### `platformkit-tests`
+## Work Sequence
 
-- keep neutral showcase artifacts
-- ensure artifacts can reference module and feature IDs
+1. Finish the public release docs in `pk-docs`.
+2. Align license policy across the ten repos.
+3. Add executable block manifests for `pk-core` and `pk-design`.
+4. Keep docs publishing scoped to release-ready OSS pages.
+5. Run all local verification gates.
+6. Push every repo to `septagon-oss`.
+7. Confirm GitHub Actions in dependency order.
+8. Run fresh-clone install/build checks.
+9. Create annotated tags in dependency order.
+10. Publish the docs site.
 
-Acceptance:
+## Extension Principle
 
-- one showcase artifact can be joined to one module page without custom glue code
+No v0.0.0 feature is accepted because it is convenient. A feature belongs in
+the public backbone only when it makes a block more composable, safer to
+replace, easier to audit, or easier to bind at runtime.
 
-## Phase 2: Create The Docs App
-
-Create `pk-docs` with:
-
-- `apps/web`
-- `packages/contracts`
-- `packages/module-source`
-- `packages/openapi-source`
-- `packages/showcase-source`
-- `packages/composer`
-
-Acceptance:
-
-- the docs app can load fixture bundles and a fixture OpenAPI spec
-
-## Phase 3: Build The Composer
-
-Implement:
-
-- bundle loader
-- OpenAPI loader and overlay applier
-- module page model composer
-- global nav builder
-
-Acceptance:
-
-- one module renders from real bundle + real spec + optional showcase data
-
-## Phase 4: Real API Pages
-
-Render real API pages from the module slice with Fumadocs OpenAPI.
-
-Acceptance:
-
-- request/response schema, examples, errors, and operation IDs are visible
-- no hand-authored endpoint inventory is required for API truth
-
-## Phase 5: Integrated Showcases
-
-Attach showcases to module pages:
-
-- transcript
-- video/poster
-- chapter list
-- related operations
-- permissions used
-
-Acceptance:
-
-- one flagship module page explains the product surface and the API surface together
-
-## Phase 6: CI And Preview
-
-Add CI jobs:
-
-1. export app OpenAPI
-2. export module bundles
-3. export showcase artifacts
-4. build docs app
-5. run page-model tests
-6. deploy preview
-
-Acceptance:
-
-- every PR gets a docs preview
-- contract drift fails before merge
-
-## Proposed Commands
-
-These are the commands I would standardize on.
-
-### Backend App
-
-```bash
-make export-openapi
-```
-
-Artifact:
-
-```text
-dist/openapi/openapi.json
-```
-
-### Business Modules
-
-```bash
-make export-module-bundles
-```
-
-Artifact:
-
-```text
-dist/module-docs/<module>/bundle.json
-dist/module-docs/<module>/openapi.overlay.yaml   # optional
-```
-
-### PlatformKit Tests
-
-```bash
-make export-showcases
-```
-
-Artifact:
-
-```text
-dist/showcases/<module>/<feature>/<showcase>.json
-dist/showcases/<module>/<feature>/<showcase>.mp4
-```
-
-### Docs App
-
-```bash
-pnpm docs:sync
-pnpm docs:dev
-pnpm docs:build
-pnpm docs:test
-```
-
-Expected behavior:
-
-- `docs:sync` copies or resolves all upstream artifacts into `.generated/`
-- `docs:dev` runs a local Fumadocs preview
-- `docs:build` produces the static site
-- `docs:test` validates page models and smoke pages
-
-## Migration Rule
-
-Do not block progress on deleting transitional provider output immediately.
-
-Use this order:
-
-1. central docs app reaches parity for one module
-2. central docs app becomes the canonical preview path
-3. transitional in-module provider output is downgraded to optional debug output
-4. remove in-module provider rendering when no longer needed
+That is the quality bar.

@@ -45,7 +45,7 @@
       "joinHref": "#get-started",
       "joinButton": "Obter PlatformKit",
       "communityButton": "Ler arquitetura",
-      "visitHref": "/docs/architecture-index"
+      "visitHref": "/docs/architecture"
     },
     "navbar": {
       "joinUsText": "Obter PlatformKit",
@@ -115,7 +115,7 @@
         "background": "",
         "textColor": "",
         "buttonText": "Ler charter da plataforma",
-        "buttonHref": "/docs/architecture-01-introduction-and-goals",
+        "buttonHref": "/docs/architecture",
         "imageSrc": ""
       },
       {
@@ -125,7 +125,7 @@
         "background": "",
         "textColor": "",
         "buttonText": "Ver arquitetura",
-        "buttonHref": "/docs/architecture-index",
+        "buttonHref": "/docs/platformkit-formula",
         "imageSrc": ""
       },
       {
@@ -135,7 +135,7 @@
         "background": "",
         "textColor": "",
         "buttonText": "Ler regras de módulos",
-        "buttonHref": "/docs/req-002-independently-deployable-modules",
+        "buttonHref": "/docs/platformkit-formula",
         "imageSrc": ""
       },
       {
@@ -145,7 +145,7 @@
         "background": "",
         "textColor": "",
         "buttonText": "Ler governação de agentes",
-        "buttonHref": "/docs/req-017-platform-agent-principal-substitution",
+        "buttonHref": "/docs/platformkit-formula",
         "imageSrc": ""
       },
       {
@@ -155,7 +155,7 @@
         "background": "",
         "textColor": "",
         "buttonText": "Inspecionar modelo de overlay",
-        "buttonHref": "/docs/adr-0002-surface-manifests-and-shell-profiles",
+        "buttonHref": "/docs/architecture",
         "imageSrc": ""
       },
       {
@@ -165,7 +165,7 @@
         "background": "",
         "textColor": "",
         "buttonText": "Ler requisitos",
-        "buttonHref": "/docs/requirements",
+        "buttonHref": "/docs/v0-0-0-release-audit",
         "imageSrc": ""
       }
     ],
@@ -175,7 +175,7 @@
       "title": "Um grafo, muitas superfícies AI",
       "subtitle": "Sirva a mesma composição como app, consola admin, servidor MCP, docs portal, worker runtime, catálogo de módulos ou superfície vertical de cliente.",
       "joinButton": "Ler ADR de topologia",
-      "buttonHref": "/docs/adr-0019-dual-path-transport-symmetry",
+      "buttonHref": "/docs/platformkit-formula",
       "items": [
         {"icon": "topology", "label": "MCP tools"},
         {"icon": "topology", "label": "Agent workflows"},
@@ -208,7 +208,7 @@
           "cellColor": "",
           "features": [],
           "buttonText": "Começar grátis",
-          "buttonHref": "/docs/architecture-01-introduction-and-goals"
+          "buttonHref": "/docs/architecture"
         },
         {
           "name": "Team",
