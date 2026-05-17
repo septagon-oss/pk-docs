@@ -258,9 +258,9 @@ function renderAtlasFooter(content) {
       <p>${escapeHtml(footer.description || "")}</p>
     </div>
     <div class="pk-footer__links">
-      ${contact.email ? `<a href="mailto:${escapeAttribute(contact.email)}">${escapeHtml(contact.email)}</a>` : ""}
-      ${contact.website ? `<a href="${escapeAttribute(externalURL(contact.website))}">${escapeHtml(contact.website)}</a>` : ""}
-      ${(content.social ?? []).map((item) => `<a href="${escapeAttribute(externalURL(item.url))}">${escapeHtml(item.label)}</a>`).join("")}
+      ${renderFooterLink(mailtoURL(contact.email), contact.email)}
+      ${renderFooterLink(externalURL(contact.website), contact.website)}
+      ${(content.social ?? []).map((item) => renderFooterLink(externalURL(item.url), item.label)).join("")}
       ${footer.termsConditions ? `<a href="${escapeAttribute(normalizePublicLink(footer.termsHref))}">${escapeHtml(footer.termsConditions)}</a>` : ""}
       ${footer.privacyPolicy ? `<a href="${escapeAttribute(normalizePublicLink(footer.privacyHref))}">${escapeHtml(footer.privacyPolicy)}</a>` : ""}
     </div>
@@ -370,17 +370,18 @@ function homepagePlanPrice(plan) {
 function normalizePublicLink(link) {
   const raw = String(link ?? "").trim();
   if (!raw) return "";
+  if (raw.startsWith("#")) return raw;
   try {
     const parsed = new URL(raw, "http://platformkit.local");
     if (parsed.origin !== "http://platformkit.local") {
-      return raw;
+      return safeExternalURL(parsed);
     }
     if (parsed.pathname.startsWith("/en/") || parsed.pathname.startsWith("/pt/")) {
       parsed.pathname = `/${parsed.pathname.split("/").slice(2).join("/")}`;
     }
     return `${parsed.pathname}${parsed.search}${parsed.hash}` || "/";
   } catch {
-    return raw;
+    return "";
   }
 }
 
@@ -395,8 +396,34 @@ function resolvePublicShellHref(href, anchorPrefix) {
 function externalURL(link) {
   const raw = String(link ?? "").trim();
   if (!raw) return "";
-  if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
-  return `https://${raw}`;
+  try {
+    const parsed = new URL(/^[A-Za-z][A-Za-z0-9+.-]*:/.test(raw) ? raw : `https://${raw}`);
+    return safeExternalURL(parsed);
+  } catch {
+    return "";
+  }
+}
+
+function mailtoURL(email) {
+  const raw = String(email ?? "").trim();
+  if (!raw || /[\r\n<>"\s]/.test(raw) || !/^[^@]+@[^@]+\.[^@]+$/.test(raw)) {
+    return "";
+  }
+  return `mailto:${raw}`;
+}
+
+function safeExternalURL(parsed) {
+  if (!["http:", "https:", "mailto:", "tel:"].includes(parsed.protocol)) {
+    return "";
+  }
+  return parsed.toString();
+}
+
+function renderFooterLink(href, label) {
+  if (!href || !String(label ?? "").trim()) {
+    return "";
+  }
+  return `<a href="${escapeAttribute(href)}">${escapeHtml(label)}</a>`;
 }
 
 function sanitizeColor(value, fallback) {

@@ -109,6 +109,35 @@ test("renderHomePage outputs the PlatformKit product page and module catalog", (
   assert.match(html, /COMUM Cowork/);
 });
 
+test("renderHomePage filters unsafe public links", () => {
+  const html = renderHomePage(siteFixture(), {
+    clientSlug: "platformkit",
+    manifest: {
+      experience: { bodyClass: "overlay-homepage-platformkit" },
+      content: {
+        metadata: { title: "PlatformKit", description: "Docs" },
+        branding: { logoAlt: "platformkit" },
+        navbar: {
+          joinUsText: "Start",
+          contactHref: "javascript:alert(1)",
+          links: [{ title: "Bad", href: "javascript:alert(1)" }],
+        },
+        sections: [{ id: "safe", title: "Safe", subtitle: "Safe" }],
+        commodities: { items: [] },
+        pricing: { plans: [] },
+        testimonials: [],
+        contact: { email: "hello@platformkit.dev\r\nbcc:evil@example.com", website: "javascript:alert(1)" },
+        social: [{ label: "Bad", url: "javascript:alert(1)" }],
+        footer: { description: "Footer" },
+      },
+    },
+  });
+
+  assert.doesNotMatch(html, /href="javascript:/);
+  assert.doesNotMatch(html, /https:\/\/javascript/);
+  assert.doesNotMatch(html, /mailto:hello@platformkit\.dev/);
+});
+
 function siteFixture() {
   return {
     featuredModuleId: "translation_management",
