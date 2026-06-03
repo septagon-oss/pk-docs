@@ -105,8 +105,13 @@ bundle := pkmodule.NewBundle(
 )
 ```
 
-Every module is constructed with `WithSQLiteDSN(cfg.Database.DSN)` and
-shared admin/health registrars. There is no hidden wiring.
+`buildApp` opens **one** shared `*sql.DB` over the SQLite file and builds
+every data module on it: each module's store is created with `sqlite.New(db)`
+and passed in via `WithStore(...)`, alongside the shared admin/health
+registrars (auth takes the handle directly via `WithSQLiteDB(db)`). They all
+share the single connection pool, so the schema each store creates at
+construction is visible to every later query — the fresh-database first-run
+guarantee. There is no hidden wiring, and no module opens its own pool.
 
 ## Step 6 — change something
 
