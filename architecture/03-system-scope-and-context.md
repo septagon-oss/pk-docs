@@ -102,7 +102,7 @@ PlatformKit's own code: 21 repositories, tied by `go.work`.
 | `platformkit-kube-apps` | Reusable Kubernetes delivery artifacts |
 | `platformkit-community` | Public discussion + community coordination |
 | `platformkit-design-system/pkds` | Sub-module: CUE-authored design system pipeline |
-| `infra` | Terraform for the `septagon-dev` GitHub org |
+| `infra` | Terraform for the private infrastructure GitHub org |
 | `platformkit` | Public flagship repository |
 | `repo-template` | Template for new Septagon repos |
 
