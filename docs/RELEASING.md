@@ -34,18 +34,20 @@ npm audit --audit-level=moderate
 
 ## Dependency Order
 
-Release in this order:
+Release in this layered order (leaves first, so dependents resolve upstream tags):
 
-1. `pk-core`
-2. `pk-shared`
-3. `pk-design`
-4. `pk-runtime`
-5. `pk-testkit`
-6. `pk-modules`
-7. `pk-client`
-8. `pk-tools`
-9. `pk-apps`
-10. `pk-docs`
+1. `pk-shared`
+2. `pk-registry`
+3. `pk-core`
+4. `pk-design`
+5. `pk-client`
+6. `platformkit-ui`
+7. `pk-runtime`
+8. `pk-testkit`
+9. `pk-modules`
+10. `pk-tools`
+11. `pk-apps`
+12. `pk-docs`
 
 ## Local Replace Policy
 
