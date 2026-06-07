@@ -62,7 +62,7 @@ The 21 repos split into five conceptual bands:
 - `platformkit-community` — public discussion and coordination.
 - `platformkit-bridges` — external-tooling bridges consuming PlatformKit control-plane artifacts.
 - `platformkit` — the public flagship repo.
-- `infra` — Terraform for the `septagon-dev` GitHub org.
+- `infra` — Terraform for the private infrastructure GitHub org.
 - `repo-template` — template for new Septagon repos.
 
 ### Why the split is this shape

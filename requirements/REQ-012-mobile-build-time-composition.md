@@ -77,7 +77,7 @@ published.
 | AC-1 | Inspection | `platformkit-mobile/tests/sync-client-packs.test.mjs` — test case: "generator fails when PLATFORMKIT_CLIENT_FILTER does not match any pack". _Verification gap: cited resource is not a Go test (pattern / non-Go); downgraded to inspection._ |
 | AC-2 | Inspection | `platformkit-mobile/tests/sync-client-packs.test.mjs` — test case: "generator fails loudly when the same slug appears in both roots". _Verification gap: cited resource is not a Go test (pattern / non-Go); downgraded to inspection._ |
 | AC-3 | Analysis | `platformkit-mobile/metro.config.js` — `candidateExtraWatchFolders` explicitly includes downstream overlay roots, then assigns `config.watchFolders`. |
-| AC-4 | Analysis | `platformkit-mobile/eas.json` — per-client profiles (`development-apex`, `development-velora`, `demo-apex`, `demo-velora`) set `env.PLATFORMKIT_CLIENT_FILTER`. |
+| AC-4 | Analysis | `platformkit-mobile/eas.json` — per-client profiles (e.g. `development-<client>`, `demo-<client>`) set `env.PLATFORMKIT_CLIENT_FILTER`. |
 
 ## Satisfied by
 
