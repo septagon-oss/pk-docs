@@ -20,11 +20,11 @@ running before you write any code.
 - A free TCP port — by default `:8080`.
 - No external services. The default store is a local SQLite file.
 
-## Step 1 — clone the workspace
+## Step 1 — clone pk-apps
 
 ```bash
-git clone https://github.com/septagon-oss/septagon-oss-workspace
-cd septagon-oss-workspace/pk-apps/apps/starter-saas
+git clone https://github.com/septagon-oss/pk-apps
+cd pk-apps/apps/starter-saas
 ```
 
 The OSS workspace is a Go workspace (`go.work` at the root). The
