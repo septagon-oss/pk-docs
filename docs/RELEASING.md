@@ -8,7 +8,28 @@ status: published
 # Releasing
 
 PlatformKit OSS releases are repo-scoped. The workspace is a convenience for
-development; each child repo is the release artifact.
+**local development only**; each child repo is the release artifact and must be
+consumable by someone who never cloned the workspace.
+
+## Run Model (read first)
+
+- **No `replace` in a published `go.mod`.** Modules resolve purely by version
+  from the Go module proxy. Cross-repo development on disk is wired by the
+  workspace `go.work` (`use ./pk-core`, …), **not** by `replace` directives. A
+  published module that replaces a `github.com/septagon-oss/*` module — or uses
+  any local-path replace (`./`, `../`, or absolute) — is broken for outsiders.
+- **Ship `v0.1.0`, retract `v0.0.0`.** The old `v0.0.0` tags were cut with local
+  `replace` directives baked in and can never resolve from the proxy. Each Go
+  module's `go.mod` declares `retract v0.0.0 // broken: contained local replace
+  directives`, so `go get` and `go list -m -versions` steer consumers to
+  `v0.1.0+`. Never reuse or move `v0.0.0`.
+- **Version namespaces.** The release is the git tag **`v0.1.0`**. The per-module
+  `ModuleVersion` (port-contract value) stays **`0.0.0`** and is **not** bumped —
+  bumping it breaks module-dependency compose, which pins `Version: "0.0.0"`.
+- **Repo set.** 11 Go-module repos get a `v0.1.0` tag (below). The front-door
+  repo `platformkit` is a new repo, also tagged `v0.1.0`. `pk-docs` is a docs
+  repo (this repo) — published, but **not** a Go module and **not** on the build
+  train. `pk-deploy` and internal-only repos are excluded.
 
 ## Local Verification
 
@@ -18,88 +39,98 @@ Run this from every repo before pushing:
 make verify
 ```
 
-For Go repos, also run:
+For Go repos, also build/test exactly as an outsider would — **no workspace
+rescue** — and confirm there are no forbidden replaces:
 
 ```bash
+GOWORK=off go build ./...
+GOWORK=off go test ./...
 go mod tidy -diff
 govulncheck ./...
 git diff --check
+
+# Block-aware replace guard (catches single-line AND replace ( … ) block form):
+go mod edit -json | jq -e '
+  [ .Replace // [] | .[]
+    | select((.Old.Path | startswith("github.com/septagon-oss/"))
+             or (.New.Path | test("^(\\.|/|\\.\\.)"))) ] | length == 0
+' >/dev/null || { echo "FAIL: forbidden replace in go.mod"; exit 1; }
 ```
 
-For `pk-docs`, also run:
+For `pk-docs`:
 
 ```bash
 npm audit --audit-level=moderate
 ```
 
-## Dependency Order
+## Dependency Order (leaf-first)
 
-Release in this layered order (leaves first, so dependents resolve upstream tags):
+Tag and push in this layered order so each repo's dependencies already exist by
+version when it is tagged:
 
-1. `pk-shared`
-2. `pk-registry`
-3. `pk-core`
-4. `pk-design`
-5. `pk-client`
-6. `platformkit-ui`
-7. `pk-runtime`
-8. `pk-testkit`
-9. `pk-modules`
-10. `pk-tools`
-11. `pk-apps`
-12. `pk-docs`
+1. **Layer 0 (leaves):** `pk-shared`, `pk-core`, `pk-design`, `pk-client`,
+   `pk-registry`, `platformkit-ui`
+2. **Layer 1:** `pk-runtime`, `pk-modules`, `pk-testkit`
+3. **Layer 2:** `pk-tools`
+4. **Layer 3:** `pk-apps`
+5. **Layer 4 (front door, new repo):** `platformkit` (requires `pk-apps`)
 
-## Local Replace Policy
+`pk-docs` is not on this train; publish it when its content is final.
 
-During workspace development, Go modules may use local `replace` directives so
-the repos can evolve together before tags exist.
+## Tagging
 
-Before a public tag:
+Create annotated `v0.1.0` tags on the merged `main` commit, only after CI is
+green, in the dependency order above:
 
-1. confirm each module can build from a fresh clone
-2. confirm any required sibling tag already exists
-3. remove or justify local-only `replace` directives in the tagged module
-4. run `go list -m all` and `go test ./...`
+```bash
+git tag -a v0.1.0 -m "PlatformKit OSS v0.1.0"
+git push origin main
+git push origin v0.1.0
+```
 
-Local replaces are acceptable in development commits. Public release tags must
-be consumable by someone who did not clone the workspace.
+The `v0.1.0` tag points at the `main` commit. `main` may advance afterward only
+for post-tag docs/CI changes — that does not move the tag, and there is no
+`HEAD == v0.1.0` requirement. **Published versions on the Go proxy are
+immutable.** If a bad version reaches the proxy, cut `v0.1.1` — never move or
+re-cut `v0.1.0`.
 
 ## Fresh-Clone Check
 
-For each Go repo:
+For each Go repo, resolve and build purely by version with no workspace:
 
 ```bash
 tmp="$(mktemp -d)"
-git clone git@github.com:septagon-oss/<repo>.git "$tmp/<repo>"
+git clone https://github.com/septagon-oss/<repo>.git "$tmp/<repo>"
 cd "$tmp/<repo>"
-git checkout v0.0.0
-make verify
+GOWORK=off go build ./...
+GOWORK=off go test ./...
 go list -m all
+```
+
+For the **front door**, do a real boot smoke (not a no-op build in an empty
+module):
+
+```bash
+git clone https://github.com/septagon-oss/platformkit
+cd platformkit
+GOWORK=off go run . &  PID=$!; sleep 3
+test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/healthz)"        = 200
+test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/v1/tenants)" = 200
+test "$(curl -s -o /dev/null -w '%{http_code}' -X POST http://localhost:8080/api/v1/auth/sessions \
+          -H 'Content-Type: application/json' \
+          -d '{"tenant_id":"tenant_acme","email":"admin@local.test","password":"changeme"}')" = 201
+kill $PID
 ```
 
 For `pk-docs`:
 
 ```bash
 tmp="$(mktemp -d)"
-git clone git@github.com:septagon-oss/pk-docs.git "$tmp/pk-docs"
+git clone https://github.com/septagon-oss/pk-docs.git "$tmp/pk-docs"
 cd "$tmp/pk-docs"
-git checkout v0.0.0
 npm ci
 make verify
 ```
-
-## Tagging
-
-Create annotated tags only after remote CI is green:
-
-```bash
-git tag -a v0.0.0 -m "v0.0.0"
-git push origin v0.0.0
-```
-
-Tags should be created in dependency order. If a downstream repo fails after an
-upstream tag, fix the downstream repo. Do not move a published tag unless the
-release is being formally withdrawn.
 
 ## Release Notes
 
