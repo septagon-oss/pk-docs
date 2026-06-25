@@ -18,17 +18,16 @@ Hold the canonical written record of how PlatformKit is designed: ADRs, architec
 
 - per-repo source code (lives in the platformkit-* implementation repos)
 - per-module business documentation (each business module owns its own `docs/`)
-- runtime documentation generation (handled by `platformkit-devtools/cmd/platformkit-claude`)
 - public marketing copy
+- release automation or CI workflow definitions
 
 ## Dependencies
 
-- Node.js + npm for the Astro Starlight build
-- `platformkit-devtools` for sync tooling
+- Node.js + npm for the Antora docs build
 - Antora UI assets vendored in `antora-ui/`
 
 ## Release Posture
 
-- Visibility: planned-public; until then, `private`
+- Visibility: `public`
 - Bootstrap mode: `git`
 - ADR rule: ADRs are append-only once Accepted; supersession requires a new numbered ADR pointing back at the original
