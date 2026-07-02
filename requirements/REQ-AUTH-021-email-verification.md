@@ -114,6 +114,7 @@ disrupted.
 | AC | Method | Evidence |
 |---|---|---|
 | AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/registration/req_auth_002_test.go::TestVerifyEmail_SingleUse_AndExpiry` covers the success and the subsequent rejection. |
+| AC-1 | Demonstration | `modules/platformkit-business-modules/auth_management/features/registration/e2e.go` — browser flow `auth_management.registration.verify_email` (Fulfills binding), run against the showroom and published with requirement label `REQ-AUTH-021-AC-1` to the Allure project `e2e-showroom-smoke` at https://allure.staging.septagon.dev. |
 | AC-2 | Inspection | Same harness — second redemption returns `ErrEmailAlreadyVerified`. _Verification gap: pending — cited evidence is prose / pattern / non-Go and cannot be auto-resolved._ |
 | AC-3 | Inspection | `req_auth_002_test.go::TestVerifyEmail_SingleUse_AndExpiry/expired_token_rejected`. _Verification gap: pending — cited evidence is prose / pattern / non-Go and cannot be auto-resolved._ |
 | AC-4 | Inspection | `verify_email.go::VerifyEmail` — `s.verificationRepo.GetByToken` returning nil → `ErrInvalidVerificationToken`. |
