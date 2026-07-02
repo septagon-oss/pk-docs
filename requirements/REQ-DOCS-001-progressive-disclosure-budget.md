@@ -4,7 +4,7 @@ title: "Eager-loaded Claude documentation stays under the per-tier byte budget"
 status: Active
 date: 2026-05-10
 slug: req-docs-001-progressive-disclosure-budget
-category: documentation
+category: governance  # cmd/-only implementation; traceability policy excludes /cmd/, so this REQ is docs/analysis-satisfied
 ears_pattern: ubiquitous
 verification_methods:
   - analysis
