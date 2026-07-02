@@ -88,7 +88,7 @@ access; the trail proves it was intentional.
   labelled marker API.
 - `platformkit-backend-kit/core/entity/repository/gorm_authz.go` —
   the persistence-layer honour of the marker.
-- `pk-modules/auth_management/features/authentication/login_service.go`,
+- `modules/platformkit-business-modules/auth_management/features/authentication/login_service.go`,
   `login_resolution.go`, `login_2fa.go` — representative callers.
 
 ## Compliance traceability

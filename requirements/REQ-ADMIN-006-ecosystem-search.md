@@ -51,8 +51,8 @@ contribution, the unified surface aggregates.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/admin_management/features/ecosystem_search/service_test.go::TestSearchHonorsTenantEnabledModules` covers grouping. |
-| AC-2 | Test | `pk-modules/admin_management/features/ecosystem_search/service_test.go::TestSearchHonorsTenantEnabledModules` covers tenant scope. |
+| AC-1 | Test | `modules/platformkit-business-modules/admin_management/features/ecosystem_search/service_test.go::TestSearchHonorsTenantEnabledModules` covers grouping. |
+| AC-2 | Test | `modules/platformkit-business-modules/admin_management/features/ecosystem_search/service_test.go::TestSearchHonorsTenantEnabledModules` covers tenant scope. |
 
 ## Implements (cross-cutting)
 

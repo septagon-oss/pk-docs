@@ -116,13 +116,13 @@ create. Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/billing_management/features/subscriptions/service_test.go::TestChangePlan_Upgrade`. |
-| AC-2 | Test | `pk-modules/billing_management/features/subscriptions/service_test.go::TestChangePlan_DowngradeAllowed`. |
-| AC-3 | Test | `pk-modules/billing_management/features/subscriptions/service_test.go::TestChangePlan_DowngradeNotAllowed`. |
-| AC-4 | Test | `pk-modules/billing_management/features/subscriptions/service_test.go::TestChangePlan_NonActiveSubscription`. |
-| AC-5 | Test | `pk-modules/billing_management/features/subscriptions/service_test.go::TestChangePlan_TrialingSubscriptionAllowed`. |
-| AC-6 | Test | `pk-modules/billing_management/features/subscriptions/service_test.go::TestChangePlan_InactiveNewPlan`. |
-| AC-7 | Test | `pk-modules/billing_management/features/subscriptions/service_test.go::TestChangePlan_ImmediateResetsBillingPeriod`. |
+| AC-1 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestChangePlan_Upgrade`. |
+| AC-2 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestChangePlan_DowngradeAllowed`. |
+| AC-3 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestChangePlan_DowngradeNotAllowed`. |
+| AC-4 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestChangePlan_NonActiveSubscription`. |
+| AC-5 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestChangePlan_TrialingSubscriptionAllowed`. |
+| AC-6 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestChangePlan_InactiveNewPlan`. |
+| AC-7 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestChangePlan_ImmediateResetsBillingPeriod`. |
 
 ## Edge cases & unhappy paths
 
@@ -175,7 +175,7 @@ create. Three properties:
 
 ## Satisfied by
 
-- `pk-modules/billing_management/features/subscriptions/service.go::ChangePlan`.
+- `modules/platformkit-business-modules/billing_management/features/subscriptions/service.go::ChangePlan`.
 
 ## Related requirements
 

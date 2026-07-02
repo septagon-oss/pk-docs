@@ -98,11 +98,11 @@ properties must hold:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/user_management/features/user/service_test.go::TestService_Create` (success branch — asserts the audit recorder received `user.create`, the metric was incremented, and the entity was returned). |
-| AC-2 | Test | `pk-modules/user_management/features/user/service_test.go::TestService_Create` (failure-branch table case — asserts `user.create.failed` audit + wrapped error). |
+| AC-1 | Test | `modules/platformkit-business-modules/user_management/features/user/service_test.go::TestService_Create` (success branch — asserts the audit recorder received `user.create`, the metric was incremented, and the entity was returned). |
+| AC-2 | Test | `modules/platformkit-business-modules/user_management/features/user/service_test.go::TestService_Create` (failure-branch table case — asserts `user.create.failed` audit + wrapped error). |
 | AC-3 | Inspection | `service_crud.go::Create` — no pre-read; the repository call is the single write path. |
 | AC-4 | Inspection | `service_crud.go::Create` — signature is `(ctx, *entities.User)`; no password parameter. The credential-writer port is invoked separately by `register_user_service.go`. |
-| AC-5 | Test | `pk-modules/user_management/features/user/service_test.go::TestService_Create` (metrics-nil sub-case in test setup). |
+| AC-5 | Test | `modules/platformkit-business-modules/user_management/features/user/service_test.go::TestService_Create` (metrics-nil sub-case in test setup). |
 | AC-6 | Inspection | `service_crud.go::Create` — `s.tracer.StartSpan` is the first statement. |
 
 ## Edge cases & unhappy paths
@@ -149,8 +149,8 @@ properties must hold:
 
 ## Satisfied by
 
-- `pk-modules/user_management/features/user/service_crud.go::Create` — orchestration.
-- `pk-modules/user_management/features/user/service_audit.go::createAuditEvent` — audit emission helper.
+- `modules/platformkit-business-modules/user_management/features/user/service_crud.go::Create` — orchestration.
+- `modules/platformkit-business-modules/user_management/features/user/service_audit.go::createAuditEvent` — audit emission helper.
 
 ## Related requirements
 

@@ -133,29 +133,29 @@ or operate on tenant B by changing tabs.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/operator_management/features/operator/html_handler_test.go::TestNewHTMLRenderHandler_SwapsToOperatorPrincipal` |
-| AC-1 | Test | `pk-modules/operator_management/features/operator/page_test.go::TestOperatorPagePreview_GetPathDoesNotInvokeRenderer` (regression guard: GET render of `/admin/operator?intent=…` must NOT invoke the SurfaceRenderer — only the POST handler that runs `authorizeAndSwapPrincipal` may do so) |
-| AC-2 | Test | `pk-modules/api_key_management/features/key_management/ensure_platform_api_key_test.go::TestEnsurePlatformAPIKey_IdempotentAndTenantScoped` |
-| AC-3 | Test | `pk-modules/auth_management/features/permissions/service_test.go::TestService_CheckPermission_APIKeyPrincipalUsesAPIKeyPermissions` |
-| AC-4 | Test | `pk-modules/api_key_management/features/key_management/ensure_platform_api_key_test.go::TestEnsurePlatformAPIKey_IdempotentAndTenantScoped` (the same test asserts cross-tenant isolation; a key issued for tenant A is invisible to tenant B's lookup) |
+| AC-1 | Test | `modules/platformkit-business-modules/operator_management/features/operator/html_handler_test.go::TestNewHTMLRenderHandler_SwapsToOperatorPrincipal` |
+| AC-1 | Test | `modules/platformkit-business-modules/operator_management/features/operator/page_test.go::TestOperatorPagePreview_GetPathDoesNotInvokeRenderer` (regression guard: GET render of `/admin/operator?intent=…` must NOT invoke the SurfaceRenderer — only the POST handler that runs `authorizeAndSwapPrincipal` may do so) |
+| AC-2 | Test | `modules/platformkit-business-modules/api_key_management/features/key_management/ensure_platform_api_key_test.go::TestEnsurePlatformAPIKey_IdempotentAndTenantScoped` |
+| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/permissions/service_test.go::TestService_CheckPermission_APIKeyPrincipalUsesAPIKeyPermissions` |
+| AC-4 | Test | `modules/platformkit-business-modules/api_key_management/features/key_management/ensure_platform_api_key_test.go::TestEnsurePlatformAPIKey_IdempotentAndTenantScoped` (the same test asserts cross-tenant isolation; a key issued for tenant A is invisible to tenant B's lookup) |
 | AC-5 | Test | `platformkit-agent-runtime/service_test.go::TestAgentRuntimeService_RecordActionUsesContextActorForPermission` and `platformkit-agent-runtime/service_test.go::TestAgentRuntimeService_RecordActionStampsOnBehalfOfMetadata` |
-| AC-6 | Test | `pk-modules/operator_management/features/operator/html_handler_test.go::TestNewHTMLRenderHandler_FailsClosedWhenAPIKeyServiceMissing` |
-| AC-7 | Test | `pk-modules/operator_management/tests/e2e/flows_test.go::TestOperatorFlows` — runs the `operator.render-as-service-account` flow defined in `flows.go` (build tag `e2e`) against the running composition. |
+| AC-6 | Test | `modules/platformkit-business-modules/operator_management/features/operator/html_handler_test.go::TestNewHTMLRenderHandler_FailsClosedWhenAPIKeyServiceMissing` |
+| AC-7 | Test | `modules/platformkit-business-modules/operator_management/tests/e2e/flows_test.go::TestOperatorFlows` — runs the `operator.render-as-service-account` flow defined in `flows.go` (build tag `e2e`) against the running composition. |
 | AC-1 | Analysis | `platformkit-backend-kit/analysis/importboundary` — confirms `operator_management` does not import `api_key_management` directly; the principal swap goes through `ports.APIKeyService`. |
 | AC-5 | Inspection | `platformkit-agent-runtime/service.go::recordAudit` — every audit-row writer reads the principal from ctx via `appcontext.GetOperatorPrincipalFromContext` and stamps `on_behalf_of` into the `Metadata` map when present. |
 
 ## Satisfied by
 
-- `pk-modules/api_key_management/features/key_management/service.go::EnsurePlatformAPIKey`
+- `modules/platformkit-business-modules/api_key_management/features/key_management/service.go::EnsurePlatformAPIKey`
   — the per-tenant service-account key issuer; idempotent on
   `(tenant_id, name)` with race-safe fallback to lookup.
-- `pk-modules/auth_management/features/permissions/service.go::CheckPermission`
+- `modules/platformkit-business-modules/auth_management/features/permissions/service.go::CheckPermission`
   — the principal-kind dispatch; API-key principals resolve from the
   key's embedded scopes, user principals use the user-role graph.
 - `platformkit-backend-kit/app/appcontext/context.go::WithOperatorPrincipal`,
   `GetOperatorPrincipalFromContext` — the principal-substitution ctx
   helpers used at the operator surface boundary.
-- `pk-modules/operator_management/features/operator/html_handler.go::authorizeAndSwapPrincipal`
+- `modules/platformkit-business-modules/operator_management/features/operator/html_handler.go::authorizeAndSwapPrincipal`
   — the explicit boundary that authorises the human, ensures the
   service-account key, and swaps the principal in ctx before the
   LLM tier is invoked.
@@ -180,11 +180,11 @@ The implementation was audited against the workspace's ADRs and
 conventions on 2026-05-07. Findings:
 
 - **ADR 0009 (ports-only cross-module communication)** —
-  `pk-modules/operator_management/features/operator/html_handler.go` imports
+  `modules/platformkit-business-modules/operator_management/features/operator/html_handler.go` imports
   only `ports.APIKeyService` and `ports.SurfaceRenderer`, never
-  `pk-modules/api_key_management/...`. The `EnsurePlatformAPIKey` extension
+  `modules/platformkit-business-modules/api_key_management/...`. The `EnsurePlatformAPIKey` extension
   lives on the existing `ports.APIKeyService` (in
-  `pk-modules/ports/api_key.go`) and is implemented
+  `modules/platformkit-business-modules/ports/api_key.go`) and is implemented
   by the `api_key_management` module, with the operator side
   consuming it through `WithCategorizedDep` in `dependencies.go`.
   ✓ Compliant.
@@ -251,7 +251,7 @@ that landed this REQ.
 - A future REQ may extend this pattern to mobile and integration agent
   surfaces; the substitution boundary already generalises.
 - The end-to-end flow declared in
-  `pk-modules/operator_management/tests/e2e/flows.go`
+  `modules/platformkit-business-modules/operator_management/tests/e2e/flows.go`
   exercises the whole identity-substitution path against the running
   showroom composition. CI runs it with the `e2e` build tag against a
   freshly-seeded postgres so a regression on any AC fails the suite

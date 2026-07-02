@@ -110,13 +110,13 @@ state machine. Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/billing_management/features/subscriptions/service_test.go::TestHandlePaymentSucceeded_PastDueToActive`. |
-| AC-2 | Test | `pk-modules/billing_management/features/subscriptions/service_test.go::TestHandlePaymentSucceeded_UnpaidToActive`. |
-| AC-3 | Test | `pk-modules/billing_management/features/subscriptions/service_test.go::TestHandlePaymentSucceeded_ActiveSubscription_NoChange`. |
-| AC-4 | Test | `pk-modules/billing_management/features/subscriptions/service_test.go::TestHandlePaymentSucceeded_InvalidData`. |
-| AC-5 | Test | `pk-modules/billing_management/features/subscriptions/service_test.go::TestHandlePaymentFailed_ActiveToPastDue`. |
-| AC-6 | Test | `pk-modules/billing_management/features/subscriptions/service_test.go::TestHandlePaymentFailed_NonActiveSubscription_NoChange`. |
-| AC-7 | Test | `pk-modules/billing_management/features/subscriptions/service_test.go::TestHandlePaymentFailed_InvalidData`. |
+| AC-1 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestHandlePaymentSucceeded_PastDueToActive`. |
+| AC-2 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestHandlePaymentSucceeded_UnpaidToActive`. |
+| AC-3 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestHandlePaymentSucceeded_ActiveSubscription_NoChange`. |
+| AC-4 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestHandlePaymentSucceeded_InvalidData`. |
+| AC-5 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestHandlePaymentFailed_ActiveToPastDue`. |
+| AC-6 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestHandlePaymentFailed_NonActiveSubscription_NoChange`. |
+| AC-7 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestHandlePaymentFailed_InvalidData`. |
 
 ## Edge cases & unhappy paths
 
@@ -171,7 +171,7 @@ state machine. Three properties:
 
 ## Satisfied by
 
-- `pk-modules/billing_management/features/subscriptions/service.go::HandlePaymentSucceeded, HandlePaymentFailed`.
+- `modules/platformkit-business-modules/billing_management/features/subscriptions/service.go::HandlePaymentSucceeded, HandlePaymentFailed`.
 
 ## Related requirements
 

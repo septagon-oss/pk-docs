@@ -116,14 +116,14 @@ surface. Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/chat_management/features/messaging/service_test.go::TestSendMessage_CreatesMessageAndReturnsInfo`. |
-| AC-2 | Test | `pk-modules/chat_management/features/messaging/service_test.go::TestSendMessage_PropagatesCreateError`. |
-| AC-3 | Test | `pk-modules/chat_management/features/messaging/service_test.go::TestSendMessage_PublishesEventWhenBusAvailable`. |
-| AC-4 | Test | `pk-modules/chat_management/features/messaging/service_test.go::TestSendMessage_NoEventWhenBusIsNil`. |
-| AC-5 | Test | `pk-modules/chat_management/features/messaging/service_test.go::TestListMessages_ReturnsAllRoomMessages`. |
-| AC-6 | Test | `pk-modules/chat_management/features/messaging/service_test.go::TestListMessages_FiltersNilMessages`. |
-| AC-7 | Test | `pk-modules/chat_management/features/messaging/service_test.go::TestListMessages_PropagatesError`. |
-| AC-8 | Test | `pk-modules/chat_management/features/messaging/service_test.go::TestListMessagesSince_FiltersOldMessages`. |
+| AC-1 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestSendMessage_CreatesMessageAndReturnsInfo`. |
+| AC-2 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestSendMessage_PropagatesCreateError`. |
+| AC-3 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestSendMessage_PublishesEventWhenBusAvailable`. |
+| AC-4 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestSendMessage_NoEventWhenBusIsNil`. |
+| AC-5 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestListMessages_ReturnsAllRoomMessages`. |
+| AC-6 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestListMessages_FiltersNilMessages`. |
+| AC-7 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestListMessages_PropagatesError`. |
+| AC-8 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestListMessagesSince_FiltersOldMessages`. |
 
 ## Edge cases & unhappy paths
 
@@ -170,7 +170,7 @@ surface. Three properties:
 
 ## Satisfied by
 
-- `pk-modules/chat_management/features/messaging/message_service.go::SendMessage, ListMessages, ListMessagesSince`.
+- `modules/platformkit-business-modules/chat_management/features/messaging/message_service.go::SendMessage, ListMessages, ListMessagesSince`.
 
 ## Related requirements
 

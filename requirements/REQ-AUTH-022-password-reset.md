@@ -106,7 +106,7 @@ session-list surface.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Inspection | `pk-modules/auth_management/features/registration/password_reset_test.go` (when present); reviewers verify `password_reset.go::Reset` exercises the orchestration order documented above. _Verification gap: pending — cited evidence is prose / pattern / non-Go and cannot be auto-resolved._ |
+| AC-1 | Inspection | `modules/platformkit-business-modules/auth_management/features/registration/password_reset_test.go` (when present); reviewers verify `password_reset.go::Reset` exercises the orchestration order documented above. _Verification gap: pending — cited evidence is prose / pattern / non-Go and cannot be auto-resolved._ |
 | AC-2 | Inspection | `password_reset.go` — repository check for `consumed_at` before any other branch. |
 | AC-3 | Inspection | TTL check identical to REQ-AUTH-021 AC-3. |
 | AC-4 | Inspection | The same `validatePasswordPolicy` helper used by REQ-AUTH-020 AC-4. |
@@ -158,11 +158,11 @@ session-list surface.
 
 ## Satisfied by
 
-- `pk-modules/auth_management/features/registration/password_reset.go` —
+- `modules/platformkit-business-modules/auth_management/features/registration/password_reset.go` —
   the reset orchestration.
-- `pk-modules/auth_management/features/registration/verification_repository.go` —
+- `modules/platformkit-business-modules/auth_management/features/registration/verification_repository.go` —
   the token-consume persistence.
-- `pk-modules/auth_management/features/registration/register_user_service.go` —
+- `modules/platformkit-business-modules/auth_management/features/registration/register_user_service.go` —
   the password-policy gate (`validatePasswordPolicy`).
 
 ## Related requirements

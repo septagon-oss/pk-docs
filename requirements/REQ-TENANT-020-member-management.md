@@ -124,12 +124,12 @@ would silently filter to zero results).
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestAddMember_Success` and `TestAddMember_TenantNotFound` — the latter exercises the tenant-existence verification before persist. |
+| AC-1 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestAddMember_Success` and `TestAddMember_TenantNotFound` — the latter exercises the tenant-existence verification before persist. |
 | AC-2 | Inspection | `service_members.go::AddMember` lines 45–48 — the `appcontext.GetUserFromContext` branch sets `member.InvitedBy`. Dedicated context-capture test pending. |
-| AC-3 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestRemoveMember_NotFound` — typed `member not found` return; `TestRemoveMember_Success` and `TestRemoveMember_DatabaseError` cover the success and error branches. |
-| AC-4 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestUpdateMemberRole_MemberNotFound` — wrapped not-found error; `TestUpdateMemberRole_Success` covers the happy path. |
-| AC-5 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestGetMember_NotFound` — `(nil, nil)` on miss; `TestGetMember_Success` and `TestGetMember_UsesCrossTenantAccess` cover the resolution paths. |
-| AC-6 | Inspection | `service_members.go::firstStringFilter` lines 149–154 — empty slice returns nil (no Eq clause). `pk-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestListMembers_Success` covers the populated-filter branch. Dedicated empty-filter regression test pending. |
+| AC-3 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestRemoveMember_NotFound` — typed `member not found` return; `TestRemoveMember_Success` and `TestRemoveMember_DatabaseError` cover the success and error branches. |
+| AC-4 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestUpdateMemberRole_MemberNotFound` — wrapped not-found error; `TestUpdateMemberRole_Success` covers the happy path. |
+| AC-5 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestGetMember_NotFound` — `(nil, nil)` on miss; `TestGetMember_Success` and `TestGetMember_UsesCrossTenantAccess` cover the resolution paths. |
+| AC-6 | Inspection | `service_members.go::firstStringFilter` lines 149–154 — empty slice returns nil (no Eq clause). `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestListMembers_Success` covers the populated-filter branch. Dedicated empty-filter regression test pending. |
 | AC-7 | Inspection | `service_members.go::ListMembers` lines 124–130 — `Page = (Offset/Limit) + 1` derivation. Dedicated pagination-derivation test pending. |
 
 ## Edge cases & unhappy paths
@@ -182,7 +182,7 @@ would silently filter to zero results).
 
 ## Satisfied by
 
-- `pk-modules/tenant_management/features/tenant_lifecycle/service_members.go::AddMember, RemoveMember, UpdateMemberRole, GetMember, ListMembers`.
+- `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_members.go::AddMember, RemoveMember, UpdateMemberRole, GetMember, ListMembers`.
 
 ## Related requirements
 

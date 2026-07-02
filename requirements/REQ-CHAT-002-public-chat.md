@@ -61,7 +61,7 @@ assistant see only its own context.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/chat_management/features/public_chat/assistant_test.go::TestSendPublicMessageUsesAssistantReply` covers session resolution; `service.go::GetOrCreatePublicSession` constructs the room with the tenant from context. |
+| AC-1 | Test | `modules/platformkit-business-modules/chat_management/features/public_chat/assistant_test.go::TestSendPublicMessageUsesAssistantReply` covers session resolution; `service.go::GetOrCreatePublicSession` constructs the room with the tenant from context. |
 | AC-2 | Inspection | `assistant.go:46-82` declares the timeout field, defaults via `defaultPublicAssistantTimeout`, and applies it in `Reply`. |
 | AC-3 | Inspection | `service.go` and `assistant.go` contain no rate-limiter; reviewers verify no rate-limit code path exists at this layer. |
 

@@ -106,11 +106,11 @@ result of a long line of CVE-class mistakes:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestVerifyToken_BlacklistedToken`. |
+| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestVerifyToken_BlacklistedToken`. |
 | AC-2 | Inspection | `refresh_token.go::validateRefreshToken` (lines 285-289) pins `*jwt.SigningMethodHMAC` and rejects everything else; the access-token validator uses the same primitive. |
 | AC-3 | Inspection | The claim-presence checks in `validateRefreshToken` apply to the access-token validator too; reviewers verify both paths. |
-| AC-4 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestRefreshAccessToken_BlacklistedToken` covers the refresh side; the access side is exercised through the bearer middleware tests in `platformkit-backend-kit/security/authn`. |
-| AC-5 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestVerifyToken_DefaultsToAccessType`. |
+| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestRefreshAccessToken_BlacklistedToken` covers the refresh side; the access side is exercised through the bearer middleware tests in `platformkit-backend-kit/security/authn`. |
+| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestVerifyToken_DefaultsToAccessType`. |
 | AC-6 | Inspection | The JWT library's `Valid` flag captures expiry; reviewers confirm the typed error path. |
 
 ## Edge cases & unhappy paths
@@ -161,12 +161,12 @@ result of a long line of CVE-class mistakes:
 
 ## Satisfied by
 
-- `pk-modules/auth_management/features/authentication/verify_token.go` —
+- `modules/platformkit-business-modules/auth_management/features/authentication/verify_token.go` —
   the verifier surface.
-- `pk-modules/auth_management/features/authentication/refresh_token.go::validateRefreshToken` —
+- `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token.go::validateRefreshToken` —
   the underlying signature + claim check the access-token path
   shares.
-- `pk-modules/auth_management/features/authentication/login_session.go::generateAccessToken` —
+- `modules/platformkit-business-modules/auth_management/features/authentication/login_session.go::generateAccessToken` —
   the producer side that the verifier round-trips.
 
 ## Related requirements

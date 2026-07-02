@@ -129,20 +129,20 @@ turn on a default-off channel either.
 - **AC-7 — Defaults match the registered values.** The
   five entries in `channelDefaults` match the
   `DefaultValue` fields in
-  `pk-modules/notification_management/settings_provider.go`
+  `modules/platformkit-business-modules/notification_management/settings_provider.go`
   (verified by `check-module-settings-audit`).
 
 ## Verification
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_UnknownKeyClosesFailClosed`. |
-| AC-2 | Test | `pk-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_NilSettingsReturnsRegisteredDefault`. |
-| AC-3 | Test | `pk-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_TenantOverrideWins`. |
-| AC-4 | Test | `pk-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_NilOverrideFallsBackToDefault`. |
-| AC-5 | Test | `pk-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_UnderlyingErrorFallsBackToDefault`. |
-| AC-6 | Test | `pk-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_NonBoolFallsBackToDefault`. |
-| AC-7 | Inspection | `pk-modules/notification_management/settings_provider.go` + `internal/channelgate/channelgate.go::channelDefaults` — same values across both files; `cmd/module-settings-audit-generate` enforces the agreement at build time. |
+| AC-1 | Test | `modules/platformkit-business-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_UnknownKeyClosesFailClosed`. |
+| AC-2 | Test | `modules/platformkit-business-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_NilSettingsReturnsRegisteredDefault`. |
+| AC-3 | Test | `modules/platformkit-business-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_TenantOverrideWins`. |
+| AC-4 | Test | `modules/platformkit-business-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_NilOverrideFallsBackToDefault`. |
+| AC-5 | Test | `modules/platformkit-business-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_UnderlyingErrorFallsBackToDefault`. |
+| AC-6 | Test | `modules/platformkit-business-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_NonBoolFallsBackToDefault`. |
+| AC-7 | Inspection | `modules/platformkit-business-modules/notification_management/settings_provider.go` + `internal/channelgate/channelgate.go::channelDefaults` — same values across both files; `cmd/module-settings-audit-generate` enforces the agreement at build time. |
 
 ## Edge cases & unhappy paths
 
@@ -196,9 +196,9 @@ turn on a default-off channel either.
 
 ## Satisfied by
 
-- `pk-modules/notification_management/internal/channelgate/channelgate.go::Enabled`.
-- `pk-modules/notification_management/internal/channelgate/channelgate.go::channelDefaults` — the registered-default table.
-- `pk-modules/notification_management/settings_provider.go` — the source-of-truth for default values surfaced in admin UI.
+- `modules/platformkit-business-modules/notification_management/internal/channelgate/channelgate.go::Enabled`.
+- `modules/platformkit-business-modules/notification_management/internal/channelgate/channelgate.go::channelDefaults` — the registered-default table.
+- `modules/platformkit-business-modules/notification_management/settings_provider.go` — the source-of-truth for default values surfaced in admin UI.
 
 ## Related requirements
 

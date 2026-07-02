@@ -151,9 +151,9 @@ without crippling the UX.
 
 ## Satisfied by
 
-- `pk-modules/auth_management/features/registration/check_availability.go` —
+- `modules/platformkit-business-modules/auth_management/features/registration/check_availability.go` —
   the availability handler.
-- `pk-modules/auth_management/features/registration/register_user_rate_limit.go` —
+- `modules/platformkit-business-modules/auth_management/features/registration/register_user_rate_limit.go` —
   the shared bucket.
 
 ## Related requirements

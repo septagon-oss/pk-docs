@@ -54,9 +54,9 @@ them uniformly.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/admin_management/features/settings/resolver_test.go::TestReset_IsIdempotent`. |
-| AC-2 | Test | `pk-modules/admin_management/features/settings/handler_test.go::TestHandleSettingsPageUsesCurrentRequestPath` covers schema-validation paths. |
-| AC-3 | Test | `pk-modules/admin_management/features/settings/section_renderer_test.go::TestRenderModuleSettingsCard_PerFieldSourceBadges`. |
+| AC-1 | Test | `modules/platformkit-business-modules/admin_management/features/settings/resolver_test.go::TestReset_IsIdempotent`. |
+| AC-2 | Test | `modules/platformkit-business-modules/admin_management/features/settings/handler_test.go::TestHandleSettingsPageUsesCurrentRequestPath` covers schema-validation paths. |
+| AC-3 | Test | `modules/platformkit-business-modules/admin_management/features/settings/section_renderer_test.go::TestRenderModuleSettingsCard_PerFieldSourceBadges`. |
 
 ## Implements (cross-cutting)
 

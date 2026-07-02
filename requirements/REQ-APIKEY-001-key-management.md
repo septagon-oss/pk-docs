@@ -73,10 +73,10 @@ hashing on every check.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/api_key_management/features/key_management/service_test.go::TestAPIKey_TableName` covers issuance + audit; `ensure_platform_api_key_test.go` covers the bootstrap path. |
-| AC-2 | Test | `pk-modules/api_key_management/features/key_management/api_key_validator_adapter_test.go::TestAPIKeyValidatorAdapter_ValidateAPIKeyHydratesUserRoles` covers the validator adapter (hash compare + scope propagation). |
-| AC-3 | Test | `pk-modules/api_key_management/features/key_management/service_test.go::TestAPIKey_TableName` covers revocation and the immediate-fail-on-next-validate path. |
-| AC-4 | Test | `pk-modules/api_key_management/features/key_management/service_test.go::TestAPIKey_TableName` covers rotation lifecycle. |
+| AC-1 | Test | `modules/platformkit-business-modules/api_key_management/features/key_management/service_test.go::TestAPIKey_TableName` covers issuance + audit; `ensure_platform_api_key_test.go` covers the bootstrap path. |
+| AC-2 | Test | `modules/platformkit-business-modules/api_key_management/features/key_management/api_key_validator_adapter_test.go::TestAPIKeyValidatorAdapter_ValidateAPIKeyHydratesUserRoles` covers the validator adapter (hash compare + scope propagation). |
+| AC-3 | Test | `modules/platformkit-business-modules/api_key_management/features/key_management/service_test.go::TestAPIKey_TableName` covers revocation and the immediate-fail-on-next-validate path. |
+| AC-4 | Test | `modules/platformkit-business-modules/api_key_management/features/key_management/service_test.go::TestAPIKey_TableName` covers rotation lifecycle. |
 
 ## Implements (cross-cutting)
 

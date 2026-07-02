@@ -78,7 +78,7 @@ warning.
 |---|---|---|
 | AC-1 | Inspection | Code review of every external-call site for the resilience wrapper. _Verification gap: a `pkvet`-style analyzer that mechanically flags raw external calls is planned but not yet implemented._ |
 | AC-2 | Inspection | `platformkit-backend-kit/resilience/providers/circuitbreaker/*_test.go` — breaker error-type coverage. _Verification gap: cited resource is not a Go test (pattern / non-Go); downgraded to inspection._ |
-| AC-3 | Test | Service-level tests (e.g. `pk-modules/notification_management/features/email_notifications/service_test.go::TestIsValidEmail`) that assert the failure-counter increments on a simulated provider error. |
+| AC-3 | Test | Service-level tests (e.g. `modules/platformkit-business-modules/notification_management/features/email_notifications/service_test.go::TestIsValidEmail`) that assert the failure-counter increments on a simulated provider error. |
 | AC-4 | Inspection | `platformkit-backend-kit/resilience/providers/circuitbreaker/circuitbreaker_test.go` — open / half-open / closed transitions. _Verification gap: pending — cited evidence is prose / pattern / non-Go and cannot be auto-resolved._ |
 
 ## Satisfied by

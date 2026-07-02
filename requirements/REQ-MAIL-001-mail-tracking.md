@@ -64,10 +64,10 @@ notifications real-time as state changes.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/mail_management/features/mail_tracking/service_test.go::TestLogMailItem_SetsDefaults` and `TestNotifyRecipient_WrongTenantReturnsError` cover tenant-scoped persistence and refusal. |
-| AC-2 | Test | `pk-modules/mail_management/features/mail_tracking/service_test.go::TestLogMailItem_PreservesExplicitStatus` and `TestLogMailItem_SetsDefaults` cover the default-and-override status assignment. |
-| AC-3 | Test | `pk-modules/mail_management/features/mail_tracking/service_test.go::TestLogMailItem_EmitsEvent` and `TestCollectMailItem_Success` cover event emission per transition. |
-| AC-4 | Test | `pk-modules/mail_management/features/mail_tracking/state_machine_test.go::TestValidateMailTransition_AllowsForwardLifecycle`, `TestValidateMailTransition_RejectsBackwardsTransitions`, `TestValidateMailTransition_RejectsUnknownState`, `TestValidateMailTransition_AllowsNoOp`. |
+| AC-1 | Test | `modules/platformkit-business-modules/mail_management/features/mail_tracking/service_test.go::TestLogMailItem_SetsDefaults` and `TestNotifyRecipient_WrongTenantReturnsError` cover tenant-scoped persistence and refusal. |
+| AC-2 | Test | `modules/platformkit-business-modules/mail_management/features/mail_tracking/service_test.go::TestLogMailItem_PreservesExplicitStatus` and `TestLogMailItem_SetsDefaults` cover the default-and-override status assignment. |
+| AC-3 | Test | `modules/platformkit-business-modules/mail_management/features/mail_tracking/service_test.go::TestLogMailItem_EmitsEvent` and `TestCollectMailItem_Success` cover event emission per transition. |
+| AC-4 | Test | `modules/platformkit-business-modules/mail_management/features/mail_tracking/state_machine_test.go::TestValidateMailTransition_AllowsForwardLifecycle`, `TestValidateMailTransition_RejectsBackwardsTransitions`, `TestValidateMailTransition_RejectsUnknownState`, `TestValidateMailTransition_AllowsNoOp`. |
 
 ## Implements (cross-cutting)
 

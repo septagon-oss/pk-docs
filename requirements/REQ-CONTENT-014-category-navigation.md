@@ -135,18 +135,18 @@ navigation surface. Two properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/content_management/features/categories/service_test.go::TestService_List_DelegatesToGeneric`. |
-| AC-2 | Test | `pk-modules/content_management/features/categories/service_test.go::TestService_BuildNavigationTree_Success`. |
-| AC-3 | Test | `pk-modules/content_management/features/categories/service_test.go::TestService_BuildNavigationTree_EmptyList`. |
-| AC-4 | Test | `pk-modules/content_management/features/categories/service_test.go::TestService_BuildNavigationTree_NestedChildren`. |
-| AC-5 | Test | `pk-modules/content_management/features/categories/service_test.go::TestService_BuildNavigationTree_OrphanedChildren`. |
-| AC-6 | Test | `pk-modules/content_management/features/categories/service_test.go::TestService_BuildNavigationTree_SortsByOrder`. |
-| AC-7 | Test | `pk-modules/content_management/features/categories/service_test.go::TestService_BuildNavigationTree_FiltersByContentType`. |
-| AC-8 | Test | `pk-modules/content_management/features/categories/service_test.go::TestService_BuildNavigationTree_NoContentTypeFilter`. |
-| AC-9 | Test | `pk-modules/content_management/features/categories/service_test.go::TestService_BuildNavigationTree_ListError`. |
-| AC-10 | Test | `pk-modules/content_management/features/categories/service_test.go::TestService_ValidateParent_RejectsSelfParent`. |
-| AC-11 | Test | `pk-modules/content_management/features/categories/service_test.go::TestService_ValidateParent_RejectsTransitiveCycle`. |
-| AC-12 | Test | `pk-modules/content_management/features/categories/service_test.go::TestService_ValidateParent_AcceptsAcyclicChain`. |
+| AC-1 | Test | `modules/platformkit-business-modules/content_management/features/categories/service_test.go::TestService_List_DelegatesToGeneric`. |
+| AC-2 | Test | `modules/platformkit-business-modules/content_management/features/categories/service_test.go::TestService_BuildNavigationTree_Success`. |
+| AC-3 | Test | `modules/platformkit-business-modules/content_management/features/categories/service_test.go::TestService_BuildNavigationTree_EmptyList`. |
+| AC-4 | Test | `modules/platformkit-business-modules/content_management/features/categories/service_test.go::TestService_BuildNavigationTree_NestedChildren`. |
+| AC-5 | Test | `modules/platformkit-business-modules/content_management/features/categories/service_test.go::TestService_BuildNavigationTree_OrphanedChildren`. |
+| AC-6 | Test | `modules/platformkit-business-modules/content_management/features/categories/service_test.go::TestService_BuildNavigationTree_SortsByOrder`. |
+| AC-7 | Test | `modules/platformkit-business-modules/content_management/features/categories/service_test.go::TestService_BuildNavigationTree_FiltersByContentType`. |
+| AC-8 | Test | `modules/platformkit-business-modules/content_management/features/categories/service_test.go::TestService_BuildNavigationTree_NoContentTypeFilter`. |
+| AC-9 | Test | `modules/platformkit-business-modules/content_management/features/categories/service_test.go::TestService_BuildNavigationTree_ListError`. |
+| AC-10 | Test | `modules/platformkit-business-modules/content_management/features/categories/service_test.go::TestService_ValidateParent_RejectsSelfParent`. |
+| AC-11 | Test | `modules/platformkit-business-modules/content_management/features/categories/service_test.go::TestService_ValidateParent_RejectsTransitiveCycle`. |
+| AC-12 | Test | `modules/platformkit-business-modules/content_management/features/categories/service_test.go::TestService_ValidateParent_AcceptsAcyclicChain`. |
 
 ## Edge cases & unhappy paths
 
@@ -198,7 +198,7 @@ navigation surface. Two properties:
 
 ## Satisfied by
 
-- `pk-modules/content_management/features/categories/service.go::List, BuildNavigationTree, ValidateParent, validateNoCycle`.
+- `modules/platformkit-business-modules/content_management/features/categories/service.go::List, BuildNavigationTree, ValidateParent, validateNoCycle`.
 
 ## Related requirements
 

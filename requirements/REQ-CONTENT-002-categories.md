@@ -61,9 +61,9 @@ site's IA honest under partial publication.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/content_management/features/categories/service_test.go::TestService_List_DelegatesToGeneric`. |
-| AC-2 | Test | `pk-modules/content_management/features/categories/service_test.go::TestService_BuildNavigationTree_Success`, `TestService_BuildNavigationTree_NestedChildren`, `TestService_BuildNavigationTree_FiltersByContentType`, `TestService_BuildNavigationTree_NoContentTypeFilter`, `TestService_BuildNavigationTree_SortsByOrder`. |
-| AC-3 | Test | `pk-modules/content_management/features/categories/service_test.go::TestService_ValidateParent_RejectsSelfParent`, `TestService_ValidateParent_RejectsTransitiveCycle`, `TestService_ValidateParent_AcceptsAcyclicChain`. |
+| AC-1 | Test | `modules/platformkit-business-modules/content_management/features/categories/service_test.go::TestService_List_DelegatesToGeneric`. |
+| AC-2 | Test | `modules/platformkit-business-modules/content_management/features/categories/service_test.go::TestService_BuildNavigationTree_Success`, `TestService_BuildNavigationTree_NestedChildren`, `TestService_BuildNavigationTree_FiltersByContentType`, `TestService_BuildNavigationTree_NoContentTypeFilter`, `TestService_BuildNavigationTree_SortsByOrder`. |
+| AC-3 | Test | `modules/platformkit-business-modules/content_management/features/categories/service_test.go::TestService_ValidateParent_RejectsSelfParent`, `TestService_ValidateParent_RejectsTransitiveCycle`, `TestService_ValidateParent_AcceptsAcyclicChain`. |
 
 ## Implements (cross-cutting)
 

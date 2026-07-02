@@ -128,11 +128,11 @@ this is the single place to add the redaction.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/user_management/features/profile/privacy_filter_test.go::TestRedactProfileForViewer_OwnerSeesEverything`. |
-| AC-2 | Test | `pk-modules/user_management/features/profile/privacy_filter_test.go::TestRedactProfileForViewer_PublicSeesOnlyDisplaySubset`. |
-| AC-3 | Test | `pk-modules/user_management/features/profile/privacy_filter_test.go::TestRedactProfileForViewer_TenantMember_PrivateVisibility`. |
-| AC-4 | Test | `pk-modules/user_management/features/profile/privacy_filter_test.go::TestRedactProfileForViewer_TenantMember_MembersOnlyVisibility`. |
-| AC-5 | Test | `pk-modules/user_management/features/profile/privacy_filter_test.go::TestRedactProfileForViewer_DoesNotMutateInput`. |
+| AC-1 | Test | `modules/platformkit-business-modules/user_management/features/profile/privacy_filter_test.go::TestRedactProfileForViewer_OwnerSeesEverything`. |
+| AC-2 | Test | `modules/platformkit-business-modules/user_management/features/profile/privacy_filter_test.go::TestRedactProfileForViewer_PublicSeesOnlyDisplaySubset`. |
+| AC-3 | Test | `modules/platformkit-business-modules/user_management/features/profile/privacy_filter_test.go::TestRedactProfileForViewer_TenantMember_PrivateVisibility`. |
+| AC-4 | Test | `modules/platformkit-business-modules/user_management/features/profile/privacy_filter_test.go::TestRedactProfileForViewer_TenantMember_MembersOnlyVisibility`. |
+| AC-5 | Test | `modules/platformkit-business-modules/user_management/features/profile/privacy_filter_test.go::TestRedactProfileForViewer_DoesNotMutateInput`. |
 | AC-6 | Inspection | `privacy_filter.go::RedactProfileForViewer` — first statement is `if profile == nil { return nil }`. |
 
 ## Edge cases & unhappy paths
@@ -195,8 +195,8 @@ this is the single place to add the redaction.
 
 ## Satisfied by
 
-- `pk-modules/user_management/features/profile/privacy_filter.go::RedactProfileForViewer` — the pure helper.
-- `pk-modules/user_management/features/profile/privacy_filter_test.go` — viewer / settings coverage.
+- `modules/platformkit-business-modules/user_management/features/profile/privacy_filter.go::RedactProfileForViewer` — the pure helper.
+- `modules/platformkit-business-modules/user_management/features/profile/privacy_filter_test.go` — viewer / settings coverage.
 
 ## Related requirements
 

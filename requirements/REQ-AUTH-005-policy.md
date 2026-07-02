@@ -58,10 +58,10 @@ crossing the boundary.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/auth_management/features/policy/service_test.go::TestValidateChangeItem` + `TestValidateChangeItemDeleteRequiresIdentity` cover the input-validation branch (delete without an identity is rejected, create requires effect + id). The change-management state machine itself (draft → submitted → approved → canary → promoted) returns typed errors at every transition; full state-machine coverage is tracked as a follow-up gap. |
-| AC-2 | Test | `pk-modules/auth_management/features/policy/policy_scope_test.go::TestNormalizeChangeItemPolicies_RejectsCrossTenantPolicy` — a policy whose `TenantID` does not match the change-request's tenant is rejected before persistence. |
+| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/policy/service_test.go::TestValidateChangeItem` + `TestValidateChangeItemDeleteRequiresIdentity` cover the input-validation branch (delete without an identity is rejected, create requires effect + id). The change-management state machine itself (draft → submitted → approved → canary → promoted) returns typed errors at every transition; full state-machine coverage is tracked as a follow-up gap. |
+| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/policy/policy_scope_test.go::TestNormalizeChangeItemPolicies_RejectsCrossTenantPolicy` — a policy whose `TenantID` does not match the change-request's tenant is rejected before persistence. |
 | AC-3 | Inspection | `service_policy_codec.go::normalizePolicyForTenant` is a pure function over its inputs; `TestNormalizePolicyForTenant_BindsNamespaceAndTenant` shows that for a given `(policy, tenantID)` it produces a stable result. The state-machine transitions are guarded by typed pre-conditions on the request status (see `service.go` Submit/Approve/StartCanary/Promote/Rollback signatures); reviewers verify no clock-time-dependent outcomes outside the documented expiring-grants path. |
-| AC-4 | Test | `pk-modules/auth_management/features/policy/service_test.go::TestPublishPolicyEvent` proves the event-bus publish path emits a typed event with the request id, tenant, and actor. The cross-tenant-specific audit (`policy.evaluation.cross_tenant{reason}`) is currently emitted indirectly via the same publish path with the rejection reason in payload; a dedicated cross-tenant audit test is tracked as a follow-up. |
+| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/policy/service_test.go::TestPublishPolicyEvent` proves the event-bus publish path emits a typed event with the request id, tenant, and actor. The cross-tenant-specific audit (`policy.evaluation.cross_tenant{reason}`) is currently emitted indirectly via the same publish path with the rejection reason in payload; a dedicated cross-tenant audit test is tracked as a follow-up. |
 
 ## Implements (cross-cutting)
 
@@ -72,13 +72,13 @@ crossing the boundary.
 
 ## Satisfied by
 
-- `pk-modules/auth_management/features/policy/feature.go`
-- `pk-modules/auth_management/features/policy/service.go`,
+- `modules/platformkit-business-modules/auth_management/features/policy/feature.go`
+- `modules/platformkit-business-modules/auth_management/features/policy/service.go`,
   `service_events.go`, `service_test.go`
-- `pk-modules/auth_management/features/policy/policy_scope_test.go`
-- `pk-modules/auth_management/features/policy/repository.go`,
+- `modules/platformkit-business-modules/auth_management/features/policy/policy_scope_test.go`
+- `modules/platformkit-business-modules/auth_management/features/policy/repository.go`,
   `entities.go`
-- `pk-modules/auth_management/features/policy/handler.go`, `routes.go`,
+- `modules/platformkit-business-modules/auth_management/features/policy/handler.go`, `routes.go`,
   `permissions.go`
 
 ## Related requirements

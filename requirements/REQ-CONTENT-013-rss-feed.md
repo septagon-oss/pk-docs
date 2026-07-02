@@ -88,8 +88,8 @@ Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/content_management/features/articles/service_test.go::TestService_GenerateRSSFeed_ValidXML`. |
-| AC-2 | Test | `pk-modules/content_management/features/articles/service_test.go::TestService_GenerateRSSFeed_XmlEscaping`. |
+| AC-1 | Test | `modules/platformkit-business-modules/content_management/features/articles/service_test.go::TestService_GenerateRSSFeed_ValidXML`. |
+| AC-2 | Test | `modules/platformkit-business-modules/content_management/features/articles/service_test.go::TestService_GenerateRSSFeed_XmlEscaping`. |
 
 ## Edge cases & unhappy paths
 
@@ -132,7 +132,7 @@ Three properties:
 
 ## Satisfied by
 
-- `pk-modules/content_management/features/articles/service.go::GenerateRSSFeed`.
+- `modules/platformkit-business-modules/content_management/features/articles/service.go::GenerateRSSFeed`.
 
 ## Related requirements
 

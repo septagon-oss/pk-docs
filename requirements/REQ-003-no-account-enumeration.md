@@ -67,15 +67,15 @@ as part of a security review.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_InvalidEmail` and `TestAuthenticate_InvalidPassword` — both return the same typed `ErrInvalidCredentials`. The HTTP-level uniform-401 collapse is exercised by `pk-modules/auth_management/features/authentication/req_auth_001_test.go::TestAuthenticate_HTTPFailureShape_IsIndistinguishable`. |
+| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_InvalidEmail` and `TestAuthenticate_InvalidPassword` — both return the same typed `ErrInvalidCredentials`. The HTTP-level uniform-401 collapse is exercised by `modules/platformkit-business-modules/auth_management/features/authentication/req_auth_001_test.go::TestAuthenticate_HTTPFailureShape_IsIndistinguishable`. |
 | AC-2 | Inspection | `auth_management/features/authentication/login.go` — the always-hash discipline ensures the password-verification path runs on both branches. **Verification gap: a dedicated timing-parity microbenchmark / statistical test is pending.** |
-| AC-3 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_AccountStatuses` (table-driven across `Inactive`, `Suspended`, `Pending`) — all collapse to the typed account-status error; the HTTP layer (REQ-AUTH-001 AC-2) maps every variant to the uniform 401, asserted by `req_auth_001_test.go::TestAuthenticate_HTTPFailureShape_IsIndistinguishable`. |
+| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_AccountStatuses` (table-driven across `Inactive`, `Suspended`, `Pending`) — all collapse to the typed account-status error; the HTTP layer (REQ-AUTH-001 AC-2) maps every variant to the uniform 401, asserted by `req_auth_001_test.go::TestAuthenticate_HTTPFailureShape_IsIndistinguishable`. |
 
 ## Satisfied by
 
-- `pk-modules/auth_management/features/authentication/login_service.go` —
+- `modules/platformkit-business-modules/auth_management/features/authentication/login_service.go` —
   the constant-time `Authenticate` path.
-- `pk-modules/auth_management/features/authentication/login_resolution.go` —
+- `modules/platformkit-business-modules/auth_management/features/authentication/login_resolution.go` —
   the post-credential `validateActiveUser` gate that defers
   account-state errors.
 

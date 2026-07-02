@@ -68,9 +68,9 @@ filesystem layer evolve independently.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/user_management/features/profile/service_test.go::TestService_GetPublicProfile_ReturnsPublicFields` and `TestService_GetPublicProfile_NoProfileReturnsDefaults`. |
-| AC-2 | Test | `pk-modules/user_management/features/profile/service_test.go::TestService_UpdateProfile_SelectiveFields` and `TestService_UpdateProfile_AllFields`. |
-| AC-3 | Test | `pk-modules/user_management/features/profile/privacy_settings_test.go::TestUpdatePrivacySettings_AppliesMappedFields` covers the storage path (storage-only — read-side filtering is exercised by `pk-modules/user_management/features/profile/privacy_filter_test.go::TestRedactProfileForViewer_TenantMember_MembersOnlyVisibility` per REQ-USER-020). |
+| AC-1 | Test | `modules/platformkit-business-modules/user_management/features/profile/service_test.go::TestService_GetPublicProfile_ReturnsPublicFields` and `TestService_GetPublicProfile_NoProfileReturnsDefaults`. |
+| AC-2 | Test | `modules/platformkit-business-modules/user_management/features/profile/service_test.go::TestService_UpdateProfile_SelectiveFields` and `TestService_UpdateProfile_AllFields`. |
+| AC-3 | Test | `modules/platformkit-business-modules/user_management/features/profile/privacy_settings_test.go::TestUpdatePrivacySettings_AppliesMappedFields` covers the storage path (storage-only — read-side filtering is exercised by `modules/platformkit-business-modules/user_management/features/profile/privacy_filter_test.go::TestRedactProfileForViewer_TenantMember_MembersOnlyVisibility` per REQ-USER-020). |
 | AC-4 | Inspection | `avatar_crud.go` stores via `infrastructure/filesystem`; binary bytes never travel through the profile read path. |
 
 ## Implements (cross-cutting)
@@ -81,16 +81,16 @@ filesystem layer evolve independently.
 
 ## Satisfied by
 
-- `pk-modules/user_management/features/profile/feature.go` — wiring.
-- `pk-modules/user_management/features/profile/service.go`,
+- `modules/platformkit-business-modules/user_management/features/profile/feature.go` — wiring.
+- `modules/platformkit-business-modules/user_management/features/profile/service.go`,
   `service_test.go` — domain logic.
-- `pk-modules/user_management/features/profile/privacy_settings_test.go` —
+- `modules/platformkit-business-modules/user_management/features/profile/privacy_settings_test.go` —
   storage-side privacy coverage.
-- `pk-modules/user_management/features/profile/avatar_crud.go` — avatar
+- `modules/platformkit-business-modules/user_management/features/profile/avatar_crud.go` — avatar
   storage abstraction.
-- `pk-modules/user_management/features/profile/handler.go`, `routes.go`,
+- `modules/platformkit-business-modules/user_management/features/profile/handler.go`, `routes.go`,
   `permissions.go` — HTTP surface.
-- `pk-modules/user_management/features/profile/ui_test.go` — admin UI rendering.
+- `modules/platformkit-business-modules/user_management/features/profile/ui_test.go` — admin UI rendering.
 
 ## Related requirements
 

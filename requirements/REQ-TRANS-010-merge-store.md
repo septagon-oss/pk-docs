@@ -129,14 +129,14 @@ surface. Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/translation_management/features/translations/service_test.go::TestListMerged_LoadsFromJSONFilesWithoutDB`. |
-| AC-2 | Test | `pk-modules/translation_management/features/translations/service_extended_test.go::TestListMerged_MergesDBAndRegistryTranslations`. |
-| AC-3 | Test | `pk-modules/translation_management/features/translations/service_extended_test.go::TestListMerged_DBFailureFallsBackToRegistry`. |
-| AC-4 | Test | `pk-modules/translation_management/features/translations/service_extended_test.go::TestListMerged_NilGenericService`. |
-| AC-5 | Test | `pk-modules/translation_management/features/translations/service_extended_test.go::TestListMerged_Pagination`. |
-| AC-6 | Test | `pk-modules/translation_management/features/translations/service_extended_test.go::TestListMerged_InvalidPageDefaults`. |
-| AC-7 | Test | `pk-modules/translation_management/features/translations/service_extended_test.go::TestListMerged_WithLocaleFilter`. |
-| AC-8 | Test | `pk-modules/translation_management/features/translations/service_extended_test.go::TestGetByLocaleAndKey_Found`, `TestGetByLocaleAndKey_NotFound`, `TestGetByLocaleAndKey_DBError`. |
+| AC-1 | Test | `modules/platformkit-business-modules/translation_management/features/translations/service_test.go::TestListMerged_LoadsFromJSONFilesWithoutDB`. |
+| AC-2 | Test | `modules/platformkit-business-modules/translation_management/features/translations/service_extended_test.go::TestListMerged_MergesDBAndRegistryTranslations`. |
+| AC-3 | Test | `modules/platformkit-business-modules/translation_management/features/translations/service_extended_test.go::TestListMerged_DBFailureFallsBackToRegistry`. |
+| AC-4 | Test | `modules/platformkit-business-modules/translation_management/features/translations/service_extended_test.go::TestListMerged_NilGenericService`. |
+| AC-5 | Test | `modules/platformkit-business-modules/translation_management/features/translations/service_extended_test.go::TestListMerged_Pagination`. |
+| AC-6 | Test | `modules/platformkit-business-modules/translation_management/features/translations/service_extended_test.go::TestListMerged_InvalidPageDefaults`. |
+| AC-7 | Test | `modules/platformkit-business-modules/translation_management/features/translations/service_extended_test.go::TestListMerged_WithLocaleFilter`. |
+| AC-8 | Test | `modules/platformkit-business-modules/translation_management/features/translations/service_extended_test.go::TestGetByLocaleAndKey_Found`, `TestGetByLocaleAndKey_NotFound`, `TestGetByLocaleAndKey_DBError`. |
 
 ## Edge cases & unhappy paths
 
@@ -179,7 +179,7 @@ surface. Three properties:
 
 ## Satisfied by
 
-- `pk-modules/translation_management/features/translations/service.go::ListMerged, GetByLocaleAndKey`.
+- `modules/platformkit-business-modules/translation_management/features/translations/service.go::ListMerged, GetByLocaleAndKey`.
 - Helper functions: `NamespaceFromKey`, `MatchesFilter`, `ResolveLangDirs`.
 
 ## Related requirements

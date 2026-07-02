@@ -91,11 +91,11 @@ properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/site_management/features/homepage/public_shell_test.go::TestRenderPublicContentShellFallsBackWhenOverlayDocumentIsMissing`. |
-| AC-2 | Test | `pk-modules/site_management/features/homepage/public_shell_test.go::TestRenderPublicContentShellUsesSplashTemplateWhenExplicitlySelected`. |
-| AC-3 | Test | `pk-modules/site_management/features/homepage/public_shell_test.go::TestRenderPublicContentShellUsesTemplateWhenExplicitlySelected`. |
-| AC-4 | Test | `pk-modules/site_management/features/homepage/public_shell_test.go::TestRenderSharedPublicPageIncludesRouteScopedStylesheets`. |
-| AC-5 | Test | `pk-modules/site_management/features/homepage/public_shell_test.go::TestRenderSharedPublicPageIncludesModuleOwnedPageAssets`. |
+| AC-1 | Test | `modules/platformkit-business-modules/site_management/features/homepage/public_shell_test.go::TestRenderPublicContentShellFallsBackWhenOverlayDocumentIsMissing`. |
+| AC-2 | Test | `modules/platformkit-business-modules/site_management/features/homepage/public_shell_test.go::TestRenderPublicContentShellUsesSplashTemplateWhenExplicitlySelected`. |
+| AC-3 | Test | `modules/platformkit-business-modules/site_management/features/homepage/public_shell_test.go::TestRenderPublicContentShellUsesTemplateWhenExplicitlySelected`. |
+| AC-4 | Test | `modules/platformkit-business-modules/site_management/features/homepage/public_shell_test.go::TestRenderSharedPublicPageIncludesRouteScopedStylesheets`. |
+| AC-5 | Test | `modules/platformkit-business-modules/site_management/features/homepage/public_shell_test.go::TestRenderSharedPublicPageIncludesModuleOwnedPageAssets`. |
 
 ## Edge cases & unhappy paths
 
@@ -126,7 +126,7 @@ properties:
 
 ## Satisfied by
 
-- `pk-modules/site_management/features/homepage/public_shell.go::RenderPublicContentShell, RenderSharedPublicPage`.
+- `modules/platformkit-business-modules/site_management/features/homepage/public_shell.go::RenderPublicContentShell, RenderSharedPublicPage`.
 
 ## Related requirements
 
