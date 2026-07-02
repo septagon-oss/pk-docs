@@ -54,9 +54,9 @@ exists) without storing the entire token set per tenant.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/admin_management/features/design_tokens/service_test.go::TestIsValidCategory` covers contract validation. |
-| AC-2 | Test | `pk-modules/admin_management/features/design_tokens/service_test.go::TestIsValidCategory` covers layered reads. |
-| AC-3 | Test | `pk-modules/admin_management/features/design_tokens/interaction_contracts_test.go::TestRenderTokenRowUsesControllerContract`. |
+| AC-1 | Test | `modules/platformkit-business-modules/admin_management/features/design_tokens/service_test.go::TestIsValidCategory` covers contract validation. |
+| AC-2 | Test | `modules/platformkit-business-modules/admin_management/features/design_tokens/service_test.go::TestIsValidCategory` covers layered reads. |
+| AC-3 | Test | `modules/platformkit-business-modules/admin_management/features/design_tokens/interaction_contracts_test.go::TestRenderTokenRowUsesControllerContract`. |
 
 ## Implements (cross-cutting)
 

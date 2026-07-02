@@ -86,9 +86,9 @@ the discipline.
 ## Satisfied by
 
 - (Pending) ADR documenting the change_management gate.
-- `pk-modules/change_management/` — the gate
+- `modules/platformkit-business-modules/change_management/` — the gate
   implementation.
-- `pk-modules/audit_management/features/change_approval/` —
+- `modules/platformkit-business-modules/audit_management/features/change_approval/` —
   the human-decision surface the gate consumes.
 
 ## Related requirements
@@ -101,5 +101,5 @@ the discipline.
 
 ## References
 
-- `pk-modules/ports/change.go` — interface definitions.
+- `modules/platformkit-business-modules/ports/change.go` — interface definitions.
 - May 2026 change_management module landing.

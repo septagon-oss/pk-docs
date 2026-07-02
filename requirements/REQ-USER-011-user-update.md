@@ -110,11 +110,11 @@ Three structural decisions:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/user_management/features/user/service_test.go::TestService_UpdateUser` (asserts the audit recorder saw `user.update` with both before/after; metric incremented). |
-| AC-2 | Test | `pk-modules/user_management/features/user/service_test.go::TestService_UpdateUser` (sparse-fields case — only `Email` set, asserts other fields preserved). |
-| AC-3 | Test | `pk-modules/user_management/features/user/service_test.go::TestService_UpdateUser` (pre-image-error sub-case — wrapped service returns error on `GetUser`, the update still proceeds and the audit row's `before` is `nil`). |
-| AC-4 | Test | `pk-modules/user_management/features/user/service_test.go::TestService_UpdateUser` (persist-error sub-case — asserts `user.update.failed` audit + wrapped error). |
-| AC-5 | Test | `pk-modules/user_management/features/user/service_test.go::TestService_UpdateUser` (metrics-nil sub-case). |
+| AC-1 | Test | `modules/platformkit-business-modules/user_management/features/user/service_test.go::TestService_UpdateUser` (asserts the audit recorder saw `user.update` with both before/after; metric incremented). |
+| AC-2 | Test | `modules/platformkit-business-modules/user_management/features/user/service_test.go::TestService_UpdateUser` (sparse-fields case — only `Email` set, asserts other fields preserved). |
+| AC-3 | Test | `modules/platformkit-business-modules/user_management/features/user/service_test.go::TestService_UpdateUser` (pre-image-error sub-case — wrapped service returns error on `GetUser`, the update still proceeds and the audit row's `before` is `nil`). |
+| AC-4 | Test | `modules/platformkit-business-modules/user_management/features/user/service_test.go::TestService_UpdateUser` (persist-error sub-case — asserts `user.update.failed` audit + wrapped error). |
+| AC-5 | Test | `modules/platformkit-business-modules/user_management/features/user/service_test.go::TestService_UpdateUser` (metrics-nil sub-case). |
 | AC-6 | Inspection | `service_crud.go::UpdateUser` — the metadata map includes `email` and `username` from the post-image. |
 
 ## Edge cases & unhappy paths
@@ -169,9 +169,9 @@ Three structural decisions:
 
 ## Satisfied by
 
-- `pk-modules/user_management/features/user/service_crud.go::UpdateUser` — sparse-DTO surface.
-- `pk-modules/user_management/features/user/service_crud.go::Update` — entity-replace surface.
-- `pk-modules/user_management/features/user/service_audit.go::createAuditEvent` — audit emission helper.
+- `modules/platformkit-business-modules/user_management/features/user/service_crud.go::UpdateUser` — sparse-DTO surface.
+- `modules/platformkit-business-modules/user_management/features/user/service_crud.go::Update` — entity-replace surface.
+- `modules/platformkit-business-modules/user_management/features/user/service_audit.go::createAuditEvent` — audit emission helper.
 
 ## Related requirements
 

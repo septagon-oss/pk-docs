@@ -92,10 +92,10 @@ properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/site_management/features/homepage/content_loader_test.go::TestLoadHomepageContent_LocaleAndFallback`. |
-| AC-2 | Test | `pk-modules/site_management/features/homepage/content_loader_test.go::TestLoadHomepageContent_DefaultProfileIncludesJoinHref`. |
-| AC-3 | Test | `pk-modules/site_management/features/homepage/content_loader_test.go::TestLoadHomepageContent_UnknownProfileFails`. |
-| AC-4 | Test | `pk-modules/site_management/features/homepage/content_loader_test.go::TestLoadHomepageContent_NonProductProfilesMustComeFromOverlay`. |
+| AC-1 | Test | `modules/platformkit-business-modules/site_management/features/homepage/content_loader_test.go::TestLoadHomepageContent_LocaleAndFallback`. |
+| AC-2 | Test | `modules/platformkit-business-modules/site_management/features/homepage/content_loader_test.go::TestLoadHomepageContent_DefaultProfileIncludesJoinHref`. |
+| AC-3 | Test | `modules/platformkit-business-modules/site_management/features/homepage/content_loader_test.go::TestLoadHomepageContent_UnknownProfileFails`. |
+| AC-4 | Test | `modules/platformkit-business-modules/site_management/features/homepage/content_loader_test.go::TestLoadHomepageContent_NonProductProfilesMustComeFromOverlay`. |
 
 ## Edge cases & unhappy paths
 
@@ -129,7 +129,7 @@ properties:
 
 ## Satisfied by
 
-- `pk-modules/site_management/features/homepage/content_loader.go::LoadHomepageContent`.
+- `modules/platformkit-business-modules/site_management/features/homepage/content_loader.go::LoadHomepageContent`.
 
 ## Related requirements
 

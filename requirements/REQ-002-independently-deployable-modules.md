@@ -43,7 +43,7 @@ topologies.
 
 ## Acceptance criteria
 
-- **AC-1** No package under `pk-modules/<module>/`
+- **AC-1** No package under `modules/platformkit-business-modules/<module>/`
   imports a Go package owned by a different business module's
   implementation. The only allowed cross-module imports are into
   `<other-module>/contracts/provides/` (the public port surface) and
@@ -63,8 +63,8 @@ topologies.
 | AC | Method | Evidence |
 |---|---|---|
 | AC-1 | Analysis | `platformkit-backend-kit/analysis/importboundary` — rejects cross-module implementation imports at `make precommit`. |
-| AC-2 | Test | `pk-modules/catalog/runtimecatalog/catalog_test.go::TestPlanSkipsWarningOnlyHTTPRouting` and `TestPlanHTTPModeBuildsRoutingWithoutLocalModule` exercise the planner's per-module-removal branches. **Verification gap: a dedicated sweep that removes each module in turn and verifies the plan still composes is pending.** |
-| AC-3 | Analysis | `make check-module-contracts` (`pk-modules/cmd/module-contract-check`). |
+| AC-2 | Test | `modules/platformkit-business-modules/catalog/runtimecatalog/catalog_test.go::TestPlanSkipsWarningOnlyHTTPRouting` and `TestPlanHTTPModeBuildsRoutingWithoutLocalModule` exercise the planner's per-module-removal branches. **Verification gap: a dedicated sweep that removes each module in turn and verifies the plan still composes is pending.** |
+| AC-3 | Analysis | `make check-module-contracts` (`modules/platformkit-business-modules/cmd/module-contract-check`). |
 
 ## Satisfied by
 
@@ -89,9 +89,9 @@ one.)
 
 ## References
 
-- `pk-modules/catalog/module_contracts.yaml` — the
+- `modules/platformkit-business-modules/catalog/module_contracts.yaml` — the
   registry that names tier and supported-set membership for every
   module.
-- `pk-modules/catalog/module_sets.yaml` — the
+- `modules/platformkit-business-modules/catalog/module_sets.yaml` — the
   preset definitions that exercise the "compose any subset"
   property.

@@ -76,10 +76,10 @@ REQ-AUTH-001 and the chosen `AuthProvider` adapter.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/auth_management/features/auth_provider/handlers_test.go::TestListConnections_RequiresTenantContextWhenNoOverride` + `TestCreateConnection_UsesTenantContextAndCatalog` + `TestDefaultConnection_UsesTenantContextFallback`. |
-| AC-2 | Test | `pk-modules/auth_management/features/auth_provider/handlers_test.go::TestListConnections_FiltersByPurpose`. |
-| AC-3 | Test | `pk-modules/auth_management/features/auth_provider/handlers_test.go::TestDisableConnection_PreservesProvisioningStatus`. |
-| AC-4 | Test | `pk-modules/auth_management/features/auth_provider/handlers_test.go::TestConnection_UsesRuntimeWithConnectionMetadata`. |
+| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/auth_provider/handlers_test.go::TestListConnections_RequiresTenantContextWhenNoOverride` + `TestCreateConnection_UsesTenantContextAndCatalog` + `TestDefaultConnection_UsesTenantContextFallback`. |
+| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/auth_provider/handlers_test.go::TestListConnections_FiltersByPurpose`. |
+| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/auth_provider/handlers_test.go::TestDisableConnection_PreservesProvisioningStatus`. |
+| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/auth_provider/handlers_test.go::TestConnection_UsesRuntimeWithConnectionMetadata`. |
 
 ## Implements (cross-cutting)
 
@@ -95,12 +95,12 @@ REQ-AUTH-001 and the chosen `AuthProvider` adapter.
 
 ## Satisfied by
 
-- `pk-modules/auth_management/features/auth_provider/feature.go` — wiring.
-- `pk-modules/auth_management/features/auth_provider/auth_provider.go`,
+- `modules/platformkit-business-modules/auth_management/features/auth_provider/feature.go` — wiring.
+- `modules/platformkit-business-modules/auth_management/features/auth_provider/auth_provider.go`,
   `config.go`, `responses.go` — connection-record types and config.
-- `pk-modules/auth_management/features/auth_provider/handlers.go`,
+- `modules/platformkit-business-modules/auth_management/features/auth_provider/handlers.go`,
   `handlers_test.go` — admin-CRUD + runtime test endpoints.
-- `pk-modules/auth_management/features/auth_provider/router.go`, `routes.go`,
+- `modules/platformkit-business-modules/auth_management/features/auth_provider/router.go`, `routes.go`,
   `permissions.go` — HTTP surface.
 
 ## Related requirements

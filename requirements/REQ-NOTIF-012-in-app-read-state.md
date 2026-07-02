@@ -119,12 +119,12 @@ ringing despite the user having "marked all read"
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/notification_management/features/in_app_notifications/service_test.go::TestMarkAsRead_Success` and `TestMarkAsRead_UpdateFails`. |
-| AC-2 | Test | `pk-modules/notification_management/features/in_app_notifications/service_test.go::TestMarkAsRead_WrongUser`. |
-| AC-3 | Test | `pk-modules/notification_management/features/in_app_notifications/service_test.go::TestMarkAsRead_AlreadyRead`. |
-| AC-4 | Test | `pk-modules/notification_management/features/in_app_notifications/service_test.go::TestMarkAsRead_NotFound`. |
-| AC-5 | Test | `pk-modules/notification_management/features/in_app_notifications/service_test.go::TestMarkAllAsRead_Success` and `TestMarkAllAsRead_NoUnread`. The pagination + filter shape is by inspection of `service.go::MarkAllAsRead` lines 386–416. |
-| AC-6 | Test | `pk-modules/notification_management/features/in_app_notifications/service_test.go::TestMarkAllAsRead_PartialUpdateFailure` and `TestMarkAllAsRead_ListError`. |
+| AC-1 | Test | `modules/platformkit-business-modules/notification_management/features/in_app_notifications/service_test.go::TestMarkAsRead_Success` and `TestMarkAsRead_UpdateFails`. |
+| AC-2 | Test | `modules/platformkit-business-modules/notification_management/features/in_app_notifications/service_test.go::TestMarkAsRead_WrongUser`. |
+| AC-3 | Test | `modules/platformkit-business-modules/notification_management/features/in_app_notifications/service_test.go::TestMarkAsRead_AlreadyRead`. |
+| AC-4 | Test | `modules/platformkit-business-modules/notification_management/features/in_app_notifications/service_test.go::TestMarkAsRead_NotFound`. |
+| AC-5 | Test | `modules/platformkit-business-modules/notification_management/features/in_app_notifications/service_test.go::TestMarkAllAsRead_Success` and `TestMarkAllAsRead_NoUnread`. The pagination + filter shape is by inspection of `service.go::MarkAllAsRead` lines 386–416. |
+| AC-6 | Test | `modules/platformkit-business-modules/notification_management/features/in_app_notifications/service_test.go::TestMarkAllAsRead_PartialUpdateFailure` and `TestMarkAllAsRead_ListError`. |
 | AC-7 | Inspection | `service.go::MarkAsRead, MarkAllAsRead` — first statement is the tracer call. |
 
 ## Edge cases & unhappy paths
@@ -182,7 +182,7 @@ ringing despite the user having "marked all read"
 
 ## Satisfied by
 
-- `pk-modules/notification_management/features/in_app_notifications/service.go::MarkAsRead, MarkAllAsRead`.
+- `modules/platformkit-business-modules/notification_management/features/in_app_notifications/service.go::MarkAsRead, MarkAllAsRead`.
 
 ## Related requirements
 

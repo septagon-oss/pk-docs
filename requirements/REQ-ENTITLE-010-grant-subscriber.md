@@ -89,11 +89,11 @@ Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/entitlement_management/features/grants/subscriber_test.go::TestExtractItems_AnySlice`. |
-| AC-2 | Test | `pk-modules/entitlement_management/features/grants/subscriber_test.go::TestExtractItems_TypedSlice`. |
-| AC-3 | Test | `pk-modules/entitlement_management/features/grants/subscriber_test.go::TestExtractItems_NilOrWrong`. |
-| AC-4 | Test | `pk-modules/entitlement_management/features/grants/subscriber_test.go::TestExtractItems_SkipsNonMapEntries`. |
-| AC-5 | Test | `pk-modules/entitlement_management/features/grants/subscriber_test.go::TestNewSubscriber_RejectsNilDeps`. |
+| AC-1 | Test | `modules/platformkit-business-modules/entitlement_management/features/grants/subscriber_test.go::TestExtractItems_AnySlice`. |
+| AC-2 | Test | `modules/platformkit-business-modules/entitlement_management/features/grants/subscriber_test.go::TestExtractItems_TypedSlice`. |
+| AC-3 | Test | `modules/platformkit-business-modules/entitlement_management/features/grants/subscriber_test.go::TestExtractItems_NilOrWrong`. |
+| AC-4 | Test | `modules/platformkit-business-modules/entitlement_management/features/grants/subscriber_test.go::TestExtractItems_SkipsNonMapEntries`. |
+| AC-5 | Test | `modules/platformkit-business-modules/entitlement_management/features/grants/subscriber_test.go::TestNewSubscriber_RejectsNilDeps`. |
 
 ## Edge cases & unhappy paths
 
@@ -130,7 +130,7 @@ Three properties:
 
 ## Satisfied by
 
-- `pk-modules/entitlement_management/features/grants/subscriber.go` — orchestration + ExtractItems + NewSubscriber.
+- `modules/platformkit-business-modules/entitlement_management/features/grants/subscriber.go` — orchestration + ExtractItems + NewSubscriber.
 
 ## Related requirements
 

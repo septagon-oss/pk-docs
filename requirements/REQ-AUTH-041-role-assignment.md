@@ -96,11 +96,11 @@ the user's next privileged action.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/auth_management/features/permissions/service_test.go::TestService_AssignUserRoles_Success` (asserts `len(bus.Published()) == 1`). |
-| AC-2 | Test | `pk-modules/auth_management/features/permissions/service_test.go::TestService_AssignUserRoles_UserNotFound`. |
-| AC-3 | Test | `pk-modules/auth_management/features/permissions/service_test.go::TestService_AssignUserRoles_RoleNotFound`. |
-| AC-4 | Test | `pk-modules/auth_management/features/permissions/service_test.go::TestService_AssignUserRoles_ExceedsMaxRoles`. |
-| AC-5 | Test | `pk-modules/auth_management/features/permissions/service_test.go::TestService_AssignUserRoles_Success` exercises the recording event bus. |
+| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/permissions/service_test.go::TestService_AssignUserRoles_Success` (asserts `len(bus.Published()) == 1`). |
+| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/permissions/service_test.go::TestService_AssignUserRoles_UserNotFound`. |
+| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/permissions/service_test.go::TestService_AssignUserRoles_RoleNotFound`. |
+| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/permissions/service_test.go::TestService_AssignUserRoles_ExceedsMaxRoles`. |
+| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/permissions/service_test.go::TestService_AssignUserRoles_Success` exercises the recording event bus. |
 | AC-6 | Inspection | The repository's UpdateRoles is a set-replace; reviewers verify duplicate role bindings collapse via the unique index. |
 
 ## Edge cases & unhappy paths
@@ -151,9 +151,9 @@ the user's next privileged action.
 
 ## Satisfied by
 
-- `pk-modules/auth_management/features/permissions/service.go::AssignUserRoles` —
+- `modules/platformkit-business-modules/auth_management/features/permissions/service.go::AssignUserRoles` —
   the entry point.
-- `pk-modules/auth_management/features/permissions/adapters.go` — the
+- `modules/platformkit-business-modules/auth_management/features/permissions/adapters.go` — the
   repository wrappers.
 
 ## Related requirements

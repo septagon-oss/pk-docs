@@ -32,7 +32,7 @@ import-clean — the target shape for new consumers). Every read,
 write, and lifecycle transition **shall** be tenant-scoped, every
 mutation **shall** emit a typed event for downstream consumption,
 and the role-assignment surface **shall** delegate to
-`pk-modules/auth_management/permissions` rather than re-implementing the
+`modules/platformkit-business-modules/auth_management/permissions` rather than re-implementing the
 binding.
 
 ## Rationale
@@ -85,9 +85,9 @@ without giving every consumer a direct database hook.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/user_management/features/user/service_test.go::TestNewService` exercises tenant-scoped lookup paths against the mock repository; `table_handler_test.go` covers the HTTP surface honouring tenant context. |
-| AC-2 | Test | `pk-modules/user_management/features/user/service_test.go::TestNewService` covers both entity-shaped and boundary read paths against the same backing store; the boundary suite is the import-clean DTO contract. |
-| AC-3 | Test | `pk-modules/user_management/features/user/service_test.go::TestNewService` includes coverage of event publication on the user lifecycle. The full event catalogue (`user.created`, `user.updated`, `user.deleted`) is registered in `feature.go` `Emits(...)` declarations and verified at module-contract check time (`make check-module-contracts`). |
+| AC-1 | Test | `modules/platformkit-business-modules/user_management/features/user/service_test.go::TestNewService` exercises tenant-scoped lookup paths against the mock repository; `table_handler_test.go` covers the HTTP surface honouring tenant context. |
+| AC-2 | Test | `modules/platformkit-business-modules/user_management/features/user/service_test.go::TestNewService` covers both entity-shaped and boundary read paths against the same backing store; the boundary suite is the import-clean DTO contract. |
+| AC-3 | Test | `modules/platformkit-business-modules/user_management/features/user/service_test.go::TestNewService` includes coverage of event publication on the user lifecycle. The full event catalogue (`user.created`, `user.updated`, `user.deleted`) is registered in `feature.go` `Emits(...)` declarations and verified at module-contract check time (`make check-module-contracts`). |
 | AC-4 | Inspection | `service_roles.go::AssignRole` / `RemoveRole` (lines 40-78) — calls into `s.userService.AssignRole/RemoveRole` and emits `user.assign_role` / `user.remove_role` audit events. Reviewers note the seam to REQ-AUTH-004 is the to-be-collapsed indirection. |
 
 ## Implements (cross-cutting)
@@ -98,14 +98,14 @@ without giving every consumer a direct database hook.
 
 ## Satisfied by
 
-- `pk-modules/user_management/features/user/feature.go` — wiring + admin UI.
-- `pk-modules/user_management/features/user/service.go`, `service_test.go`,
+- `modules/platformkit-business-modules/user_management/features/user/feature.go` — wiring + admin UI.
+- `modules/platformkit-business-modules/user_management/features/user/service.go`, `service_test.go`,
   `service_roles.go` — domain logic, role delegation.
-- `pk-modules/user_management/features/user/handler.go`,
+- `modules/platformkit-business-modules/user_management/features/user/handler.go`,
   `table_handler.go`, `routes.go`, `representation.go` — HTTP surface.
-- `pk-modules/user_management/features/user/notification_service.go`,
+- `modules/platformkit-business-modules/user_management/features/user/notification_service.go`,
   `notification_service_test.go` — admin-pending notification fan-out.
-- `pk-modules/user_management/features/user/section_renderer.go`,
+- `modules/platformkit-business-modules/user_management/features/user/section_renderer.go`,
   `section_renderer_test.go` — admin section rendering.
 
 ## Related requirements

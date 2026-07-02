@@ -107,9 +107,9 @@ properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/billing_management/features/subscriptions/subscription_fsm_test.go::TestValidateTransition_ValidTransitions`. |
-| AC-2 | Test | `pk-modules/billing_management/features/subscriptions/subscription_fsm_test.go::TestValidateTransition_InvalidTransitions`. |
-| AC-3 | Test | `pk-modules/billing_management/features/subscriptions/subscription_fsm_test.go::TestValidateTransition_UnknownStatus`. |
+| AC-1 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/subscription_fsm_test.go::TestValidateTransition_ValidTransitions`. |
+| AC-2 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/subscription_fsm_test.go::TestValidateTransition_InvalidTransitions`. |
+| AC-3 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/subscription_fsm_test.go::TestValidateTransition_UnknownStatus`. |
 
 ## Edge cases & unhappy paths
 
@@ -155,7 +155,7 @@ properties:
 
 ## Satisfied by
 
-- `pk-modules/billing_management/features/subscriptions/subscription_fsm.go::ValidateTransition`.
+- `modules/platformkit-business-modules/billing_management/features/subscriptions/subscription_fsm.go::ValidateTransition`.
 
 ## Related requirements
 

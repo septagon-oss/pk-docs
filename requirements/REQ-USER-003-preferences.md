@@ -60,9 +60,9 @@ load.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/user_management/features/preferences/service_test.go::TestService_GetDefaults_ReturnsCopy` covers tenant-scoped read/write paths against the mock repository. |
-| AC-2 | Test | `pk-modules/user_management/features/preferences/service_test.go::TestService_GetDefaults_ReturnsCopy` covers event emission on update; the event type is registered in `feature.go`. |
-| AC-3 | Test | `pk-modules/user_management/features/preferences/service_test.go::TestService_GetDefaults_ReturnsCopy` covers default-population on create (the constructor seeds defaults rather than relying on the repository's column defaults, which would diverge under migration). |
+| AC-1 | Test | `modules/platformkit-business-modules/user_management/features/preferences/service_test.go::TestService_GetDefaults_ReturnsCopy` covers tenant-scoped read/write paths against the mock repository. |
+| AC-2 | Test | `modules/platformkit-business-modules/user_management/features/preferences/service_test.go::TestService_GetDefaults_ReturnsCopy` covers event emission on update; the event type is registered in `feature.go`. |
+| AC-3 | Test | `modules/platformkit-business-modules/user_management/features/preferences/service_test.go::TestService_GetDefaults_ReturnsCopy` covers default-population on create (the constructor seeds defaults rather than relying on the repository's column defaults, which would diverge under migration). |
 
 ## Implements (cross-cutting)
 
@@ -71,12 +71,12 @@ load.
 
 ## Satisfied by
 
-- `pk-modules/user_management/features/preferences/feature.go` — wiring.
-- `pk-modules/user_management/features/preferences/service.go`,
+- `modules/platformkit-business-modules/user_management/features/preferences/feature.go` — wiring.
+- `modules/platformkit-business-modules/user_management/features/preferences/service.go`,
   `service_test.go` — domain logic + tests.
-- `pk-modules/user_management/features/preferences/preferences_crud.go` —
+- `modules/platformkit-business-modules/user_management/features/preferences/preferences_crud.go` —
   generic CRUD wiring.
-- `pk-modules/user_management/features/preferences/handler.go`, `routes.go`,
+- `modules/platformkit-business-modules/user_management/features/preferences/handler.go`, `routes.go`,
   `permissions.go` — HTTP surface.
 
 ## Related requirements

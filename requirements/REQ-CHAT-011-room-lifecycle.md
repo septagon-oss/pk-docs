@@ -107,12 +107,12 @@ Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/chat_management/features/messaging/service_test.go::TestCreateRoom_Success`. |
+| AC-1 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestCreateRoom_Success`. |
 | AC-2 | Inspection | `room_service.go::CreateRoom` — wrapped error propagation on the `s.rooms.Create` failure path. Dedicated create-error test pending. |
-| AC-3 | Test | `pk-modules/chat_management/features/messaging/service_test.go::TestGetRoom_ReturnsRoomInfo`. |
+| AC-3 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestGetRoom_ReturnsRoomInfo`. |
 | AC-4 | Inspection | `room_service.go::GetRoom` — wrapped error on the `s.rooms.GetByID` failure path. Dedicated not-found test pending. |
-| AC-5 | Test | `pk-modules/chat_management/features/messaging/service_test.go::TestCloseRoom_SetsStatusClosed`. |
-| AC-6 | Test | `pk-modules/chat_management/features/messaging/service_test.go::TestCloseRoom_PropagatesGetError`. |
+| AC-5 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestCloseRoom_SetsStatusClosed`. |
+| AC-6 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestCloseRoom_PropagatesGetError`. |
 
 ## Edge cases & unhappy paths
 
@@ -160,7 +160,7 @@ Three properties:
 
 ## Satisfied by
 
-- `pk-modules/chat_management/features/messaging/room_service.go::CreateRoom, GetRoom, CloseRoom, AddParticipant, FindRoomByConditions`.
+- `modules/platformkit-business-modules/chat_management/features/messaging/room_service.go::CreateRoom, GetRoom, CloseRoom, AddParticipant, FindRoomByConditions`.
 
 ## Related requirements
 

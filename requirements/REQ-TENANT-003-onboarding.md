@@ -77,8 +77,8 @@ checking your email" while the side-effects fan out behind it.
 
 ## Satisfied by
 
-- `pk-modules/tenant_management/features/onboarding/feature.go`
-- `pk-modules/tenant_management/features/onboarding/handler.go`,
+- `modules/platformkit-business-modules/tenant_management/features/onboarding/feature.go`
+- `modules/platformkit-business-modules/tenant_management/features/onboarding/handler.go`,
   `routes.go`, `permissions.go`
 
 ## Related requirements

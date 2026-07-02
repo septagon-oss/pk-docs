@@ -99,12 +99,12 @@ admin UI) panic on missing rows. Three discipline points:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestCreateTenant_Success` — DTO equality on the use-case happy path. |
+| AC-1 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestCreateTenant_Success` — DTO equality on the use-case happy path. |
 | AC-2 | Inspection | `service.go::CreateTenant` lines 91–94 — `s.metrics.Inc(ctx, "tenant.created", nil)` is gated on `err == nil`; counter-on-failure regression would be visible in test setup. Dedicated metric-on-failure test pending. |
 | AC-3 | Inspection | `service.go::CreateTenant` lines 87–89 — explicit `nil` check returns the typed `onboarding use case is not configured` error before any side effect. Dedicated test pending; current `TestCreateTenant_Success` covers the configured branch only. |
-| AC-4 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestCreateTenant_ValidationError` — wraps and propagates the use-case error. |
-| AC-5 | Test | Use case persistence is exercised via the underlying `crud.GenericService` test suites; `pk-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestCreateTenant_Success` verifies the orchestration end-to-end. |
-| AC-6 | Inspection | The `tenant.created` event is emitted by `usecases.OnboardTenantUseCase`; the catalogued event surface is documented at `pk-modules/tenant_management/contracts/provides/events.go`. Dedicated event-emission test pending in the use-case package. |
+| AC-4 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestCreateTenant_ValidationError` — wraps and propagates the use-case error. |
+| AC-5 | Test | Use case persistence is exercised via the underlying `crud.GenericService` test suites; `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestCreateTenant_Success` verifies the orchestration end-to-end. |
+| AC-6 | Inspection | The `tenant.created` event is emitted by `usecases.OnboardTenantUseCase`; the catalogued event surface is documented at `modules/platformkit-business-modules/tenant_management/contracts/provides/events.go`. Dedicated event-emission test pending in the use-case package. |
 
 ## Edge cases & unhappy paths
 
@@ -152,8 +152,8 @@ admin UI) panic on missing rows. Three discipline points:
 
 ## Satisfied by
 
-- `pk-modules/tenant_management/features/tenant_lifecycle/service.go::CreateTenant` — admission + metric.
-- `pk-modules/tenant_management/features/tenant_lifecycle/usecases/onboard_tenant.go::Execute` — orchestration.
+- `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service.go::CreateTenant` — admission + metric.
+- `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/usecases/onboard_tenant.go::Execute` — orchestration.
 
 ## Related requirements
 

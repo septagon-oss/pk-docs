@@ -68,8 +68,8 @@ remove its last owner without approval (Tier 1).
 
 ## Satisfied by
 
-- `pk-modules/tenant_management/change_provider.go`
-- `pk-modules/tenant_management/features/tenant_lifecycle/`
+- `modules/platformkit-business-modules/tenant_management/change_provider.go`
+- `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/`
 
 ## Related requirements
 

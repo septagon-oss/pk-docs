@@ -68,8 +68,8 @@ as an afterthought.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/user_management/features/user/service_test.go::TestService_UpdateUser` and `TestService_Update` — both branches (success / failure) assert the audit recorder receives `user.update` / `user.update.failed` with full pre/post-image. The same pattern is exercised by `TestService_Create` and lifecycle tests (`TestService_Activate`, `TestService_Suspend`, `TestService_DeactivateUser`). |
-| AC-2 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestRecordAuditEvent_Success` exercises the audit envelope normalisation; `TestRecordAuditEvent_EnrichesFromRequestContext` covers the context-derived fields. **Verification gap: a dedicated heavy-association-stripping test is pending.** |
+| AC-1 | Test | `modules/platformkit-business-modules/user_management/features/user/service_test.go::TestService_UpdateUser` and `TestService_Update` — both branches (success / failure) assert the audit recorder receives `user.update` / `user.update.failed` with full pre/post-image. The same pattern is exercised by `TestService_Create` and lifecycle tests (`TestService_Activate`, `TestService_Suspend`, `TestService_DeactivateUser`). |
+| AC-2 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestRecordAuditEvent_Success` exercises the audit envelope normalisation; `TestRecordAuditEvent_EnrichesFromRequestContext` covers the context-derived fields. **Verification gap: a dedicated heavy-association-stripping test is pending.** |
 | AC-3 | Inspection | The audit-emit pattern in `service_crud.go` and `service_lifecycle.go` uses `_ = s.createAuditEvent(...)` so audit failures cannot fail the underlying operation. Discipline enforced by code review; dedicated test pending. |
 | AC-4 | Inspection | `audit_management/features/audit_trail/table_handler_render_detail.go` — admin UI renders a "no audit row" indicator when the lookup misses. |
 
@@ -80,7 +80,7 @@ as an afterthought.
   guaranteed write.
 - [Convention C-14 — Every Go file declares its purpose](../conventions.md#c-14-every-go-file-declares-its-purpose) —
   the discipline that pins each audit-wrapping file to this REQ.
-- `pk-modules/user_management/features/user/service_audit.go` —
+- `modules/platformkit-business-modules/user_management/features/user/service_audit.go` —
   the canonical audit-by-wrapping pattern.
 
 ## Compliance traceability

@@ -71,10 +71,10 @@ operator surface uniform with the other notification channels.
 
 ## Satisfied by
 
-- `pk-modules/notification_management/features/push_notifications/feature.go`
-- `pk-modules/notification_management/features/push_notifications/service.go`,
+- `modules/platformkit-business-modules/notification_management/features/push_notifications/feature.go`
+- `modules/platformkit-business-modules/notification_management/features/push_notifications/service.go`,
   `service_test.go`
-- `pk-modules/notification_management/features/push_notifications/routes.go`,
+- `modules/platformkit-business-modules/notification_management/features/push_notifications/routes.go`,
   `permissions.go`
 
 ## Related requirements

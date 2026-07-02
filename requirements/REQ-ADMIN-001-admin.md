@@ -67,8 +67,8 @@ migration.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/admin_management/features/admin/provider_test.go::TestBuildSurfaceContributionFromPlansUsesExplicitSurfaceContracts` covers the discovery-driven composition. |
-| AC-2 | Test | `pk-modules/admin_management/features/admin/provider_test.go::TestBuildSurfaceContributionFromPlansUsesExplicitSurfaceContracts` covers the registry-filter branch. |
+| AC-1 | Test | `modules/platformkit-business-modules/admin_management/features/admin/provider_test.go::TestBuildSurfaceContributionFromPlansUsesExplicitSurfaceContracts` covers the discovery-driven composition. |
+| AC-2 | Test | `modules/platformkit-business-modules/admin_management/features/admin/provider_test.go::TestBuildSurfaceContributionFromPlansUsesExplicitSurfaceContracts` covers the registry-filter branch. |
 | AC-3 | Inspection | `provider.go::SetAdminRegistry` and the `cacheMu` discipline — cache invalidation on registry change. |
 
 ## Implements (cross-cutting)

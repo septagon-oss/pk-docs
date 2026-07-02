@@ -142,13 +142,13 @@ question.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestPerformComplianceCheck_SeverityAudit_Compliant`, `TestPerformComplianceCheck_SeverityAudit_NonCompliant`, `TestPerformComplianceCheck_SeverityAudit_Partial`. |
-| AC-2 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestPerformComplianceCheck_Completeness`. |
-| AC-3 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestPerformComplianceCheck_Retention` and `TestPerformComplianceCheck_RetentionFallbackDays`. |
+| AC-1 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestPerformComplianceCheck_SeverityAudit_Compliant`, `TestPerformComplianceCheck_SeverityAudit_NonCompliant`, `TestPerformComplianceCheck_SeverityAudit_Partial`. |
+| AC-2 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestPerformComplianceCheck_Completeness`. |
+| AC-3 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestPerformComplianceCheck_Retention` and `TestPerformComplianceCheck_RetentionFallbackDays`. |
 | AC-4 | Inspection | `service.go::PerformComplianceCheck` lines 382–396 — score = `(total - failed) / total * 100`; `TestPerformComplianceCheck_SeverityAudit_Partial` exercises the partial branch end-to-end. |
-| AC-5 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestPerformComplianceCheck_DetailsPopulated`. |
+| AC-5 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestPerformComplianceCheck_DetailsPopulated`. |
 | AC-6 | Inspection | `service.go::PerformComplianceCheck` lines 404–406 — `s.metrics.Inc(ctx, "audit.compliance.check", nil)` runs at the end of the function. Dedicated counter test pending. |
-| AC-7 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestPerformComplianceCheck_QueryError` — wrapped error; the Warn-vs-Error-log differentiation is by inspection of lines 339–344. |
+| AC-7 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestPerformComplianceCheck_QueryError` — wrapped error; the Warn-vs-Error-log differentiation is by inspection of lines 339–344. |
 
 ## Edge cases & unhappy paths
 
@@ -196,8 +196,8 @@ question.
 
 ## Satisfied by
 
-- `pk-modules/audit_management/features/audit_trail/service.go::PerformComplianceCheck`.
-- `pk-modules/audit_management/features/audit_compliance/feature.go` — UI surface for compliance reports.
+- `modules/platformkit-business-modules/audit_management/features/audit_trail/service.go::PerformComplianceCheck`.
+- `modules/platformkit-business-modules/audit_management/features/audit_compliance/feature.go` — UI surface for compliance reports.
 
 ## Related requirements
 

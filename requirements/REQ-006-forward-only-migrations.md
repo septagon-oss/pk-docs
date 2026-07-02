@@ -66,7 +66,7 @@ sequence again, not by manual schema surgery.
 | AC-1 | Analysis | `make check-migrations-append-only` (planned guard — `git diff` against a base ref to reject edits to existing migration files). |
 | AC-1 | Inspection | Code-review checklist item — reviewers reject any PR that modifies an already-committed migration. |
 | AC-2 | Inspection | Migration template + scaffolder seed enforce idempotent SQL idioms. |
-| AC-3 | Inspection | Migration replay against a clean schema is exercised end-to-end through the showroom bring-up (`platformkit-apps/Makefile::showroom-up`) and the platformkit-tests E2E harness, both of which run all migrations from scratch on every cold start. **Verification gap: dedicated `TestMigrations_ApplyFromScratch` / `TestMigrations_ApplyOnPartialSchema` Go tests under `pk-modules/tests/` are pending.** |
+| AC-3 | Inspection | Migration replay against a clean schema is exercised end-to-end through the showroom bring-up (`platformkit-apps/Makefile::showroom-up`) and the platformkit-tests E2E harness, both of which run all migrations from scratch on every cold start. **Verification gap: dedicated `TestMigrations_ApplyFromScratch` / `TestMigrations_ApplyOnPartialSchema` Go tests under `modules/platformkit-business-modules/tests/` are pending.** |
 
 ## Satisfied by
 

@@ -121,15 +121,15 @@ documented entry point. Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/translation_management/features/translations/service_test.go::TestParseTranslationJSON_ArrayFormat`. |
-| AC-2 | Test | `pk-modules/translation_management/features/translations/service_test.go::TestParseTranslationJSON_FlatMapFormat`. |
-| AC-3 | Test | `pk-modules/translation_management/features/translations/service_extended_test.go::TestParseTranslationJSON_NestedFormat`. |
-| AC-4 | Test | `pk-modules/translation_management/features/translations/service_extended_test.go::TestParseTranslationJSON_EmptyInput`. |
-| AC-5 | Test | `pk-modules/translation_management/features/translations/service_extended_test.go::TestParseTranslationJSON_InvalidJSON`. |
-| AC-6 | Test | `pk-modules/translation_management/features/translations/service_extended_test.go::TestParseTranslationJSON_ArrayWithBlankIDs`. |
-| AC-7 | Test | `pk-modules/translation_management/features/translations/service_extended_test.go::TestFlattenTranslationObject_DeepNesting`. |
-| AC-8 | Test | `pk-modules/translation_management/features/translations/service_extended_test.go::TestFlattenTranslationObject_SkipsBlankKeys`. |
-| AC-9 | Test | `pk-modules/translation_management/features/translations/service_test.go::TestNamespaceFromKey`. |
+| AC-1 | Test | `modules/platformkit-business-modules/translation_management/features/translations/service_test.go::TestParseTranslationJSON_ArrayFormat`. |
+| AC-2 | Test | `modules/platformkit-business-modules/translation_management/features/translations/service_test.go::TestParseTranslationJSON_FlatMapFormat`. |
+| AC-3 | Test | `modules/platformkit-business-modules/translation_management/features/translations/service_extended_test.go::TestParseTranslationJSON_NestedFormat`. |
+| AC-4 | Test | `modules/platformkit-business-modules/translation_management/features/translations/service_extended_test.go::TestParseTranslationJSON_EmptyInput`. |
+| AC-5 | Test | `modules/platformkit-business-modules/translation_management/features/translations/service_extended_test.go::TestParseTranslationJSON_InvalidJSON`. |
+| AC-6 | Test | `modules/platformkit-business-modules/translation_management/features/translations/service_extended_test.go::TestParseTranslationJSON_ArrayWithBlankIDs`. |
+| AC-7 | Test | `modules/platformkit-business-modules/translation_management/features/translations/service_extended_test.go::TestFlattenTranslationObject_DeepNesting`. |
+| AC-8 | Test | `modules/platformkit-business-modules/translation_management/features/translations/service_extended_test.go::TestFlattenTranslationObject_SkipsBlankKeys`. |
+| AC-9 | Test | `modules/platformkit-business-modules/translation_management/features/translations/service_test.go::TestNamespaceFromKey`. |
 
 ## Edge cases & unhappy paths
 
@@ -178,7 +178,7 @@ documented entry point. Three properties:
 
 ## Satisfied by
 
-- `pk-modules/translation_management/features/translations/service.go::ParseTranslationJSON, FlattenTranslationObject, NamespaceFromKey`.
+- `modules/platformkit-business-modules/translation_management/features/translations/service.go::ParseTranslationJSON, FlattenTranslationObject, NamespaceFromKey`.
 
 ## Related requirements
 

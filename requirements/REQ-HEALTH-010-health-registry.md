@@ -106,12 +106,12 @@ self-monitoring surface. Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/health_management/registry_test.go::TestNewHealthRegistryStartsEmpty`. |
-| AC-2 | Test | `pk-modules/health_management/registry_test.go::TestRegisterAndGetProvider`. |
-| AC-3 | Test | `pk-modules/health_management/registry_test.go::TestRegisterProviderRejectsInvalidModuleID`. |
-| AC-4 | Test | `pk-modules/health_management/registry_test.go::TestUnregisterProvider`. |
-| AC-5 | Test | `pk-modules/health_management/registry_test.go::TestUnregisterProviderReturnsErrorForUnknownModule`. |
-| AC-6 | Test | `pk-modules/health_management/registry_test.go::TestGetAllHealthChecksAggregatesAcrossModules`. |
+| AC-1 | Test | `modules/platformkit-business-modules/health_management/registry_test.go::TestNewHealthRegistryStartsEmpty`. |
+| AC-2 | Test | `modules/platformkit-business-modules/health_management/registry_test.go::TestRegisterAndGetProvider`. |
+| AC-3 | Test | `modules/platformkit-business-modules/health_management/registry_test.go::TestRegisterProviderRejectsInvalidModuleID`. |
+| AC-4 | Test | `modules/platformkit-business-modules/health_management/registry_test.go::TestUnregisterProvider`. |
+| AC-5 | Test | `modules/platformkit-business-modules/health_management/registry_test.go::TestUnregisterProviderReturnsErrorForUnknownModule`. |
+| AC-6 | Test | `modules/platformkit-business-modules/health_management/registry_test.go::TestGetAllHealthChecksAggregatesAcrossModules`. |
 
 ## Edge cases & unhappy paths
 
@@ -155,7 +155,7 @@ self-monitoring surface. Three properties:
 
 ## Satisfied by
 
-- `pk-modules/health_management/registry.go::HealthRegistry, RegisterProvider, UnregisterProvider, GetProvider, GetAllHealthChecks`.
+- `modules/platformkit-business-modules/health_management/registry.go::HealthRegistry, RegisterProvider, UnregisterProvider, GetProvider, GetAllHealthChecks`.
 
 ## Related requirements
 

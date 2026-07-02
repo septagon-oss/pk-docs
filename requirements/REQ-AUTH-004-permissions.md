@@ -61,9 +61,9 @@ the "least privilege" posture in face of misconfiguration.
 | AC | Method | Evidence |
 |---|---|---|
 | AC-1 | Analysis | `make check-module-deps` — duplicate capability declarations fail the build. |
-| AC-2 | Test | `pk-modules/auth_management/features/permissions/req_auth_004_test.go::TestCheckUserPermission_FailsClosedOnRepoError` (explicit deny on read-failure). Match-side covered by `service_test.go::TestService_CheckUserPermission_NoMatch` + `TestService_CheckUserPermission_ExactMatch` + `TestService_CheckUserPermission_WildcardMatch`. |
+| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/permissions/req_auth_004_test.go::TestCheckUserPermission_FailsClosedOnRepoError` (explicit deny on read-failure). Match-side covered by `service_test.go::TestService_CheckUserPermission_NoMatch` + `TestService_CheckUserPermission_ExactMatch` + `TestService_CheckUserPermission_WildcardMatch`. |
 | AC-3 | Mixed | Audit emission: `service_test.go::TestService_AssignUserRoles_Success` asserts `bus.Published()` carries one event. Cache invalidation: not yet verified at the unit level — the production path relies on the parent service evicting per-user permission caches; tracked as a follow-up test gap. |
-| AC-4 | Test | `pk-modules/auth_management/features/permissions/req_auth_004_test.go::TestCheckUserPermission_IsDeterministic` calls the check ten times against an unchanged backing store and asserts the result is stable. |
+| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/permissions/req_auth_004_test.go::TestCheckUserPermission_IsDeterministic` calls the check ten times against an unchanged backing store and asserts the result is stable. |
 
 ## Implements (cross-cutting)
 
@@ -73,12 +73,12 @@ the "least privilege" posture in face of misconfiguration.
 
 ## Satisfied by
 
-- `pk-modules/auth_management/features/permissions/feature.go`
-- `pk-modules/auth_management/features/permissions/service.go`,
+- `modules/platformkit-business-modules/auth_management/features/permissions/feature.go`
+- `modules/platformkit-business-modules/auth_management/features/permissions/service.go`,
   `service_test.go`
-- `pk-modules/auth_management/features/permissions/adapters.go`,
+- `modules/platformkit-business-modules/auth_management/features/permissions/adapters.go`,
   `adapters_test.go`
-- `pk-modules/auth_management/features/permissions/handler.go`, `routes.go`
+- `modules/platformkit-business-modules/auth_management/features/permissions/handler.go`, `routes.go`
 
 ## Related requirements
 

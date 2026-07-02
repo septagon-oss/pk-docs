@@ -113,7 +113,7 @@ disrupted.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/auth_management/features/registration/req_auth_002_test.go::TestVerifyEmail_SingleUse_AndExpiry` covers the success and the subsequent rejection. |
+| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/registration/req_auth_002_test.go::TestVerifyEmail_SingleUse_AndExpiry` covers the success and the subsequent rejection. |
 | AC-2 | Inspection | Same harness — second redemption returns `ErrEmailAlreadyVerified`. _Verification gap: pending — cited evidence is prose / pattern / non-Go and cannot be auto-resolved._ |
 | AC-3 | Inspection | `req_auth_002_test.go::TestVerifyEmail_SingleUse_AndExpiry/expired_token_rejected`. _Verification gap: pending — cited evidence is prose / pattern / non-Go and cannot be auto-resolved._ |
 | AC-4 | Inspection | `verify_email.go::VerifyEmail` — `s.verificationRepo.GetByToken` returning nil → `ErrInvalidVerificationToken`. |
@@ -175,11 +175,11 @@ disrupted.
 
 ## Satisfied by
 
-- `pk-modules/auth_management/features/registration/verify_email.go` —
+- `modules/platformkit-business-modules/auth_management/features/registration/verify_email.go` —
   the verifier and orchestration.
-- `pk-modules/auth_management/features/registration/verification_repository.go` —
+- `modules/platformkit-business-modules/auth_management/features/registration/verification_repository.go` —
   the persistence layer.
-- `pk-modules/auth_management/features/registration/register_user_service.go::sendVerificationEmail` —
+- `modules/platformkit-business-modules/auth_management/features/registration/register_user_service.go::sendVerificationEmail` —
   the producer side that mints tokens.
 
 ## Related requirements

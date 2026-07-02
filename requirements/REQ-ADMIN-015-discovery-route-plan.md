@@ -105,13 +105,13 @@ shows menu" (consumer). Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/admin_management/features/discovery/service_test.go::TestBuildRoutePlanUsesCanonicalEntityRoute`. |
-| AC-2 | Test | `pk-modules/admin_management/features/discovery/service_test.go::TestBuildRoutePlansDoesNotPanicWithoutContext`. |
-| AC-3 | Test | `pk-modules/admin_management/features/discovery/service_test.go::TestBuildRoutePlanAssignsLandingRouteAndCanonicalSectionIDs`. |
-| AC-4 | Test | `pk-modules/admin_management/features/discovery/service_test.go::TestFeatureEntityPluralTitleUsesTableNameAsPluralFallback`. |
-| AC-5 | Test | `pk-modules/admin_management/features/discovery/service_test.go::TestBuildMenuItemsFromPlansGroupsRepeatedModuleTitles`. |
-| AC-6 | Test | `pk-modules/admin_management/features/discovery/service_test.go::TestBuildMenuItemsFromPlansSupportsExplicitMenuParent`. |
-| AC-7 | Test | `pk-modules/admin_management/features/discovery/service_test.go::TestBuildStandaloneMenuItemUsesLandingPageRoute`. |
+| AC-1 | Test | `modules/platformkit-business-modules/admin_management/features/discovery/service_test.go::TestBuildRoutePlanUsesCanonicalEntityRoute`. |
+| AC-2 | Test | `modules/platformkit-business-modules/admin_management/features/discovery/service_test.go::TestBuildRoutePlansDoesNotPanicWithoutContext`. |
+| AC-3 | Test | `modules/platformkit-business-modules/admin_management/features/discovery/service_test.go::TestBuildRoutePlanAssignsLandingRouteAndCanonicalSectionIDs`. |
+| AC-4 | Test | `modules/platformkit-business-modules/admin_management/features/discovery/service_test.go::TestFeatureEntityPluralTitleUsesTableNameAsPluralFallback`. |
+| AC-5 | Test | `modules/platformkit-business-modules/admin_management/features/discovery/service_test.go::TestBuildMenuItemsFromPlansGroupsRepeatedModuleTitles`. |
+| AC-6 | Test | `modules/platformkit-business-modules/admin_management/features/discovery/service_test.go::TestBuildMenuItemsFromPlansSupportsExplicitMenuParent`. |
+| AC-7 | Test | `modules/platformkit-business-modules/admin_management/features/discovery/service_test.go::TestBuildStandaloneMenuItemUsesLandingPageRoute`. |
 
 ## Edge cases & unhappy paths
 
@@ -142,7 +142,7 @@ shows menu" (consumer). Three properties:
 
 ## Satisfied by
 
-- `pk-modules/admin_management/features/discovery/service.go::BuildRoutePlan, BuildRoutePlans, BuildMenuItemsFromPlans, BuildStandaloneMenuItem`.
+- `modules/platformkit-business-modules/admin_management/features/discovery/service.go::BuildRoutePlan, BuildRoutePlans, BuildMenuItemsFromPlans, BuildStandaloneMenuItem`.
 
 ## Related requirements
 

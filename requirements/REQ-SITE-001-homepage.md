@@ -57,9 +57,9 @@ the platform default while the tenant uploads theirs.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/site_management/features/homepage/brand_assets_test.go::TestResolveBrandingUsesTenantOverlayAssets`. |
-| AC-2 | Test | `pk-modules/site_management/features/homepage/content_loader_test.go::TestLoadHomepageContent_LocaleAndFallback`. |
-| AC-3 | Test | `pk-modules/site_management/features/homepage/handler_test.go::TestNormalizePublicLink`. |
+| AC-1 | Test | `modules/platformkit-business-modules/site_management/features/homepage/brand_assets_test.go::TestResolveBrandingUsesTenantOverlayAssets`. |
+| AC-2 | Test | `modules/platformkit-business-modules/site_management/features/homepage/content_loader_test.go::TestLoadHomepageContent_LocaleAndFallback`. |
+| AC-3 | Test | `modules/platformkit-business-modules/site_management/features/homepage/handler_test.go::TestNormalizePublicLink`. |
 
 ## Implements (cross-cutting)
 
@@ -68,11 +68,11 @@ the platform default while the tenant uploads theirs.
 
 ## Satisfied by
 
-- `pk-modules/site_management/features/homepage/feature.go`
-- `pk-modules/site_management/features/homepage/brand_assets_test.go`,
+- `modules/platformkit-business-modules/site_management/features/homepage/feature.go`
+- `modules/platformkit-business-modules/site_management/features/homepage/brand_assets_test.go`,
   `content_loader.go`, `content_loader_test.go`
-- `pk-modules/site_management/features/homepage/handler.go`, `handler_test.go`
-- `pk-modules/site_management/features/homepage/client_manifest.go`,
+- `modules/platformkit-business-modules/site_management/features/homepage/handler.go`, `handler_test.go`
+- `modules/platformkit-business-modules/site_management/features/homepage/client_manifest.go`,
   `color_defaults.go`
 
 ## Related requirements

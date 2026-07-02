@@ -68,9 +68,9 @@ tenant deletion cascades to its workspaces.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/tenant_management/features/workspace_management/service_test.go::TestToWorkspaceDTO_AllFieldsMapped` covers tenant-context enforcement on create. |
-| AC-2 | Test | `pk-modules/tenant_management/features/workspace_management/service_test.go::TestToWorkspaceDTO_AllFieldsMapped` covers cross-tenant visibility paths. |
-| AC-3 | Test | `pk-modules/tenant_management/features/workspace_management/service_test.go::TestToWorkspaceDTO_AllFieldsMapped` covers the lifecycle event emission. |
+| AC-1 | Test | `modules/platformkit-business-modules/tenant_management/features/workspace_management/service_test.go::TestToWorkspaceDTO_AllFieldsMapped` covers tenant-context enforcement on create. |
+| AC-2 | Test | `modules/platformkit-business-modules/tenant_management/features/workspace_management/service_test.go::TestToWorkspaceDTO_AllFieldsMapped` covers cross-tenant visibility paths. |
+| AC-3 | Test | `modules/platformkit-business-modules/tenant_management/features/workspace_management/service_test.go::TestToWorkspaceDTO_AllFieldsMapped` covers the lifecycle event emission. |
 
 ## Implements (cross-cutting)
 
@@ -79,10 +79,10 @@ tenant deletion cascades to its workspaces.
 
 ## Satisfied by
 
-- `pk-modules/tenant_management/features/workspace_management/feature.go`
-- `pk-modules/tenant_management/features/workspace_management/service.go`,
+- `modules/platformkit-business-modules/tenant_management/features/workspace_management/feature.go`
+- `modules/platformkit-business-modules/tenant_management/features/workspace_management/service.go`,
   `service_test.go`
-- `pk-modules/tenant_management/features/workspace_management/handler.go`,
+- `modules/platformkit-business-modules/tenant_management/features/workspace_management/handler.go`,
   `routes.go`, `permissions.go`
 
 ## Related requirements

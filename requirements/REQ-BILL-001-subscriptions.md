@@ -67,9 +67,9 @@ tenant allowed to use feature X?".
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/billing_management/features/subscriptions/subscription_fsm_test.go::TestValidateTransition_UnknownStatus` covers the state-machine invariants. |
-| AC-2 | Test | `pk-modules/billing_management/features/subscriptions/service_test.go::TestParseUsageValue` covers event emission and audit trail. |
-| AC-3 | Test | `pk-modules/billing_management/features/subscriptions/entitlements_test.go::TestListEntitlements_UsesStructuredSubscriptionItems` covers propagation to entitlement. |
+| AC-1 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/subscription_fsm_test.go::TestValidateTransition_UnknownStatus` covers the state-machine invariants. |
+| AC-2 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestParseUsageValue` covers event emission and audit trail. |
+| AC-3 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/entitlements_test.go::TestListEntitlements_UsesStructuredSubscriptionItems` covers propagation to entitlement. |
 
 ## Implements (cross-cutting)
 
@@ -82,7 +82,7 @@ tenant allowed to use feature X?".
 - `billing_management/features/subscriptions/feature.go`
 - `billing_management/features/subscriptions/service.go`,
   `service_test.go`
-- `pk-modules/billing_management/features/subscriptions/subscription_fsm_test.go`
+- `modules/platformkit-business-modules/billing_management/features/subscriptions/subscription_fsm_test.go`
 - `billing_management/features/subscriptions/entitlements.go`,
   `entitlements_test.go`
 - `billing_management/features/subscriptions/context_helpers.go`
