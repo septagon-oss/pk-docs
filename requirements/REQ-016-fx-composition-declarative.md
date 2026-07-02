@@ -81,7 +81,7 @@ a notification-management module just to satisfy an import.
 | AC-1 | Analysis | `make check-structure` (`platformkit-devtools/internal/modulechecks/structure.go`) — verifies every module declares `NewModule`, `GetModule`, and `GetFeatures`. |
 | AC-2 | Inspection | Code review checklist: `platformkit-apps/complete-saas-monolith/main.go` is the canonical reference; new entrypoints follow the same shape. |
 | AC-3 | Analysis | `make check-module-deps` (catalog contract check) — fails on unresolved required deps. |
-| AC-4 | Test | `pk-modules/catalog/runtimecatalog/catalog_test.go::TestPlanSkipsWarningOnlyHTTPRouting` exercises `Plan()` against subsets of the registered modules. |
+| AC-4 | Test | `modules/platformkit-business-modules/catalog/runtimecatalog/catalog_test.go::TestPlanSkipsWarningOnlyHTTPRouting` exercises `Plan()` against subsets of the registered modules. |
 
 ## Satisfied by
 
@@ -101,6 +101,6 @@ a notification-management module just to satisfy an import.
 ## References
 
 - `platformkit-backend-kit/app/module/` — module-helper builders.
-- `pk-modules/catalog/` — registry + presets.
+- `modules/platformkit-business-modules/catalog/` — registry + presets.
 - `platformkit-apps/complete-saas-monolith/main.go` — reference
   bootstrap.

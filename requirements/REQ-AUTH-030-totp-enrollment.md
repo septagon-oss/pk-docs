@@ -96,10 +96,10 @@ TOTP enrolment has three security-load-bearing properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/auth_management/features/twofactor/service_test.go::TestService_Enroll_GeneratesSecret`. |
+| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/twofactor/service_test.go::TestService_Enroll_GeneratesSecret`. |
 | AC-2 | Inspection | `service.go::Enroll` — the SetSecret/SetBackupCodes pair without a SetEnabled call. |
-| AC-3 | Test | `pk-modules/auth_management/features/twofactor/service_test.go::TestService_Enroll_ReturnsBackupCodes` (asserts the count). |
-| AC-4 | Test | `pk-modules/auth_management/features/twofactor/service_test.go::TestService_Enroll_ReturnsOTPURL`. |
+| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/twofactor/service_test.go::TestService_Enroll_ReturnsBackupCodes` (asserts the count). |
+| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/twofactor/service_test.go::TestService_Enroll_ReturnsOTPURL`. |
 | AC-5 | Inspection | Code review of the production `SecretStore` implementation; the in-memory test store is documented as test-only at `req_auth_003_test.go::replayGuardedStore`. |
 | AC-6 | Inspection | `service.go::Enroll` overwrites unconditionally; reviewers verify the documented behaviour against the threat-model expectation. |
 
@@ -145,11 +145,11 @@ TOTP enrolment has three security-load-bearing properties:
 
 ## Satisfied by
 
-- `pk-modules/auth_management/features/twofactor/service.go::Enroll` —
+- `modules/platformkit-business-modules/auth_management/features/twofactor/service.go::Enroll` —
   the orchestration.
-- `pk-modules/auth_management/features/twofactor/service.go::generateSecret` /
+- `modules/platformkit-business-modules/auth_management/features/twofactor/service.go::generateSecret` /
   `generateBackupCode` — the random primitives.
-- `pk-modules/auth_management/features/authentication/twofactor_store.go` —
+- `modules/platformkit-business-modules/auth_management/features/authentication/twofactor_store.go` —
   the production SecretStore implementation that persists
   with encryption-at-rest.
 

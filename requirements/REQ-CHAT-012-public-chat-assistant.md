@@ -102,9 +102,9 @@ surface. Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/chat_management/features/public_chat/assistant_test.go::TestSiteAssistantReplyBuildsArticleAwarePublicPrompt`. |
-| AC-2 | Test | `pk-modules/chat_management/features/public_chat/assistant_test.go::TestSendPublicMessageUsesAssistantReply`. |
-| AC-3 | Test | `pk-modules/chat_management/features/public_chat/assistant_test.go::TestSendPublicMessageFallsBackWhenAssistantFails`. |
+| AC-1 | Test | `modules/platformkit-business-modules/chat_management/features/public_chat/assistant_test.go::TestSiteAssistantReplyBuildsArticleAwarePublicPrompt`. |
+| AC-2 | Test | `modules/platformkit-business-modules/chat_management/features/public_chat/assistant_test.go::TestSendPublicMessageUsesAssistantReply`. |
+| AC-3 | Test | `modules/platformkit-business-modules/chat_management/features/public_chat/assistant_test.go::TestSendPublicMessageFallsBackWhenAssistantFails`. |
 
 ## Edge cases & unhappy paths
 
@@ -161,8 +161,8 @@ surface. Three properties:
 
 ## Satisfied by
 
-- `pk-modules/chat_management/features/public_chat/assistant.go` — prompt builder and reply orchestration.
-- `pk-modules/chat_management/features/public_chat/service.go` — public-chat orchestration entry.
+- `modules/platformkit-business-modules/chat_management/features/public_chat/assistant.go` — prompt builder and reply orchestration.
+- `modules/platformkit-business-modules/chat_management/features/public_chat/service.go` — public-chat orchestration entry.
 
 ## Related requirements
 

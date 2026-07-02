@@ -101,9 +101,9 @@ trade-off.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/admin_management/features/settings/service_outbox_test.go::TestSetSettingValue_OutboxPath_EnqueuesInsteadOfDirectPublish`. |
-| AC-2 | Test | `pk-modules/admin_management/features/settings/service_outbox_test.go::TestSetSettingValue_OutboxPath_OnUpdate`. |
-| AC-3 | Test | `pk-modules/admin_management/features/settings/service_outbox_test.go` covers the no-outbox direct publish branch. |
+| AC-1 | Test | `modules/platformkit-business-modules/admin_management/features/settings/service_outbox_test.go::TestSetSettingValue_OutboxPath_EnqueuesInsteadOfDirectPublish`. |
+| AC-2 | Test | `modules/platformkit-business-modules/admin_management/features/settings/service_outbox_test.go::TestSetSettingValue_OutboxPath_OnUpdate`. |
+| AC-3 | Test | `modules/platformkit-business-modules/admin_management/features/settings/service_outbox_test.go` covers the no-outbox direct publish branch. |
 
 ## Edge cases & unhappy paths
 
@@ -149,8 +149,8 @@ trade-off.
 
 ## Satisfied by
 
-- `pk-modules/admin_management/features/settings/service.go::SetSettingValue` — orchestration.
-- `pk-modules/internal/outbox/` — outbox infrastructure.
+- `modules/platformkit-business-modules/admin_management/features/settings/service.go::SetSettingValue` — orchestration.
+- `modules/platformkit-business-modules/internal/outbox/` — outbox infrastructure.
 
 ## Related requirements
 

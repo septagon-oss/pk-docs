@@ -65,9 +65,9 @@ unreachable and remove it from rotation.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/health_management/features/health_monitoring/api_test.go::TestPruneAcknowledgementsRemovesResolvedAlerts` covers the rollup composition and the single-failure isolation. |
-| AC-2 | Test | `pk-modules/health_management/features/health_monitoring/api_test.go::TestPruneAcknowledgementsRemovesResolvedAlerts` covers the unauthenticated-liveness vs authenticated-detail split. |
-| AC-3 | Test | `pk-modules/health_management/features/health_monitoring/api_test.go::TestPruneAcknowledgementsRemovesResolvedAlerts` covers timeout behaviour with a deliberately slow check. |
+| AC-1 | Test | `modules/platformkit-business-modules/health_management/features/health_monitoring/api_test.go::TestPruneAcknowledgementsRemovesResolvedAlerts` covers the rollup composition and the single-failure isolation. |
+| AC-2 | Test | `modules/platformkit-business-modules/health_management/features/health_monitoring/api_test.go::TestPruneAcknowledgementsRemovesResolvedAlerts` covers the unauthenticated-liveness vs authenticated-detail split. |
+| AC-3 | Test | `modules/platformkit-business-modules/health_management/features/health_monitoring/api_test.go::TestPruneAcknowledgementsRemovesResolvedAlerts` covers timeout behaviour with a deliberately slow check. |
 
 ## Implements (cross-cutting)
 

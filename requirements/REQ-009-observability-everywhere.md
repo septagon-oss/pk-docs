@@ -74,8 +74,8 @@ whole is operated under one discipline.
 | AC | Method | Evidence |
 |---|---|---|
 | AC-1 | Inspection | Code-review checklist over `platformkit-backend-kit/infrastructure/middleware/context_enrichment.go` and `platformkit-backend-kit/security/authz/middleware/huma_logger_middleware.go`: request context carries trace IDs and logger via `appcontext` before handlers execute. |
-| AC-2 | Inspection | Code-review checklist over durable mutation services (for example `pk-modules/tenant_management/features/tenant_lifecycle/service.go`, `pk-modules/user_management/features/user/service_crud.go`): each mutation path includes at least one `metrics.Inc(...)` call. |
-| AC-3 | Inspection | Code-review checklist over failure paths (for example `pk-modules/auth_management/features/authentication/login_service.go`, `pk-modules/notification_management/features/email_notifications/service.go`): failure branch logs error fields and increments a `*.failed` counter. |
+| AC-2 | Inspection | Code-review checklist over durable mutation services (for example `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service.go`, `modules/platformkit-business-modules/user_management/features/user/service_crud.go`): each mutation path includes at least one `metrics.Inc(...)` call. |
+| AC-3 | Inspection | Code-review checklist over failure paths (for example `modules/platformkit-business-modules/auth_management/features/authentication/login_service.go`, `modules/platformkit-business-modules/notification_management/features/email_notifications/service.go`): failure branch logs error fields and increments a `*.failed` counter. |
 | AC-4 | Test | `platformkit-backend-kit/observability/logger/providers/noop/contract_test.go::TestNoOpLoggerContract`, `platformkit-backend-kit/observability/tracing/providers/noop/contract_test.go::TestNoOpTracerContract`, and `platformkit-backend-kit/observability/metrics/providers/noop/contract_test.go::TestNoOpMetricsContract` validate noop providers under `observability/*/providers/noop/`. |
 
 ## Satisfied by

@@ -105,12 +105,12 @@ end-user's.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestLogout_Success` and `TestLogout_WithRefreshToken`. |
-| AC-2 | Inspection | `pk-modules/auth_management/features/authentication/service_test.go::TestLogout_WithRefreshToken` asserts `blacklist:refresh:<hash>` exists post-call; refresh consumption is covered in `TestRefreshAccessToken_BlacklistedToken`. |
-| AC-3 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestLogout_WithLogoutEverywhere`. |
+| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestLogout_Success` and `TestLogout_WithRefreshToken`. |
+| AC-2 | Inspection | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestLogout_WithRefreshToken` asserts `blacklist:refresh:<hash>` exists post-call; refresh consumption is covered in `TestRefreshAccessToken_BlacklistedToken`. |
+| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestLogout_WithLogoutEverywhere`. |
 | AC-4 | Inspection | `logout.go` provider-call wrapper logs and continues on provider error; reviewers verify the local revocation is unconditional. |
 | AC-5 | Inspection | The service's update-then-publish ordering uses the row's pre-revocation state; an already-revoked row is a no-op write. |
-| AC-6 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestLogout_WithLogoutEverywhere_ReturnsErrorWhenSessionRevocationFails`. |
+| AC-6 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestLogout_WithLogoutEverywhere_ReturnsErrorWhenSessionRevocationFails`. |
 
 ## Edge cases & unhappy paths
 
@@ -159,13 +159,13 @@ end-user's.
 
 ## Satisfied by
 
-- `pk-modules/auth_management/features/authentication/logout.go` — handler
+- `modules/platformkit-business-modules/auth_management/features/authentication/logout.go` — handler
   and orchestration.
-- `pk-modules/auth_management/features/authentication/login_session.go` —
+- `modules/platformkit-business-modules/auth_management/features/authentication/login_session.go` —
   the session-mutation helpers `Logout` consumes.
-- `pk-modules/auth_management/features/authentication/repository.go` —
+- `modules/platformkit-business-modules/auth_management/features/authentication/repository.go` —
   session-row writes.
-- `pk-modules/auth_management/features/authentication/logout_browser_test.go` —
+- `modules/platformkit-business-modules/auth_management/features/authentication/logout_browser_test.go` —
   HTML form coverage.
 
 ## Related requirements

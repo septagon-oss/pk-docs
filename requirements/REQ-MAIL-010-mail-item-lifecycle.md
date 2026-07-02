@@ -136,18 +136,18 @@ collected (audit defect). Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/mail_management/features/mail_tracking/service_test.go::TestLogMailItem_SetsDefaults`. |
-| AC-2 | Test | `pk-modules/mail_management/features/mail_tracking/service_test.go::TestLogMailItem_PreservesExplicitStatus`. |
-| AC-3 | Test | `pk-modules/mail_management/features/mail_tracking/service_test.go::TestLogMailItem_EmitsEvent`. |
-| AC-4 | Test | `pk-modules/mail_management/features/mail_tracking/service_test.go::TestLogMailItem_PropagatesCreateError`. |
-| AC-5 | Test | `pk-modules/mail_management/features/mail_tracking/service_test.go::TestNotifyRecipient_SetsNotifiedStatus`. |
-| AC-6 | Test | `pk-modules/mail_management/features/mail_tracking/service_test.go::TestNotifyRecipient_WrongTenantReturnsError`. |
-| AC-7 | Test | `pk-modules/mail_management/features/mail_tracking/service_test.go::TestCollectMailItem_Success`. |
-| AC-8 | Test | `pk-modules/mail_management/features/mail_tracking/service_test.go::TestCollectMailItem_AlreadyCollected`. |
-| AC-9 | Test | `pk-modules/mail_management/features/mail_tracking/service_test.go::TestCollectMailItem_WrongTenant`. |
-| AC-10 | Test | `pk-modules/mail_management/features/mail_tracking/service_test.go::TestListPendingMail_ExcludesTerminalStatuses`. |
-| AC-11 | Test | `pk-modules/mail_management/features/mail_tracking/service_test.go::TestGetMailItem_ReturnsNilForWrongTenant`. |
-| AC-12 | Test | `pk-modules/mail_management/features/mail_tracking/service_test.go::TestGetMailItem_ReturnsItemForCorrectTenant`. |
+| AC-1 | Test | `modules/platformkit-business-modules/mail_management/features/mail_tracking/service_test.go::TestLogMailItem_SetsDefaults`. |
+| AC-2 | Test | `modules/platformkit-business-modules/mail_management/features/mail_tracking/service_test.go::TestLogMailItem_PreservesExplicitStatus`. |
+| AC-3 | Test | `modules/platformkit-business-modules/mail_management/features/mail_tracking/service_test.go::TestLogMailItem_EmitsEvent`. |
+| AC-4 | Test | `modules/platformkit-business-modules/mail_management/features/mail_tracking/service_test.go::TestLogMailItem_PropagatesCreateError`. |
+| AC-5 | Test | `modules/platformkit-business-modules/mail_management/features/mail_tracking/service_test.go::TestNotifyRecipient_SetsNotifiedStatus`. |
+| AC-6 | Test | `modules/platformkit-business-modules/mail_management/features/mail_tracking/service_test.go::TestNotifyRecipient_WrongTenantReturnsError`. |
+| AC-7 | Test | `modules/platformkit-business-modules/mail_management/features/mail_tracking/service_test.go::TestCollectMailItem_Success`. |
+| AC-8 | Test | `modules/platformkit-business-modules/mail_management/features/mail_tracking/service_test.go::TestCollectMailItem_AlreadyCollected`. |
+| AC-9 | Test | `modules/platformkit-business-modules/mail_management/features/mail_tracking/service_test.go::TestCollectMailItem_WrongTenant`. |
+| AC-10 | Test | `modules/platformkit-business-modules/mail_management/features/mail_tracking/service_test.go::TestListPendingMail_ExcludesTerminalStatuses`. |
+| AC-11 | Test | `modules/platformkit-business-modules/mail_management/features/mail_tracking/service_test.go::TestGetMailItem_ReturnsNilForWrongTenant`. |
+| AC-12 | Test | `modules/platformkit-business-modules/mail_management/features/mail_tracking/service_test.go::TestGetMailItem_ReturnsItemForCorrectTenant`. |
 
 ## Edge cases & unhappy paths
 
@@ -194,8 +194,8 @@ collected (audit defect). Three properties:
 
 ## Satisfied by
 
-- `pk-modules/mail_management/features/mail_tracking/service.go::LogMailItem, NotifyRecipient, CollectMailItem, ListPendingMail, GetMailItem`.
-- `pk-modules/mail_management/features/mail_tracking/state_machine.go::ValidateMailTransition` — the transition validator.
+- `modules/platformkit-business-modules/mail_management/features/mail_tracking/service.go::LogMailItem, NotifyRecipient, CollectMailItem, ListPendingMail, GetMailItem`.
+- `modules/platformkit-business-modules/mail_management/features/mail_tracking/state_machine.go::ValidateMailTransition` — the transition validator.
 
 ## Related requirements
 

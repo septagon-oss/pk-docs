@@ -125,12 +125,12 @@ applies before MFA challenge is evaluated.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_Success` and `TestCompleteInteractiveAuthentication_PersistsPlatformSession`. |
-| AC-2 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_AccountStatuses` (table-driven across `Inactive`, `Suspended`, `Pending`). |
-| AC-3 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_InvalidEmail` + `TestAuthenticate_InvalidPassword`. Constant-time discipline is satisfied by `passhash.HashPassword`/`ComparePassword` (bcrypt, intrinsically constant-time on equal-length inputs); reviewers verify the always-hash branch in `login.go`. |
-| AC-4 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_UsesCrossTenantLookupBeforeTenantMembershipResolution` and `TestAuthenticate_TwoFactorChallengeRestoresTenantWithoutHostScopedContext`. |
-| AC-5 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_MetricsRecorded`. PII discipline is enforced by the `observability/logger/redactor` contract (REQ-009). |
-| AC-6 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_RateLimited` and `TestAuthenticate_CacheBasedRateLimit`. |
+| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_Success` and `TestCompleteInteractiveAuthentication_PersistsPlatformSession`. |
+| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_AccountStatuses` (table-driven across `Inactive`, `Suspended`, `Pending`). |
+| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_InvalidEmail` + `TestAuthenticate_InvalidPassword`. Constant-time discipline is satisfied by `passhash.HashPassword`/`ComparePassword` (bcrypt, intrinsically constant-time on equal-length inputs); reviewers verify the always-hash branch in `login.go`. |
+| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_UsesCrossTenantLookupBeforeTenantMembershipResolution` and `TestAuthenticate_TwoFactorChallengeRestoresTenantWithoutHostScopedContext`. |
+| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_MetricsRecorded`. PII discipline is enforced by the `observability/logger/redactor` contract (REQ-009). |
+| AC-6 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_RateLimited` and `TestAuthenticate_CacheBasedRateLimit`. |
 
 ## Edge cases & unhappy paths
 
@@ -183,13 +183,13 @@ applies before MFA challenge is evaluated.
 
 ## Satisfied by
 
-- `pk-modules/auth_management/features/authentication/login.go` — orchestration.
-- `pk-modules/auth_management/features/authentication/login_service.go` — credential verification + session minting.
-- `pk-modules/auth_management/features/authentication/login_resolution.go` — tenant resolution.
-- `pk-modules/auth_management/features/authentication/login_session.go` — token generation.
-- `pk-modules/auth_management/features/authentication/login_rate_limit.go` — bounded retry.
-- `pk-modules/auth_management/features/authentication/handler.go` + `routes.go` — HTTP surface.
-- `pk-modules/auth_management/features/authentication/repository.go` — session persistence.
+- `modules/platformkit-business-modules/auth_management/features/authentication/login.go` — orchestration.
+- `modules/platformkit-business-modules/auth_management/features/authentication/login_service.go` — credential verification + session minting.
+- `modules/platformkit-business-modules/auth_management/features/authentication/login_resolution.go` — tenant resolution.
+- `modules/platformkit-business-modules/auth_management/features/authentication/login_session.go` — token generation.
+- `modules/platformkit-business-modules/auth_management/features/authentication/login_rate_limit.go` — bounded retry.
+- `modules/platformkit-business-modules/auth_management/features/authentication/handler.go` + `routes.go` — HTTP surface.
+- `modules/platformkit-business-modules/auth_management/features/authentication/repository.go` — session persistence.
 
 ## Related requirements
 

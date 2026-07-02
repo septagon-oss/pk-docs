@@ -67,8 +67,8 @@ upstream of `ListMessages`.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/chat_management/features/messaging/service_test.go::TestCreateRoom_Success` covers tenant assignment on room create and the list/get paths. |
-| AC-2 | Test | `pk-modules/chat_management/features/messaging/service_test.go::TestCreateRoom_Success` covers event emission on the `SendMessage`, `CreateRoom`, and participant-join paths via the recording event bus. |
+| AC-1 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestCreateRoom_Success` covers tenant assignment on room create and the list/get paths. |
+| AC-2 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestCreateRoom_Success` covers event emission on the `SendMessage`, `CreateRoom`, and participant-join paths via the recording event bus. |
 | AC-3 | Inspection | `message_service.go::ListMessages` (lines 64-78) and `room_service.go::GetRoom` (lines 41-47) — neither consults `ChatParticipant` before returning data. Tracked as a follow-up gap; the upstream HTTP layer is the current enforcement point. |
 
 ## Implements (cross-cutting)

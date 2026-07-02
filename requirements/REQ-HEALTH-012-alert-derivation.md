@@ -98,8 +98,8 @@ properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/health_management/features/health_monitoring/api_test.go::TestDeriveAlertsIncludesNonHealthyChecksAndAcknowledgements`. |
-| AC-2 | Test | `pk-modules/health_management/features/health_monitoring/api_test.go::TestPruneAcknowledgementsRemovesResolvedAlerts`. |
+| AC-1 | Test | `modules/platformkit-business-modules/health_management/features/health_monitoring/api_test.go::TestDeriveAlertsIncludesNonHealthyChecksAndAcknowledgements`. |
+| AC-2 | Test | `modules/platformkit-business-modules/health_management/features/health_monitoring/api_test.go::TestPruneAcknowledgementsRemovesResolvedAlerts`. |
 
 ## Edge cases & unhappy paths
 
@@ -150,7 +150,7 @@ properties:
 
 ## Satisfied by
 
-- `pk-modules/health_management/features/health_monitoring/api.go::DeriveAlerts, PruneAcknowledgements`.
+- `modules/platformkit-business-modules/health_management/features/health_monitoring/api.go::DeriveAlerts, PruneAcknowledgements`.
 
 ## Related requirements
 

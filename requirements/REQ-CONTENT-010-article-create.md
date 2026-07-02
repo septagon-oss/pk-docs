@@ -120,14 +120,14 @@ renderer changes. Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/content_management/features/articles/service_test.go::TestService_CreateArticle_Success`. |
-| AC-2 | Test | `pk-modules/content_management/features/articles/service_test.go::TestService_CreateArticle_PreservesExistingSlug`. |
-| AC-3 | Test | `pk-modules/content_management/features/articles/service_test.go::TestService_CreateArticle_MarkdownRendering`. |
-| AC-4 | Test | `pk-modules/content_management/features/articles/service_test.go::TestMarkdownRenderer_PreservesMermaidFenceLanguage`. |
-| AC-5 | Test | `pk-modules/content_management/features/articles/service_test.go::TestService_CreateArticle_EmptyContent`. |
-| AC-6 | Test | `pk-modules/content_management/features/articles/service_test.go::TestService_CreateArticle_WithTags`. |
-| AC-7 | Test | `pk-modules/content_management/features/articles/service_test.go::TestService_CreateArticle_PreservesStatus`. |
-| AC-8 | Test | `pk-modules/content_management/features/articles/service_test.go::TestService_CreateArticle_RequiresLocale`. |
+| AC-1 | Test | `modules/platformkit-business-modules/content_management/features/articles/service_test.go::TestService_CreateArticle_Success`. |
+| AC-2 | Test | `modules/platformkit-business-modules/content_management/features/articles/service_test.go::TestService_CreateArticle_PreservesExistingSlug`. |
+| AC-3 | Test | `modules/platformkit-business-modules/content_management/features/articles/service_test.go::TestService_CreateArticle_MarkdownRendering`. |
+| AC-4 | Test | `modules/platformkit-business-modules/content_management/features/articles/service_test.go::TestMarkdownRenderer_PreservesMermaidFenceLanguage`. |
+| AC-5 | Test | `modules/platformkit-business-modules/content_management/features/articles/service_test.go::TestService_CreateArticle_EmptyContent`. |
+| AC-6 | Test | `modules/platformkit-business-modules/content_management/features/articles/service_test.go::TestService_CreateArticle_WithTags`. |
+| AC-7 | Test | `modules/platformkit-business-modules/content_management/features/articles/service_test.go::TestService_CreateArticle_PreservesStatus`. |
+| AC-8 | Test | `modules/platformkit-business-modules/content_management/features/articles/service_test.go::TestService_CreateArticle_RequiresLocale`. |
 
 ## Edge cases & unhappy paths
 
@@ -177,7 +177,7 @@ renderer changes. Three properties:
 
 ## Satisfied by
 
-- `pk-modules/content_management/features/articles/service.go::CreateArticle, GenerateSlug`.
+- `modules/platformkit-business-modules/content_management/features/articles/service.go::CreateArticle, GenerateSlug`.
 
 ## Related requirements
 

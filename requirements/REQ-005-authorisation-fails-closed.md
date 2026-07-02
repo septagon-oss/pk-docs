@@ -64,7 +64,7 @@ because the alternative is silent compromise.
 | AC-1 | Test | `platformkit-backend-kit/security/authn/jwt_middleware_test.go::TestPassesRevocationCheck_FailsClosedOnStoreError` |
 | AC-2 | Test | `platformkit-backend-kit/security/authn/jwt_middleware_tenant_test.go::TestPassesTenantMembership_RejectsOnVerifierError` |
 | AC-3 | Test | `platformkit-backend-kit/core/entity/repository/gorm_security_test.go::TestScopedDB_RefusesUnscopedQuery` |
-| AC-4 | Inspection | `pk-modules/auth_management/features/policy/service_rollout.go::IsFrozen` — repository read errors are treated as `frozen=true`. **Verification gap: a dedicated rollout-gate-fail-closed test is pending.** |
+| AC-4 | Inspection | `modules/platformkit-business-modules/auth_management/features/policy/service_rollout.go::IsFrozen` — repository read errors are treated as `frozen=true`. **Verification gap: a dedicated rollout-gate-fail-closed test is pending.** |
 
 ## Satisfied by
 
@@ -72,7 +72,7 @@ because the alternative is silent compromise.
   the JWT middleware's `passesRevocationCheck` and
   `passesTenantMembership` helpers that explicitly reject on store
   error.
-- `pk-modules/auth_management/features/policy/service_rollout.go` —
+- `modules/platformkit-business-modules/auth_management/features/policy/service_rollout.go` —
   the rollout gate that treats backend errors as "frozen".
 - `platformkit-backend-kit/core/entity/repository/gorm_authz.go` —
   `scopedDB`'s refusal to issue an unscoped query.

@@ -116,10 +116,10 @@ of forcing the user back to the login flow.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/auth_management/features/authentication/req_auth_001_test.go::TestRefresh_SingleUse_FailsOnReplay` (first redemption must succeed before the second can fail). |
-| AC-2 | Test | `pk-modules/auth_management/features/authentication/req_auth_001_test.go::TestRefresh_SingleUse_FailsOnReplay` exercises the rotation discipline end-to-end. |
-| AC-3 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestRefreshAccessToken_EmptyToken` and the JWT-parsing branch in `validateRefreshToken`. |
-| AC-4 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestRefreshAccessToken_BlacklistedToken`. |
+| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/req_auth_001_test.go::TestRefresh_SingleUse_FailsOnReplay` (first redemption must succeed before the second can fail). |
+| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/req_auth_001_test.go::TestRefresh_SingleUse_FailsOnReplay` exercises the rotation discipline end-to-end. |
+| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestRefreshAccessToken_EmptyToken` and the JWT-parsing branch in `validateRefreshToken`. |
+| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestRefreshAccessToken_BlacklistedToken`. |
 | AC-5 | Inspection | `refresh_token.go:194-197` — typed `"session expired"` return when `getSession` returns nil. |
 | AC-6 | Inspection | `refresh_token.go:206-208` — `validateRefreshTokenUserStatus` propagates the typed status errors. |
 | AC-7 | Inspection | `refresh_token.go:174-178` — Warn-and-continue branch on cache error, with the documented trade-off. |
@@ -176,11 +176,11 @@ of forcing the user back to the login flow.
 
 ## Satisfied by
 
-- `pk-modules/auth_management/features/authentication/refresh_token.go` —
+- `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token.go` —
   the verifier + rotator.
-- `pk-modules/auth_management/features/authentication/login_session.go::generateAccessToken` /
+- `modules/platformkit-business-modules/auth_management/features/authentication/login_session.go::generateAccessToken` /
   `generateRefreshToken` — the token-mint helpers.
-- `pk-modules/auth_management/features/authentication/req_auth_001_test.go` — replay-rejection coverage.
+- `modules/platformkit-business-modules/auth_management/features/authentication/req_auth_001_test.go` — replay-rejection coverage.
 
 ## Related requirements
 

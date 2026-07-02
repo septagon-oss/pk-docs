@@ -134,18 +134,18 @@ defaults, cache TTLs, display preferences. Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/admin_management/features/settings/resolver_test.go::TestResolve_BaselineWhenNoOverrides`. |
-| AC-2 | Test | `pk-modules/admin_management/features/settings/resolver_test.go::TestResolve_DeploymentBeatsBaseline`. |
-| AC-3 | Test | `pk-modules/admin_management/features/settings/resolver_test.go::TestResolve_TenantBeatsDeployment`. |
-| AC-4 | Test | `pk-modules/admin_management/features/settings/resolver_test.go::TestResolve_UnknownKeyReturnsErrSettingNotDefined`. |
-| AC-5 | Test | `pk-modules/admin_management/features/settings/resolver_test.go::TestResolveAll_MergesLayersPerKey`. |
-| AC-6 | Test | `pk-modules/admin_management/features/settings/resolver_test.go::TestResolveAll_UnknownModuleReturnsEmpty`. |
-| AC-7 | Test | `pk-modules/admin_management/features/settings/resolver_test.go::TestReset_RemovesTenantOverride`. |
-| AC-8 | Test | `pk-modules/admin_management/features/settings/resolver_test.go::TestReset_IsIdempotent`. |
-| AC-9 | Test | `pk-modules/admin_management/features/settings/resolver_test.go::TestReset_UnknownKeyReturnsErrSettingNotDefined`. |
-| AC-10 | Test | `pk-modules/admin_management/features/settings/resolver_test.go::TestResetAll_RemovesEveryTenantOverrideOnTheModule`. |
-| AC-11 | Test | `pk-modules/admin_management/features/settings/resolver_test.go::TestSetDeploymentOverrides_DefensiveCopy`. |
-| AC-12 | Test | `pk-modules/admin_management/features/settings/resolver_test.go::TestSetDeploymentOverrides_NilDisablesLayer`. |
+| AC-1 | Test | `modules/platformkit-business-modules/admin_management/features/settings/resolver_test.go::TestResolve_BaselineWhenNoOverrides`. |
+| AC-2 | Test | `modules/platformkit-business-modules/admin_management/features/settings/resolver_test.go::TestResolve_DeploymentBeatsBaseline`. |
+| AC-3 | Test | `modules/platformkit-business-modules/admin_management/features/settings/resolver_test.go::TestResolve_TenantBeatsDeployment`. |
+| AC-4 | Test | `modules/platformkit-business-modules/admin_management/features/settings/resolver_test.go::TestResolve_UnknownKeyReturnsErrSettingNotDefined`. |
+| AC-5 | Test | `modules/platformkit-business-modules/admin_management/features/settings/resolver_test.go::TestResolveAll_MergesLayersPerKey`. |
+| AC-6 | Test | `modules/platformkit-business-modules/admin_management/features/settings/resolver_test.go::TestResolveAll_UnknownModuleReturnsEmpty`. |
+| AC-7 | Test | `modules/platformkit-business-modules/admin_management/features/settings/resolver_test.go::TestReset_RemovesTenantOverride`. |
+| AC-8 | Test | `modules/platformkit-business-modules/admin_management/features/settings/resolver_test.go::TestReset_IsIdempotent`. |
+| AC-9 | Test | `modules/platformkit-business-modules/admin_management/features/settings/resolver_test.go::TestReset_UnknownKeyReturnsErrSettingNotDefined`. |
+| AC-10 | Test | `modules/platformkit-business-modules/admin_management/features/settings/resolver_test.go::TestResetAll_RemovesEveryTenantOverrideOnTheModule`. |
+| AC-11 | Test | `modules/platformkit-business-modules/admin_management/features/settings/resolver_test.go::TestSetDeploymentOverrides_DefensiveCopy`. |
+| AC-12 | Test | `modules/platformkit-business-modules/admin_management/features/settings/resolver_test.go::TestSetDeploymentOverrides_NilDisablesLayer`. |
 
 ## Edge cases & unhappy paths
 
@@ -195,7 +195,7 @@ defaults, cache TTLs, display preferences. Three properties:
 
 ## Satisfied by
 
-- `pk-modules/admin_management/features/settings/resolver.go::Resolve, ResolveAll, Reset, ResetAll, SetDeploymentOverrides, ErrSettingNotDefined`.
+- `modules/platformkit-business-modules/admin_management/features/settings/resolver.go::Resolve, ResolveAll, Reset, ResetAll, SetDeploymentOverrides, ErrSettingNotDefined`.
 
 ## Related requirements
 

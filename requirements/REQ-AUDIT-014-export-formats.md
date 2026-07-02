@@ -106,14 +106,14 @@ requests. Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestExportAuditData_JSON`. |
-| AC-2 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestExportAuditData_CSV`. |
-| AC-3 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestExportAuditData_DefaultFormat`. |
-| AC-4 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestExportAuditData_QueryError`. |
-| AC-5 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestExportAuditData_EmptyEvents`. |
-| AC-6 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestExportAuditData_RetentionPolicyInExport`. |
-| AC-7 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestExportAuditData_RetentionPolicyFallback`. |
-| AC-8 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestExportAuditData_CSV_MultipleEvents`. |
+| AC-1 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestExportAuditData_JSON`. |
+| AC-2 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestExportAuditData_CSV`. |
+| AC-3 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestExportAuditData_DefaultFormat`. |
+| AC-4 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestExportAuditData_QueryError`. |
+| AC-5 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestExportAuditData_EmptyEvents`. |
+| AC-6 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestExportAuditData_RetentionPolicyInExport`. |
+| AC-7 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestExportAuditData_RetentionPolicyFallback`. |
+| AC-8 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestExportAuditData_CSV_MultipleEvents`. |
 
 ## Edge cases & unhappy paths
 
@@ -155,7 +155,7 @@ requests. Three properties:
 
 ## Satisfied by
 
-- `pk-modules/audit_management/features/audit_trail/service.go::ExportAuditData`.
+- `modules/platformkit-business-modules/audit_management/features/audit_trail/service.go::ExportAuditData`.
 
 ## Related requirements
 

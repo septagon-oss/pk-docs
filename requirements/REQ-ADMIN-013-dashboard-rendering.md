@@ -92,12 +92,12 @@ properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/admin_management/admin_dashboard_test.go::TestRenderDashboardFailsClosedWithoutPermission`. |
-| AC-2 | Test | `pk-modules/admin_management/admin_dashboard_test.go::TestRenderDashboardAllowsAuthorizedOperator`. |
-| AC-3 | Test | `pk-modules/admin_management/admin_dashboard_test.go::TestRenderProfileFailsClosedWithoutPermission`. |
-| AC-4 | Test | `pk-modules/admin_management/admin_dashboard_test.go::TestRenderProfileAllowsAuthorizedOperator`. |
-| AC-5 | Test | `pk-modules/admin_management/admin_dashboard_test.go::TestRenderDashboardContentUsesPromptFirstWorkspace`. |
-| AC-6 | Test | `pk-modules/admin_management/admin_dashboard_test.go::TestBuildAdminHomeRouteCatalogDedupesRoutes`. |
+| AC-1 | Test | `modules/platformkit-business-modules/admin_management/admin_dashboard_test.go::TestRenderDashboardFailsClosedWithoutPermission`. |
+| AC-2 | Test | `modules/platformkit-business-modules/admin_management/admin_dashboard_test.go::TestRenderDashboardAllowsAuthorizedOperator`. |
+| AC-3 | Test | `modules/platformkit-business-modules/admin_management/admin_dashboard_test.go::TestRenderProfileFailsClosedWithoutPermission`. |
+| AC-4 | Test | `modules/platformkit-business-modules/admin_management/admin_dashboard_test.go::TestRenderProfileAllowsAuthorizedOperator`. |
+| AC-5 | Test | `modules/platformkit-business-modules/admin_management/admin_dashboard_test.go::TestRenderDashboardContentUsesPromptFirstWorkspace`. |
+| AC-6 | Test | `modules/platformkit-business-modules/admin_management/admin_dashboard_test.go::TestBuildAdminHomeRouteCatalogDedupesRoutes`. |
 
 ## Edge cases & unhappy paths
 
@@ -137,8 +137,8 @@ properties:
 
 ## Satisfied by
 
-- `pk-modules/admin_management/admin_dashboard.go` (render orchestration).
-- `pk-modules/admin_management/features/dashboard/feature.go` — wiring.
+- `modules/platformkit-business-modules/admin_management/admin_dashboard.go` (render orchestration).
+- `modules/platformkit-business-modules/admin_management/features/dashboard/feature.go` — wiring.
 
 ## Related requirements
 

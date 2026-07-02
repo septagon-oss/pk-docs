@@ -102,11 +102,11 @@ properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/content_management/features/articles/service_test.go::TestService_PublishArticle_SetsPublishedAt`. |
-| AC-2 | Test | `pk-modules/content_management/features/articles/service_test.go::TestService_PublishArticle_NotFound`. |
-| AC-3 | Test | `pk-modules/content_management/features/articles/service_test.go::TestService_UnpublishArticle_RevertsToDraft`. |
-| AC-4 | Test | `pk-modules/content_management/features/articles/service_test.go::TestService_UpdateArticle_PartialFields`. |
-| AC-5 | Test | `pk-modules/content_management/features/articles/service_test.go::TestService_UpdateArticle_ContentReRendersMarkdown`. |
+| AC-1 | Test | `modules/platformkit-business-modules/content_management/features/articles/service_test.go::TestService_PublishArticle_SetsPublishedAt`. |
+| AC-2 | Test | `modules/platformkit-business-modules/content_management/features/articles/service_test.go::TestService_PublishArticle_NotFound`. |
+| AC-3 | Test | `modules/platformkit-business-modules/content_management/features/articles/service_test.go::TestService_UnpublishArticle_RevertsToDraft`. |
+| AC-4 | Test | `modules/platformkit-business-modules/content_management/features/articles/service_test.go::TestService_UpdateArticle_PartialFields`. |
+| AC-5 | Test | `modules/platformkit-business-modules/content_management/features/articles/service_test.go::TestService_UpdateArticle_ContentReRendersMarkdown`. |
 
 ## Edge cases & unhappy paths
 
@@ -153,7 +153,7 @@ properties:
 
 ## Satisfied by
 
-- `pk-modules/content_management/features/articles/service.go::PublishArticle, UnpublishArticle, UpdateArticle`.
+- `modules/platformkit-business-modules/content_management/features/articles/service.go::PublishArticle, UnpublishArticle, UpdateArticle`.
 
 ## Related requirements
 

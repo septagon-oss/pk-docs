@@ -63,7 +63,7 @@ platform booting even when an optional integration is unreachable.
 - **AC-2** Concrete provider code lives at
   `platformkit-integrations/<domain>/<provider>/`. The directory name
   is the provider's slug (e.g. `twilio/`, `stripe/`, `tile38/`).
-- **AC-3** No business-module package under `pk-modules/`
+- **AC-3** No business-module package under `modules/platformkit-business-modules/`
   imports a concrete adapter package; imports go to the domain
   interface package only.
 - **AC-4** Optional integrations have a noop fallback (e.g.

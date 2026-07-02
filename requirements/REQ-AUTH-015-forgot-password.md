@@ -103,7 +103,7 @@ that signal even though the user-facing response is opaque.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Inspection | `pk-modules/auth_management/features/authentication/forgot_password_test.go` (when present) — the happy-path mint-and-dispatch flow. *Note:* coverage gap if the test file is currently absent; reviewers verify the path manually until the test lands. _Verification gap: pending — cited evidence is prose / pattern / non-Go and cannot be auto-resolved._ |
+| AC-1 | Inspection | `modules/platformkit-business-modules/auth_management/features/authentication/forgot_password_test.go` (when present) — the happy-path mint-and-dispatch flow. *Note:* coverage gap if the test file is currently absent; reviewers verify the path manually until the test lands. _Verification gap: pending — cited evidence is prose / pattern / non-Go and cannot be auto-resolved._ |
 | AC-2 | Inspection | Same harness — the unknown-email path returns the identical response. _Verification gap: pending — cited evidence is prose / pattern / non-Go and cannot be auto-resolved._ |
 | AC-3 | Inspection | `forgot_password.go` token-redemption path; reviewers confirm the consumed-token marker is set and checked on subsequent redemptions. |
 | AC-4 | Inspection | `forgot_password.go` TTL check against `Config.VerificationTokenTTL`. |
@@ -163,9 +163,9 @@ that signal even though the user-facing response is opaque.
 
 ## Satisfied by
 
-- `pk-modules/auth_management/features/authentication/forgot_password.go` —
+- `modules/platformkit-business-modules/auth_management/features/authentication/forgot_password.go` —
   the token mint + dispatch orchestration.
-- `pk-modules/auth_management/features/authentication/login_service.go` —
+- `modules/platformkit-business-modules/auth_management/features/authentication/login_service.go` —
   the recovery-flow integration with the user lookup helpers.
 
 ## Related requirements

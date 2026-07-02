@@ -101,11 +101,11 @@ case-by-case forensics.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `pk-modules/auth_management/features/permissions/service_test.go::TestService_CheckUserPermission_ExactMatch`. |
-| AC-2 | Test | `pk-modules/auth_management/features/permissions/service_test.go::TestService_CheckUserPermission_WildcardMatch`. |
-| AC-3 | Test | `pk-modules/auth_management/features/permissions/service_test.go::TestService_CheckUserPermission_NoMatch`. |
-| AC-4 | Test | `pk-modules/auth_management/features/permissions/req_auth_004_test.go::TestCheckUserPermission_FailsClosedOnRepoError`. |
-| AC-5 | Test | `pk-modules/auth_management/features/permissions/req_auth_004_test.go::TestCheckUserPermission_IsDeterministic`. |
+| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/permissions/service_test.go::TestService_CheckUserPermission_ExactMatch`. |
+| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/permissions/service_test.go::TestService_CheckUserPermission_WildcardMatch`. |
+| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/permissions/service_test.go::TestService_CheckUserPermission_NoMatch`. |
+| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/permissions/req_auth_004_test.go::TestCheckUserPermission_FailsClosedOnRepoError`. |
+| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/permissions/req_auth_004_test.go::TestCheckUserPermission_IsDeterministic`. |
 | AC-6 | Inspection | `authz.NormalizePermissionToken` strips/lowercases per its contract; reviewers verify the helper is the single normalisation point. |
 | AC-7 | Inspection | The empty-set iteration trivially returns `false`; reviewers verify no fallback returns `true`. |
 
@@ -156,9 +156,9 @@ case-by-case forensics.
 
 ## Satisfied by
 
-- `pk-modules/auth_management/features/permissions/service.go::CheckUserPermission` —
+- `modules/platformkit-business-modules/auth_management/features/permissions/service.go::CheckUserPermission` —
   the entry point.
-- `pk-modules/auth_management/features/permissions/service.go::matchesPermission` —
+- `modules/platformkit-business-modules/auth_management/features/permissions/service.go::matchesPermission` —
   the wildcard matcher.
 - `security/authz/NormalizePermissionToken` — the canonical
   token primitive.
