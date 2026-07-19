@@ -38,6 +38,7 @@ ADR if the underlying decision needs to change.
 - [C-21 Email-verification bearers are hash-only and owner-guarded](#c-21-email-verification-bearers-are-hash-only-and-owner-guarded)
 - [C-22 One-time public authentication bearers use hash-only scoped ledgers](#c-22-one-time-public-authentication-bearers-use-hash-only-scoped-ledgers)
 - [C-23 Live A2UI delivery has one app-owned signed boundary](#c-23-live-a2ui-delivery-has-one-app-owned-signed-boundary)
+- [C-24 Warm latency claims require segmented exact-candidate evidence](#c-24-warm-latency-claims-require-segmented-exact-candidate-evidence)
 - [C-14 Every Go file declares its purpose](#c-14-every-go-file-declares-its-purpose)
 
 ---
@@ -1070,6 +1071,63 @@ top-level action-response fields.
 
 **Motivating ADR.**
 [ADR 0073 — runtime A2UI surfaces cross an app-owned signed delivery boundary](./adr/0073-runtime-a2ui-surfaces-cross-an-app-owned-signed-delivery-boundary.md).
+
+---
+
+## C-24 Warm latency claims require segmented exact-candidate evidence
+
+Classify bounded work as `interactive` or `async_acceptance` before measuring
+it. Both classes use p95 ≤ 50 ms and p99 ≤ 100 ms under the declared warm
+normal-load profile. Evaluate each normalized route and status independently;
+never average a release decision across unrelated routes. Streaming handler
+completion has no objective under this convention.
+
+An asynchronous acceptance is complete only after validation, authorization,
+idempotency handling, and the durable job or outbox commit. HTTP 202 without a
+durable boundary is not acceptance. Provider, model, conversion, notification,
+and other unbounded work completes outside the request and keeps separate queue,
+execution, and provider telemetry.
+
+Keep measurement ownership explicit. Platform-owned persistence and messaging
+needed for the bounded response stay inside the server percentile. External or
+model completion, public-network transit, cold-start intervals, client runtime
+scheduling, and device paint do not. Track those as named separate segments;
+never use their exclusion to relax platform-owned work or use a server
+histogram to claim network or device-paint latency.
+
+Publish local pending state before the first network wait and target observable
+feedback within 50 ms. A same-turn ordering or pending-render test is valid
+deterministic evidence for the client contract, but it is not a wall-clock
+device-paint measurement.
+
+**When you're adding or changing a bounded route or client interaction.**
+
+- Declare the request class, expected status, representative payload/data
+  volume, and durable boundary where applicable.
+- Preserve normalized route, method, status, and class labels and the exact
+  50 ms/100 ms histogram boundaries.
+- Add the route to the checked-in release manifest when it is release-critical;
+  use at least 100 measured requests and enough warm-up requests to exercise
+  every measured connection.
+- Name excluded provider, queue, network, and client-paint segments separately.
+- Commit visible pending state before transport and reserve paint-time claims
+  for device performance evidence.
+
+**How it's enforced.**
+
+- Backend policy, middleware, OpenTelemetry, and slow-request tests preserve
+  the request classes, objectives, dimensions, and exact bucket boundaries.
+- The reusable latency gate rejects under-sampled manifests, invalid response
+  classes/statuses, per-route percentile failures, redirects, timeouts, and
+  unreadable responses.
+- The release workflow boots the digest-pinned candidate, validates and retains
+  its per-route latency report, and rechecks the evidenced digest immediately
+  before promotion. A report from another artifact cannot move release tags.
+- Frontend and native tests prove pending state precedes transport and is
+  visibly rendered without promoting that ordering proof into a paint claim.
+
+**Motivating ADR.**
+[ADR 0074 — warm platform-owned latency is a release-gated percentile contract](./adr/0074-warm-platform-owned-latency-is-a-release-gated-percentile-contract.md).
 
 ---
 
