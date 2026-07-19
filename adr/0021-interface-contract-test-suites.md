@@ -15,10 +15,10 @@ Status: **Accepted** (2026-04-13)
 ## The problem
 
 PlatformKit ships a lot of interfaces with more than one
-implementation. `cache.Cache` has memory, Redis, mock, noop, and
-middleware providers under
-`platformkit-backend-kit/infrastructure/cache/providers/`.
-`services.AuthService` has session and noop. `FieldRenderer` has
+implementation. `cache.Cache` has memory, Redis, mock, and middleware
+providers under `platformkit-backend-kit/infrastructure/cache/providers/`.
+Frontend service registries can accept app-owned implementations in addition
+to the concrete providers shipped by frontend-kit. `FieldRenderer` has
 per-type renderers (boolean, date, number, select, text,
 semantic, status, composite) registered by priority.
 
@@ -104,16 +104,14 @@ Five rules keep the pattern honest:
    implementation details.** "Set-then-Get returns the set value"
    is an invariant. "Redis uses RESP3 framing" is not.
 4. **Fail-closed behaviour is asserted.** An auth contract that
-   doesn't verify "fresh service starts unauthenticated" allows an
-   insecure noop to pass silently.
-5. **Deliberately non-conforming stubs opt out explicitly.** A
-   noop that by design returns zero values for every call does NOT
-   wire the contract and documents the non-conformance in the
-   struct doc comment. Example:
-   `platformkit-frontend-kit/services/user/providers/noop` (a
-   `UserService` stub) intentionally returns `nil` from
-   `GetCurrentUser` and `false` from `HasPermission`; it doesn't
-   call `usercontract.RunUserServiceTests`.
+   doesn't verify "fresh service starts unauthenticated" allows a
+   synthetic provider to mask missing enforcement.
+5. **Production providers must conform; test doubles stay in tests.** A
+   production-facing provider cannot opt out of the shared contract by
+   returning success-shaped zero values. Test-only doubles belong in
+   `_test.go` files or dedicated test-support packages. Runtime factories
+   require an exact registered provider name and return an error for missing
+   or unknown names; they never substitute a silent provider.
 
 Adjacent patterns that live in `*contract/` directories but are
 NOT this pattern (out of scope):
@@ -200,15 +198,13 @@ NOT this pattern (out of scope):
   `≥1 *_test.go` floor and does NOT cover backend-kit or
   frontend-kit provider directories where most contract suites
   live.
-- **Gap — no lint against contract-skipping noop justification.**
-  A noop provider that deliberately opts out is expected to
-  document *why* in its doc comment. Nothing enforces the doc
-  comment.
-- **Gap — no enforcement of the "fail-closed" rule for noop
-  contracts.** The rule is policy, not statically checkable. The
-  `services/user/providers/noop.HasPermission → true` case in
-  2026-04-13 was caught by manual audit and reviewer pushback,
-  not by contract tests (noop doesn't wire any).
+- **Frontend provider selection is mechanically fail-closed.**
+  `platformkit-frontend-kit/providers.Registry.Require` rejects missing,
+  non-canonical, and unregistered names. Every canonical frontend service
+  factory delegates to that resolver and propagates its error. The
+  repository-level `service_provider_contract_test.go` verifies those
+  failure modes, confirms real providers construct successfully, and scans
+  the production service tree so retired noop packages cannot return.
 
 ## References
 
@@ -223,6 +219,10 @@ NOT this pattern (out of scope):
   - `platformkit-frontend-kit/services/auth/authcontract/auth_contract.go`
     — fail-closed identity contract with the factory-per-subtest
     pattern.
+  - `platformkit-frontend-kit/service_provider_contract_test.go` and
+    `providers/registry_test.go` — forward-only provider-selection evidence:
+    exact registered names, explicit construction errors, real provider
+    construction, and source ratchets against retired pretend providers.
 - Full inventory of interface behavioural contract packages (26
   as of 2026-04-13; verified via grep for `^func Run[A-Z]` in
   `*contract/` directories):

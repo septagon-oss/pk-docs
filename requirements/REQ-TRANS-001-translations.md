@@ -41,8 +41,8 @@ The translations service is the platform's keyed string registry.
 Locale fallback chains, missing-key visible-fallback, and
 tenant-override layering are deliberately NOT implemented at this
 service layer — those are the responsibility of the *localizer*
-(typically wired into the request pipeline, e.g.
-`app/localization/providers/noop`) which composes lookups across
+(wired into the request pipeline through the canonical `goi18n` or `json`
+provider) which composes lookups across
 locales and applies overrides on top.
 
 ## Acceptance criteria

@@ -77,7 +77,7 @@ contract test, not three weeks later in production.
 | AC | Method | Evidence |
 |---|---|---|
 | AC-1 | Inspection | Repo audit during PR review: new packages under `<module>/<feature>/` should not declare test infrastructure that duplicates `platformkit-tests/` capabilities. |
-| AC-2 | Test | `core/platformkit-backend-kit/observability/logger/providers/noop/contract_test.go::TestNoOpLoggerContract` and siblings — the canonical shape. |
+| AC-2 | Test | `core/platformkit-backend-kit/observability/logger/providers/noop/contract_test.go::TestNoOpLoggerContract` and siblings exercise explicit test doubles through shared contract suites; these doubles are not runtime providers. |
 | AC-3 | Inspection | E2E suites under `modules/platformkit-business-modules/<module>/tests/e2e/` running against the seeded showroom fixtures. _Verification gap: pending — cited evidence is prose / pattern / non-Go and cannot be auto-resolved._ |
 | AC-4 | Inspection | Grep for any package that declares its own browser bootstrap; reviewers redirect to `platformkit-tests/flow/`. |
 

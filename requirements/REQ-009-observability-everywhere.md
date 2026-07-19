@@ -65,9 +65,10 @@ whole is operated under one discipline.
   so operation volume and outcomes remain measurable.
 - **AC-3** Every failure path emits a structured log line that includes
   the supplied error and increments a `*.failed` metric counter.
-- **AC-4** `observability/*/providers/noop/` implementations exist for
-  logger, tracing, and metrics so a deployment does not hard-fail when
-  telemetry exporters are intentionally stripped by SRE.
+- **AC-4** Logger, tracing, and metrics test doubles may be constructed
+  explicitly by tests, but they are not production providers. Every shipped
+  composition selects concrete telemetry providers and startup fails when a
+  required telemetry dependency is absent.
 
 ## Verification
 
@@ -76,7 +77,7 @@ whole is operated under one discipline.
 | AC-1 | Inspection | Code-review checklist over `platformkit-backend-kit/infrastructure/middleware/context_enrichment.go` and `platformkit-backend-kit/security/authz/middleware/huma_logger_middleware.go`: request context carries trace IDs and logger via `appcontext` before handlers execute. |
 | AC-2 | Inspection | Code-review checklist over durable mutation services (for example `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service.go`, `modules/platformkit-business-modules/user_management/features/user/service_crud.go`): each mutation path includes at least one `metrics.Inc(...)` call. |
 | AC-3 | Inspection | Code-review checklist over failure paths (for example `modules/platformkit-business-modules/auth_management/features/authentication/login_service.go`, `modules/platformkit-business-modules/notification_management/features/email_notifications/service.go`): failure branch logs error fields and increments a `*.failed` counter. |
-| AC-4 | Test | `core/platformkit-backend-kit/observability/logger/providers/noop/contract_test.go::TestNoOpLoggerContract`, `core/platformkit-backend-kit/observability/tracing/providers/noop/contract_test.go::TestNoOpTracerContract`, and `core/platformkit-backend-kit/observability/metrics/providers/noop/contract_test.go::TestNoOpMetricsContract` validate noop providers under `observability/*/providers/noop/`. |
+| AC-4 | Test | `core/platformkit-backend-kit/observability/logger/providers/noop/contract_test.go::TestNoOpLoggerContract`, `core/platformkit-backend-kit/observability/tracing/providers/noop/contract_test.go::TestNoOpTracerContract`, and `core/platformkit-backend-kit/observability/metrics/providers/noop/contract_test.go::TestNoOpMetricsContract` validate explicit test doubles; `infrastructure/providers/noop_retirement_test.go::TestPriorityRuntimeNoopProviderRegistrationsStayRetired` prevents runtime registration from returning. |
 
 ## Satisfied by
 
@@ -86,8 +87,8 @@ whole is operated under one discipline.
 - `platformkit-backend-kit/observability/logger/providers/noop/`,
   `platformkit-backend-kit/observability/tracing/providers/noop/`, and
   `platformkit-backend-kit/observability/metrics/providers/noop/` —
-  noop-provider pattern that keeps modules operational when telemetry
-  backends are absent.
+  explicit test doubles used by contract suites; production composition uses
+  Zap, OTLP tracing, and OTel metrics and rejects missing providers.
 
 ## Compliance traceability
 

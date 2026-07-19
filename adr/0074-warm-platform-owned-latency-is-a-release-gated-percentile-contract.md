@@ -51,8 +51,8 @@ eventual response is 202.
 These are percentile objectives, not a hard maximum for every request. A warm
 measurement starts only after the exact candidate is ready and its declared
 connections have been exercised. It uses the checked-in bounded-route set,
-the manifest's exact request inputs, concurrency and timeout, at least one
-warm-up per measured connection, and at least 100 measured requests per route.
+the manifest's exact request inputs, concurrency and timeout, a warm-up batch
+that primes the client pool, and at least 100 measured requests per route.
 Every route is evaluated independently.
 
 Platform-owned work required to produce the bounded response remains inside the
@@ -133,7 +133,7 @@ metric and evidence rather than borrowing the bounded-response histogram.
   middleware and OpenTelemetry tests preserve route/status/class dimensions.
   The wire-level 202 class remains diagnostic; release-manifest enrollment is
   the conformance authority.
-- `tooling/platformkit-tests/cmd/latency-gate` warms every connection, requires
+- `tooling/platformkit-tests/cmd/latency-gate` primes the client pool, requires
   at least 100 samples per route, measures routes independently, and emits a
   fail-closed machine-readable report.
 - `apps/platformkit-apps/config/latency-release.json` declares the release route

@@ -32,8 +32,7 @@ participants, reactions) are real CRUD records — they belong in
 chat_management's Postgres tables and feature graph, no question.
 Second, the transport (WebSocket connections, channel namespaces,
 presence sets, history rings) is infrastructure — it belongs next to
-`communication/realtime` (the LiveKit-backed Service) and
-`communication/support` (the helpdesk integrations), implemented by
+`communication/realtime` (the LiveKit-backed Service), implemented by
 providers under `platformkit-integrations/<vendor>/`. Third, the
 multi-tenant invariants we have everywhere else — tenant-scoped
 channels, audited cross-module access, port-only consumption — apply
@@ -55,9 +54,8 @@ agnostic port: a domain layer in `chat_management` that owns rooms,
 messages, participants, reactions, and the canonical message log; and
 a transport layer in `platformkit-backend-kit/communication/chat`
 defining a provider contract that `platformkit-integrations/chat/*`
-implements. The contract sits next to `realtime` (LiveKit) and
-`support` (helpdesks), mirroring their shape so a future PlatformKit
-engineer reading any of the three understands the next one for free.
+implements. The contract sits next to `realtime` (LiveKit), sharing neutral
+identity and transport primitives without inventing a dormant third seam.
 
 ```text
 ┌────────────────────────────────────────────────────────────────────┐
