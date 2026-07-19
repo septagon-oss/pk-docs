@@ -35,7 +35,7 @@ CI/lint/runtime guard that enforces it, and the ADR file.
 | [0003](../adr/0003-component-token-extractor-pattern.md) | Every component resolves its styles through `style.go` | `guard-tokens` + per-component `style_test.go` |
 | [0004](../adr/0004-typed-design-token-dsl.md) | Every Tailwind class goes through a typed DSL | `check-ui-tokens` + `cmd/guard-tokens` |
 
-### Runtime reliability (4)
+### Runtime reliability (5)
 
 | # | Decision | Guard |
 |---|---|---|
@@ -43,6 +43,7 @@ CI/lint/runtime guard that enforces it, and the ADR file.
 | [0006](../adr/0006-transactional-atomicity-for-multi-entity-state.md) | Multi-entity writes are atomic or they don't happen | Per-use-case mock-tx test |
 | [0007](../adr/0007-transactional-outbox-for-event-delivery.md) | Events go through the outbox, not straight to the bus | Three-layer `event_id` defence + 18-test contract suite |
 | [0008](../adr/0008-async-goroutine-context-semantics.md) | Background work keeps its tracing and loses its deadline | Review + trace-correlation audit |
+| [0074](../adr/0074-warm-platform-owned-latency-is-a-release-gated-percentile-contract.md) | Warm platform-owned latency is a release-gated percentile contract | Per-route p95/p99 gate + segmented telemetry + exact-candidate digest recheck |
 
 ### Security and data protection (7)
 
@@ -111,6 +112,7 @@ Rules that follow mechanically from the decisions above.
 | [C-21](../conventions.md#c-21-email-verification-bearers-are-hash-only-and-owner-guarded) | Email-verification bearers are hash-only and owner-guarded | [ADR 0071](../adr/0071-email-verification-uses-hash-only-proofs-and-owner-guarded-activation.md) |
 | [C-22](../conventions.md#c-22-one-time-public-authentication-bearers-use-hash-only-scoped-ledgers) | One-time public authentication bearers use hash-only scoped ledgers | [ADR 0072](../adr/0072-one-time-public-authentication-bearers-use-hash-only-scoped-ledgers.md) |
 | [C-23](../conventions.md#c-23-live-a2ui-delivery-has-one-app-owned-signed-boundary) | Live A2UI delivery has one app-owned signed boundary | [ADR 0073](../adr/0073-runtime-a2ui-surfaces-cross-an-app-owned-signed-delivery-boundary.md) |
+| [C-24](../conventions.md#c-24-warm-latency-claims-require-segmented-exact-candidate-evidence) | Warm latency claims require segmented exact-candidate evidence | [ADR 0074](../adr/0074-warm-platform-owned-latency-is-a-release-gated-percentile-contract.md) |
 | [C-14](../conventions.md#c-14-every-go-file-declares-its-purpose) | Every Go file declares its purpose | [ADR 0029](../adr/0029-every-file-declares-its-purpose.md), [ADR 0064](../adr/0064-file-purpose-traceability-is-a-blocking-workspace-invariant.md) |
 
 ## Decision-to-guard matrix
@@ -131,6 +133,7 @@ Machine-checked guards today:
 - Email verification — hash-only consume + owner-guarded activation CAS + scanner-safe CSRF confirmation + sensitive delivery + atomic resend cooldown tests
 - One-time public authentication bearers — purpose-scoped digest ledgers + atomic consume + scanner-safe browser flows + irreversible plaintext-cutover tests
 - Live A2UI delivery — root/keyset/envelope golden chain + app-owned signing finalizer + durable replay/equivocation tests
+- Warm platform-owned latency — per-route p95/p99 gate + exact histogram boundaries + immediate local pending feedback + exact-candidate pre-promotion evidence
 - E2E build tags — `buildtags`
 - Security/delivery ownership — review + package-local coordinator/provider tests
 - Repo-split import bans — `repo-split-importcheck`

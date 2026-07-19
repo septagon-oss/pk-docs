@@ -170,6 +170,7 @@ gains acceptance criteria the cross-cuttings cannot express.
 - [REQ-017 — Platform agent surfaces authenticate as service-account principals](./REQ-017-platform-agent-principal-substitution.md)
 - [REQ-018 — Renderable entities declare read permissions; renderer fails closed on undeclared](./REQ-018-permission-coverage-fail-closed.md)
 - [REQ-019 — Live A2UI delivery is signed, audience-bound, and replay-resistant](./REQ-019-live-a2ui-delivery-is-signed-and-replay-resistant.md)
+- [REQ-020 — Warm platform-owned interactions meet the percentile latency objective](./REQ-020-warm-platform-owned-interactions-meet-the-latency-objective.md)
 
 ### Feature REQs by module
 

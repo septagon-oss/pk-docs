@@ -357,6 +357,20 @@ repo_topics:
     diataxis: explanation
     collection: adr
     adr_number: 72
+  - id: adr-0073-runtime-a2ui-surfaces-cross-an-app-owned-signed-delivery-boundary
+    title: Runtime A2UI surfaces cross an app-owned signed delivery boundary
+    path: adr/0073-runtime-a2ui-surfaces-cross-an-app-owned-signed-delivery-boundary.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 73
+  - id: adr-0074-warm-platform-owned-latency-is-a-release-gated-percentile-contract
+    title: Warm platform-owned latency is a release-gated percentile contract
+    path: adr/0074-warm-platform-owned-latency-is-a-release-gated-percentile-contract.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 74
 
 # This repo hosts no Go modules — pilot_modules intentionally empty.
 pilot_modules: []
