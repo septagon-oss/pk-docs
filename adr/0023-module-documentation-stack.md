@@ -1,6 +1,6 @@
 ---
 title: "ADR 0023: Module documentation is a curated stack, not a single framework"
-status: Proposed
+status: Superseded
 date: 2026-04-25
 slug: adr-0023-module-documentation-stack
 adr_topic: documentation
@@ -10,7 +10,14 @@ tags: [adr, documentation, arc42, diataxis, c4, charter, modules]
 
 # ADR 0023 — Module documentation is a curated stack, not a single framework
 
-Status: **Proposed** (2026-04-25)
+> **Historical proposal — do not implement.** The full PlatformKit
+> distribution re-scoped this six-framework proposal in ADR 0053 on
+> 2026-06-24 to generated facts plus a short `MODULE.md`; that portfolio ADR is
+> not reproduced in this smaller OSS ADR subset. References below to CUE-owned
+> module facts or a hand-authored catalog YAML describe an abandoned plan.
+> Current catalog authority is [ADR 0048](./0048-go-authored-catalog-and-generated-exports.md).
+
+Status: **Superseded** (2026-06-24) — was **Proposed** (2026-04-25)
 
 ## The problem
 
@@ -243,7 +250,8 @@ Five analyzers under `cmd/platformkit verify charter`, all run by
   not pattern-matched.
 - `charter-dependency-parity` — `dependencies.required` and
   `dependencies.optional` in CUE match the
-  `WithCategorizedDep(... required=...)` calls in
+  `standard.WithDep(module.RequiresPort[T](...))` and
+  `standard.WithDep(module.OptionalPort[T](...))` calls in
   `dependencies.go`. The same parity analyzer that today guards
   the catalog yaml extends to the charter.
 - `charter-narrative-completeness` — `MODULE.md` has all required

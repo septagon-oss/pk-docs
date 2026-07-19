@@ -61,9 +61,9 @@ because the alternative is silent compromise.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `platformkit-backend-kit/security/authn/jwt_middleware_test.go::TestPassesRevocationCheck_FailsClosedOnStoreError` |
-| AC-2 | Test | `platformkit-backend-kit/security/authn/jwt_middleware_tenant_test.go::TestPassesTenantMembership_RejectsOnVerifierError` |
-| AC-3 | Test | `platformkit-backend-kit/core/entity/repository/gorm_security_test.go::TestScopedDB_RefusesUnscopedQuery` |
+| AC-1 | Test | `core/platformkit-backend-kit/security/authn/jwt_middleware_test.go::TestPassesRevocationCheck_FailsClosedOnStoreError` |
+| AC-2 | Test | `core/platformkit-backend-kit/security/authn/jwt_middleware_tenant_test.go::TestPassesTenantMembership_RejectsOnVerifierError` |
+| AC-3 | Test | `core/platformkit-backend-kit/core/entity/repository/gorm_security_test.go::TestScopedDB_RefusesUnscopedQuery` |
 | AC-4 | Inspection | `modules/platformkit-business-modules/auth_management/features/policy/service_rollout.go::IsFrozen` — repository read errors are treated as `frozen=true`. **Verification gap: a dedicated rollout-gate-fail-closed test is pending.** |
 
 ## Satisfied by

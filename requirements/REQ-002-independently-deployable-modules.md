@@ -41,6 +41,12 @@ monolith binary, a microservices mesh, or a per-client overlay. Every
 coupling that lives at the import level forecloses one of those
 topologies.
 
+This requirement's `modules/platformkit-business-modules` paths and catalog
+checks apply to the full PlatformKit distribution. The public
+`github.com/septagon-oss/pk-modules/pkg` repository is a smaller reference pack
+that composes its exported packages directly; it does not maintain a second
+tier or module-set catalog.
+
 ## Acceptance criteria
 
 - **AC-1** No package under `modules/platformkit-business-modules/<module>/`
@@ -53,17 +59,18 @@ topologies.
   buildable binary, with the missing module's optional ports
   resolving to nil-safe fallbacks rather than nil-pointer panics at
   boot.
-- **AC-3** The `module_contracts.yaml` and `module_sets.yaml`
-  catalogs declare every module's tier and its preset memberships;
-  a module that is in a preset but not in the catalog (or vice
-  versa) fails the contract-check.
+- **AC-3** The typed `AuthoredCatalog` and `AuthoredModuleSets` declare every
+  full-distribution module's tier, preset memberships, and named-set
+  memberships. A module that is referenced by a preset or set but absent from
+  the authored catalog (or vice versa) fails the contract-check; serialized
+  YAML is never an authored input.
 
 ## Verification
 
 | AC | Method | Evidence |
 |---|---|---|
 | AC-1 | Analysis | `platformkit-backend-kit/analysis/importboundary` — rejects cross-module implementation imports at `make precommit`. |
-| AC-2 | Test | `modules/platformkit-business-modules/catalog/runtimecatalog/catalog_test.go::TestPlanSkipsWarningOnlyHTTPRouting` and `TestPlanHTTPModeBuildsRoutingWithoutLocalModule` exercise the planner's per-module-removal branches. **Verification gap: a dedicated sweep that removes each module in turn and verifies the plan still composes is pending.** |
+| AC-2 | Test | `apps/platformkit-apps/modulecatalog/full/catalog_test.go::TestPlanModuleOnlyDoesNotReEnableDisabledModule` and `apps/platformkit-apps/modulecatalog/full/catalog_test.go::TestPlanIgnoresDisabledUnknownModuleKeys` exercise selective composition and explicit module removal. **Verification gap: a dedicated sweep that removes each module in turn and verifies the plan still composes is pending.** |
 | AC-3 | Analysis | `make check-module-contracts` (`modules/platformkit-business-modules/cmd/module-contract-check`). |
 
 ## Satisfied by
@@ -89,9 +96,11 @@ one.)
 
 ## References
 
-- `modules/platformkit-business-modules/catalog/module_contracts.yaml` — the
-  registry that names tier and supported-set membership for every
-  module.
-- `modules/platformkit-business-modules/catalog/module_sets.yaml` — the
-  preset definitions that exercise the "compose any subset"
+- `modules/platformkit-business-modules/catalog/modulecontracts/authored_catalog.go`
+  — the typed registry that names tier and preset membership for every
+  full-distribution module.
+- `modules/platformkit-business-modules/catalog/modulecontracts/authored_module_sets.go`
+  — typed named-set definitions that exercise the "compose any subset"
   property.
+- [ADR 0048 — the catalog is Go-authored; serialized formats are generated exports](../adr/0048-go-authored-catalog-and-generated-exports.md)
+  — catalog authority and repository-scope distinction.

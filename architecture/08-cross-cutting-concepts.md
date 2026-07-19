@@ -224,13 +224,16 @@ everywhere else.
 ## Tier posture
 
 **The rule.** Every module declares a tier (`core-certified`,
-`supported`, `experimental`) in
-`catalog/module_contracts.yaml`. The claim is mechanically
-cross-checked against the module's actual substance (migrations,
-tests, evidence).
+`supported`, `experimental`) in the full distribution's typed
+`catalog/modulecontracts/authored_catalog.go`. The claim is mechanically
+cross-checked against the module's actual substance (migrations, tests,
+evidence). The public `pk-modules/pkg` reference pack does not duplicate the
+tier catalog; serialized catalog formats are generated exports only.
 
 **Authority.**
 [ADR 0015 — every module declares one of three tiers](../adr/0015-module-tiering.md).
+See also
+[ADR 0048 — the catalog is Go-authored](../adr/0048-go-authored-catalog-and-generated-exports.md).
 
 **Enforcement.** `check-module-contracts`,
 `check-module-maturity`, `check-module-assurance-evidence`.

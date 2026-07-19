@@ -93,8 +93,9 @@ follows the same file shape:
 <module_name>/
 ├── module.go                # NewModule / GetModule / singleton wiring
 ├── metadata.go              # Features list, sitemap config, dependency options
-├── dependencies.go          # WithCategorizedDep calls — what ports this module needs
-├── invocations.go           # fx.Invoke hooks (admin registration, event subs, migration registration)
+├── dependencies.go          # typed RequiresPort / OptionalPort declarations
+├── surfaces.go              # optional declarative admin/operator surface contributions
+├── invocations.go           # fx.Invoke hooks (route wiring, event subscriptions, migrations)
 ├── admin.go                 # Admin sidebar section, dashboard widgets, capabilities
 ├── providers.go             # fx providers (repositories, services)
 ├── migrations.go            # //go:embed migrations + RegisterModuleMigrations(...)
@@ -117,9 +118,13 @@ ADR or a convention:
 
 - `module.go` uses `module.NewSingleton` because modules are
   singletons ([C-02](../conventions.md#c-02-one-module-one-instance)).
-- `dependencies.go` declares ports via `WithCategorizedDep` because
-  cross-module calls go through ports
+- `dependencies.go` declares ports via typed
+  `standard.WithDep(module.RequiresPort[T](...))` or `OptionalPort[T]`
+  because cross-module calls go through ports
   ([ADR 0009](../adr/0009-ports-only-cross-module-communication.md)).
+- `surfaces.go` publishes `surface.Contribution` values through the
+  `module_surface_contributions` Fx group; modules do not depend on an admin
+  registrar merely to appear in a governed shell.
 - `contracts/` ships the public surface because public contracts
   live away from their implementation
   ([C-04](../conventions.md#c-04-public-contracts-live-away-from-their-implementation)).
@@ -186,13 +191,13 @@ flowchart LR
 - Implementation — everything else (`features/`, `providers.go`,
   `service.go`). Never imported by another module directly.
 
-When a consumer module needs `UserService`:
+When a consumer module needs to read users:
 
 1. The consumer's `dependencies.go` declares
-   `WithCategorizedDep((*ports.UserService)(nil), ...)`.
-2. The `ports.UserService` interface is a type alias or
-   re-declaration of
-   `user_management/contracts/provides.UserService`.
+   `standard.WithDep(module.RequiresPort[ports.UserBoundaryReader](module.PortSpec{...}))`
+   (or `OptionalPort` when absence has a defined fallback).
+2. `ports.UserBoundaryReader` exposes only DTO-returning read methods;
+   `porttypes.UserDTO` is independent of the provider's persistence schema.
 3. The app catalog wires the concrete implementation (from
    `user_management/providers.go`) into the fx graph.
 4. The consumer receives the port through fx injection; its code

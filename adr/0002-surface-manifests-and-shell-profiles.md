@@ -42,7 +42,7 @@ affordances.
 We add a typed product-composition layer with three artifacts, owned
 by the repos that already own the inputs.
 
-**`ModuleSurfaceContribution`** — owned by
+**`surface.Contribution`** — owned by
 `pk-modules`. The transport-safe description of a
 module's UI contribution: stable route IDs, display labels, nav
 section/group membership, icon tokens, page-pattern hints, breadcrumb
@@ -75,7 +75,7 @@ Phase 1 is admin-first. We prove one shell profile (`admin`), one
 route and nav inventory, the existing admin page family, and the
 deterministic merge of defaults/policy/preferences. We reuse the
 current seams rather than standing up a parallel composition stack:
-`pk-modules` derives `ModuleSurfaceContribution`
+`pk-modules` derives `surface.Contribution`
 from the existing admin-registration, route, menu, and page-intent
 seams; `platformkit-apps` assembles manifests *above* topology
 bootstraps, not inside topology-specific sidebar wiring;

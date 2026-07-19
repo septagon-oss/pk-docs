@@ -12,6 +12,5 @@ Early contributions should preserve the minimal surface:
 Run before opening a pull request:
 
 ```bash
-go test ./...
+make verify
 ```
-

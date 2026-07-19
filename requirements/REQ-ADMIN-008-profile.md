@@ -49,8 +49,8 @@ admin shell.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Inspection | Coverage gap — no `*_test.go` exists; reviewers verify the request-context scoping. |
-| AC-2 | Inspection | Reviewers verify the import of `user_management` profile/preferences services rather than re-implementation. |
+| AC-1 | Test | `modules/platformkit-business-modules/admin_management/features/profile/section_renderer_test.go::TestProfileFeatureDeclaresGovernedPagePermission` verifies the governed self-profile page is permission-owned; request-context scoping remains an integration-review concern. |
+| AC-2 | Test | `modules/platformkit-business-modules/admin_management/features/profile/section_renderer_test.go::TestProfileSectionRendererOwnsProfileContent` verifies that the governed section delegates through the narrow admin content seam instead of implementing a second profile route. |
 
 ## Implements (cross-cutting)
 
@@ -59,8 +59,8 @@ admin shell.
 ## Satisfied by
 
 - `admin_management/features/profile/feature.go`
-- `admin_management/features/profile/handler.go`,
-  `permissions.go`, `routes.go`
+- `admin_management/features/profile/section_renderer.go`
+- `admin_management/admin_renderer.go`
 
 ## Related requirements
 

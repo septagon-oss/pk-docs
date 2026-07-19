@@ -1,16 +1,16 @@
 ---
 id: REQ-AUTH-003
 title: "Two-factor authentication binds a TOTP secret per user and enforces single-use codes"
-status: Proposed
-date: 2026-05-06
+status: Active
+date: 2026-07-18
 slug: req-auth-003-twofactor
 category: auth
 ears_pattern: state-driven
 verification_methods: [test, inspection]
 compliance: [SOC2_CC6.1, ISO27001_A.9.4]
 satisfied_by:
-  adr: [ADR-0009]
-  conventions: [C-04, C-14]
+  adr: [ADR-0009, ADR-0065, ADR-0070]
+  conventions: [C-04, C-17, C-20, C-14]
 implements_cross_cutting: [REQ-003, REQ-004, REQ-005, REQ-009]
 type: doc
 tags: [requirement, feature, auth_management]
@@ -20,7 +20,7 @@ feature: twofactor
 
 # REQ AUTH-003 — Two-factor authentication
 
-Status: **Proposed** (2026-05-06)
+Status: **Active** (2026-07-18)
 
 ## Statement
 
@@ -30,7 +30,9 @@ generate a per-user secret, store it encrypted at rest, and emit
 one-time backup codes that are themselves single-use. Code validation
 **shall** accept the current TOTP window plus the configured drift,
 reject replay of an already-consumed window, and audit every
-acceptance and rejection.
+acceptance and rejection. An ordinary enrollment request **shall not**
+replace or disable an active factor; replacement requires a separately
+authorized recovery or current-factor flow.
 
 ## Rationale
 
@@ -42,28 +44,57 @@ fallback recovery surface and are equally sensitive.
 
 ## Acceptance criteria
 
-- **AC-1** Enrolment generates a 160-bit secret, persists it encrypted
-  with the platform's key-management primitive, and returns a
-  provisioning URI plus the configured number of backup codes
-  (single-display, one-time-readable).
+- **AC-1** Enrolment generates a 160-bit secret and seals it before persistence
+  in a C-17 `pkse:v1` AES-256-GCM envelope bound to the user ID. Every
+  non-development environment requires an explicitly configured 32-byte active
+  key and accepts at most three distinct decrypt-only previous keys for
+  rotation. The response returns
+  a provisioning URI plus the configured number of single-display backup codes;
+  durable backup codes remain one-way hashes.
 - **AC-2** Validation accepts the current TOTP window and the
   configured drift (±N steps). The accepted window is recorded
   per-user; presenting the same window again fails closed.
 - **AC-3** Backup-code consumption marks the code redeemed, audits
-  `auth.twofactor.backup_consumed`, and triggers a re-enrol prompt
+  `auth.mfa.backup_code_consumed`, and triggers a re-enrol signal
   when the remaining count drops below the configured threshold.
 - **AC-4** Validation failures contribute to the authentication
   rate-limit (REQ-AUTH-001 AC-3) and emit
-  `auth.twofactor.failed`.
+  `auth.mfa.verification_failed`.
+- **AC-5** Pre-envelope plaintext enrollment state is never silently accepted
+  or downgraded to single-factor login. Migration 017 removes plaintext seed
+  and recovery material while preserving the prior verified marker as a
+  fail-closed re-enrollment lock. Malformed, tampered, wrong-user, unknown-key,
+  or locked state reports an operational/re-enrollment error while MFA remains
+  logically required.
+- **AC-6** Enrollment rejects an already-active factor and a migration
+  re-enrollment lock before generating or storing replacement credentials. It
+  rechecks that state inside the durable transaction, generates the complete
+  seed and recovery-code set before the first write, and commits the seed and
+  recovery hashes together. A concurrent activation, entropy failure, state
+  read failure, or storage failure leaves the live secret, verified marker,
+  backup codes, and replay counter unchanged.
+- **AC-7** When a verified interactive-provider callback transitions to local
+  MFA, the continuation retains the SHA-256 digest of the original 256-bit
+  browser binding, flow reference, exact tenant/provider/connection tuple,
+  verified platform identity reference, and only the bounded non-secret facts
+  needed to render and complete local MFA. It compares the same browser binding
+  in constant time, revalidates that exact authority, and consumes the
+  continuation once before session issuance. A missing, mismatched, expired,
+  replayed, or unavailable continuation creates no membership or session and
+  never re-enters the provider. No upstream provider credential or arbitrary
+  provider metadata is retained in the challenge state.
 
 ## Verification
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/twofactor/service_test.go::TestService_Enroll_GeneratesSecret` + `TestService_Enroll_ReturnsBackupCodes` + `TestService_Enroll_ReturnsOTPURL`. Encryption-at-rest of the secret is an inspection claim — the unit-test store keeps secrets in memory; production storage relies on the chosen `SecretStore` impl persisting via the platform's encrypted-at-rest column type. |
-| AC-2 | Test | Acceptance + drift: `modules/platformkit-business-modules/auth_management/features/twofactor/service_test.go::TestService_Verify_ValidCode` + `TestService_Verify_InvalidCode` + `TestService_Verify_TimeSkewTolerance`. Replay rejection: `req_auth_003_test.go::TestTOTP_RejectsReplay_WithinDriftWindow` exercises a `ReplayGuardedSecretStore` and confirms a code accepted at T cannot be replayed at T + ε. The optional `ReplayGuardedSecretStore` interface in `service.go` lets the wired SecretStore opt into per-user counter tracking; when present, `Service::Verify` refuses any TOTP whose counter is `<=` the stored last-accepted value. Stores that do not implement the interface retain permissive replay semantics with no error so existing wirings continue to compile. |
-| AC-3 | Test | Consumption: `modules/platformkit-business-modules/auth_management/features/twofactor/service_test.go::TestService_Recover_ConsumesBackupCode`. Audit emission: `req_auth_003_test.go::TestBackupCode_EmitsAuditEvent` exercises the optional `AuditSink` callback wired via `Service::WithAuditSink`; on backup-code consumption the service emits the typed `auth.twofactor.backup_consumed` event with the user id. Sinks that are not wired fall through to no-op auditing without breaking existing wirings. |
-| AC-4 | Inspection | The twofactor `Service` does not own the rate-limit primitive — rate-limit integration happens at the parent authentication feature. Reviewers verify in `authentication/login_2fa.go` that a failed TOTP path increments the login rate-limit counter used by REQ-AUTH-001 AC-3. |
+| AC-1 | Test | Enrollment tests plus `modules/platformkit-business-modules/auth_management/features/authentication/totp_secret_protector_test.go::TestTOTPSecretProtectorRoundTripUsesRandomVersionedAEADEnvelope`, `TestTOTPSecretProtectorBindsEnvelopeToUserAndRejectsTampering`, `TestProvideTOTPSecretProtectionRequiresDedicatedProductionKey`, `TestProvideTOTPSecretProtectionEnvironmentOverrideCannotEnableDevelopmentFallback`, `TestTOTPSecretKeyringDecryptsPreviousKey`, and `TestMFASetupClassifiesSecretAndBackupCodesAsNonProjectable`. |
+| AC-2 | Test | Acceptance + drift: `modules/platformkit-business-modules/auth_management/features/twofactor/service_test.go::TestService_Verify_ValidCode` + `TestService_Verify_InvalidCode` + `TestService_Verify_TimeSkewTolerance`. Atomic replay rejection: `modules/platformkit-business-modules/auth_management/features/twofactor/req_auth_003_test.go::TestTOTP_RejectsReplay_WithinDriftWindow`, `TestTOTP_ConcurrentReplayHasExactlyOneWinner`, and `TestTOTP_EnableFailureRollsBackCounterAdvancement`. Production-store evidence: `modules/platformkit-business-modules/auth_management/features/authentication/twofactor_store_replay_test.go::TestPersistentSecretStoreProductionWiringRejectsImmediateTOTPReplay` + `TestPersistentSecretStoreAdvanceAcceptedCounterCASAllowsOneWinner`. `AtomicReplayGuardSecretStore::AdvanceAcceptedCounter` replaces the race-prone split read/write protocol; the production `persistentSecretStore` advances migration-016's durable counter through the entity-version CAS, and `Service::Verify` commits that advancement together with `SetEnabled` in the store transaction. `NewProduction` rejects stores missing either capability, while the lightweight `New` constructor is reserved for deliberately lean in-memory integrations. |
+| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/twofactor/service_test.go::TestService_Recover_ConsumesBackupCode`, `modules/platformkit-business-modules/auth_management/features/twofactor/req_auth_003_test.go::TestBackupCode_EmitsAuditEvent`, and `modules/platformkit-business-modules/auth_management/features/twofactor/durable_security_events_test.go::TestBackupCodeConsumptionSignalsReenrollmentBelowThreshold` verify atomic consumption, remaining-count threshold, audit, and declared event publication. |
+| AC-4 | Inspection | The twofactor `Service` does not own the rate-limit primitive — rate-limit integration happens at the parent authentication feature. Reviewers verify in `modules/platformkit-business-modules/auth_management/features/authentication/login_2fa.go` that a failed TOTP path increments the login rate-limit counter used by REQ-AUTH-001 AC-3. |
+| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/totp_secret_protector_test.go::TestPersistentSecretStoreMigrationLockDoesNotDowngradeMFA`, `TestPersistentSecretStoreUnreadableEnvelopeDoesNotReportMFADisabled`, `TestPersistentSecretStorePersistsOnlyEnvelopeAndFailsClosedOnPlaintext`, and `modules/platformkit-business-modules/auth_management/features/twofactor/totp_secret_migration_test.go::TestTOTPSecretEnvelopeMigrationIntegrity`. |
+| AC-6 | Test | `modules/platformkit-business-modules/auth_management/features/twofactor/service_test.go::TestService_Enroll_RefusesToReplaceActiveFactorWithoutMutation`, `TestService_Enroll_GenerationAndStateReadFailuresDoNotMutateFactor`, `modules/platformkit-business-modules/auth_management/features/twofactor/req_auth_003_test.go::TestTOTP_EnrollmentStorageFailureRollsBackCompleteFactorState`, and `modules/platformkit-business-modules/auth_management/features/authentication/twofactor_store_replay_test.go::TestPersistentSecretStoreRefusesActiveSecretReplacementWithoutMutation`. |
+| AC-7 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/interactive_mfa_test.go::TestCompleteInteractiveAuthenticationRequiresLocalMFABeforeExistingOrGuestSession`, `TestCompleteInteractiveAuthenticationInvalidReplayAndRateLimitLeaveChallengeSafe`, `TestCompleteInteractiveAuthenticationChallengeStoreDeleteFailureHasNoAuthWrites`, `TestCompleteInteractiveAuthenticationRejectsExpiredStoredProviderSession`, and `interactive_flow_browser_security_test.go::TestInteractiveMFAChallengeCannotBeContinuedInAnotherBrowser`; inspection verifies digest-only browser continuity and exclusion of upstream credentials. |
 
 ## Implements (cross-cutting)
 
@@ -74,11 +105,31 @@ fallback recovery surface and are equally sensitive.
 
 ## Satisfied by
 
+- [ADR 0070 — Interactive browser authentication uses durable one-time bound proofs](../adr/0070-interactive-browser-authentication-uses-durable-one-time-bound-proofs.md)
+- [Convention C-20 — Interactive browser authentication uses one-time bound proofs](../conventions.md#c-20-interactive-browser-authentication-uses-one-time-bound-proofs)
 - `modules/platformkit-business-modules/auth_management/features/twofactor/feature.go`
 - `modules/platformkit-business-modules/auth_management/features/twofactor/service.go`,
   `service_test.go`
-- `modules/platformkit-business-modules/auth_management/features/twofactor/handler.go`, `routes.go`,
-  `permissions.go`
+- `modules/platformkit-business-modules/auth_management/features/twofactor/handler.go`
+- `modules/platformkit-business-modules/auth_management/features/authentication/totp_secret_protector.go`
+- `modules/platformkit-business-modules/auth_management/features/authentication/twofactor_store.go`
+- `modules/platformkit-business-modules/auth_management/migrations/016_add_atomic_totp_replay_counter.up.sql`
+- `modules/platformkit-business-modules/auth_management/migrations/017_protect_totp_secrets_at_rest.up.sql`
+
+## Deployment and key rotation
+
+- Before migration 017 runs outside development, configure
+  `modules.auth_management.config.totp_secret_encryption_key` as standard
+  base64 encoding of exactly 32 random bytes (`openssl rand -base64 32`).
+- During rotation, place at most three old keys in
+  `totp_secret_encryption_previous_keys`, deploy the new active writer, allow
+  authenticated reads to rewrap rows, prove no old-key envelopes remain, then
+  remove the old key.
+- Accounts that previously had active plaintext MFA become fail-closed
+  re-enrollment locks. They require an approved administrative/account-recovery
+  path; ordinary sign-in cannot silently bypass the missing factor.
+- Migration 017 is intentionally security-irreversible. Recovery rolls the
+  application and keyring forward instead of restoring plaintext writers.
 
 ## Related requirements
 

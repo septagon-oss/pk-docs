@@ -1,176 +1,170 @@
 ---
 id: REQ-AUTH-012
-title: "Logout revokes the active session and any bound refresh token"
+title: "Logout durably revokes sessions and refresh families"
 status: Proposed
-date: 2026-05-08
+date: 2026-07-18
 slug: req-auth-012-logout
 category: auth
 ears_pattern: event-driven
 priority: must
-risk: medium
+risk: high
 verification_methods: [test, inspection]
 compliance:
   - SOC2_CC6.1
   - SOC2_CC6.7
   - ISO27001_A.9.4
 satisfied_by:
-  adr: [ADR-0009]
-  conventions: [C-04, C-14]
+  adr: [ADR-0006, ADR-0007, ADR-0067]
+  conventions: [C-04, C-19, C-14]
 implements_cross_cutting: [REQ-001, REQ-004, REQ-005]
 refines: REQ-AUTH-001
-depends_on: [REQ-AUTH-010]
+depends_on: [REQ-AUTH-010, REQ-AUTH-011, REQ-AUTH-016]
 type: doc
-tags: [requirement, capability, auth_management, authentication, logout, session]
+tags: [requirement, capability, auth_management, authentication, logout, session, revocation]
 module: auth_management
 feature: authentication
 capability: logout
 capability_kind: state_machine
 stakeholders:
-  - end-user (account holder ending a session)
-  - operator (forced-logout responder)
-  - compliance auditor (session-termination evidence)
+  - end-user
+  - operator
+  - compliance auditor
 ---
 
-# REQ AUTH-012 — Logout
+# REQ AUTH-012 — Durable logout
 
-Status: **Proposed** (2026-05-08)
+Status: **Proposed** (2026-07-18)
 
 ## Statement
 
-**When** a user submits a logout request — whether the
-single-session flow (`Logout`) or the every-session flow
-(`LogoutEverywhere`) — the system **shall** mark the session row
-revoked, blacklist any associated refresh token in the shared
-cache, surface an optional provider-side logout call, and emit
-the catalogued `auth.user.logged_out` audit event. **If** the
-logout-everywhere flow is invoked, the system **shall**
-additionally revoke every other session bound to the same
-user-id without disturbing sessions in other tenants the user
-also belongs to.
+**When** an authenticated user logs out of one session, the system **shall**
+cryptographically derive the exact user and session from the presented access
+token and atomically revoke that durable session and its refresh family. **When**
+the user selects logout everywhere, the system **shall** revoke every session
+and refresh family owned by that platform identity. Cache invalidation and
+provider logout **shall** remain secondary effects that cannot weaken the
+committed local revocation.
 
 ## Rationale
 
-Logout is the primary user-controlled defence against a
-compromised device. The discipline this REQ encodes:
+Logout is a security boundary, not a cookie-clearing hint. A Redis blacklist
+alone is insufficient because failed writes and eviction can make an old token
+look current. Conversely, a submitted refresh-token body is untrusted input and
+must not select which durable credential is revoked.
 
-1. **Revocation must be immediate.** A session marked revoked
-   must fail validation on the very next request. This is what
-   makes "log out from my old laptop" a real safety lever
-   rather than a cosmetic UI control.
-2. **Refresh-token blacklist is co-equal with session revocation.**
-   Without it, a stolen refresh token would continue to mint
-   access tokens after the user thought they had logged out.
-   The blacklist key (`blacklist:refresh:<hash>`) lives in the
-   shared cache so every replica observes the revocation.
-3. **Logout-everywhere is per-user, not per-account-record.**
-   A user who is a member of two tenants and logs out of one
-   should not lose their session in the other. The query is
-   scoped accordingly.
-
-The provider-side logout (when an `AuthProvider` is configured)
-is best-effort — a provider that fails to acknowledge our
-logout still results in our session being revoked locally; the
-provider's stale state is the operator's problem, not the
-end-user's.
+The session row and refresh family are the local authority. Their revocation
+commits with audit and event intent. Ordinary platform access tokens are then
+checked against that session and the active user on every request, while every
+refresh attempt must pass the family ledger. Provider logout and cache JTI
+markers improve immediacy but cannot undo or substitute for this boundary.
 
 ## Acceptance criteria
 
-- **AC-1 — Single-session revocation.** A `Logout` call against
-  a valid session token transitions the session row to
-  `revoked_at = now()`, blacklists the bound refresh token in
-  the cache, and emits `auth.user.logged_out`.
-- **AC-2 — Refresh-token blacklist coverage.** A subsequent
-  `RefreshAccessToken` call with the revoked refresh token
-  fails with `"refresh token revoked"` (REQ-AUTH-011 AC-4).
-- **AC-3 — Logout-everywhere.** A `LogoutEverywhere` call
-  iterates the user's other sessions, marking each revoked and
-  blacklisting each refresh token; the originating session is
-  revoked last so the response can include the count of
-  terminated sessions.
-- **AC-4 — Provider-side fail-soft.** If the configured
-  `AuthProvider.Logout` returns an error, the local revocation
-  still completes and the failure is logged at Warn. The user
-  is logged out from the platform's perspective; the provider's
-  state is reconciled out of band.
-- **AC-5 — Concurrent-revoke safety.** A logout against a
-  session that is already revoked returns success (idempotent);
-  the second call does not produce a duplicate audit event.
-- **AC-6 — Logout-everywhere error reporting.** If
-  `LogoutEverywhere` cannot revoke one of the user's other
-  sessions (e.g. database error mid-iteration), the call
-  returns a typed error AND the partial-revocation count, so
-  the caller can decide whether to retry.
+- **AC-1 — Verified logout subject.** Logout accepts only a valid access-purpose
+  token and derives its non-empty user and session IDs from verified claims. It
+  reloads the exact active session and rejects ownership mismatch.
+- **AC-2 — Atomic single-session revocation.** One logout transaction revokes
+  the exact session, its refresh family, audit intent, and
+  `auth.user.logged_out` event. No caller-supplied refresh bearer is trusted as
+  revocation authority.
+- **AC-3 — Global identity logout.** Logout everywhere revokes all sessions and
+  families owned by the authenticated platform user, across devices and tenant
+  contexts, without touching another user's state.
+- **AC-4 — Durable access-token enforcement.** Every platform token explicitly
+  marked `type=access` is rejected after its exact session is inactive, absent,
+  mismatched, or unavailable, or its exact user is inactive or unavailable.
+  This check runs on every request even when JWT parsing is cached.
+- **AC-5 — Cache is defence in depth.** Logout attempts to write the access JTI,
+  token digest, and session invalidation marker, but cache failure does not
+  roll back local logout and cache absence cannot make the durable session or
+  family valid.
+- **AC-6 — Provider fail-soft.** Provider-side logout runs after local commit.
+  Its failure is logged without restoring the local session or returning a
+  false local failure.
+- **AC-7 — Idempotent browser outcome.** A repeated browser logout whose session
+  is already absent or revoked still allows the client to clear its cookie and
+  reach the signed-out state; it does not emit a duplicate durable mutation.
+- **AC-8 — Transaction failure is explicit.** A database, audit, or outbox
+  failure returns an error and commits none of the requested revocations. The
+  service never reports a partially successful logout-everywhere count as a
+  completed security outcome.
+- **AC-9 — Session isolation.** Single-session logout leaves sibling sessions
+  active. Logout everywhere may affect siblings of the same user but never a
+  session or family bound to another user.
+- **AC-10 — No recoverable bearer persistence.** Logout never reads or restores
+  a raw refresh token from the session row; durable revocation targets the
+  family by session or user identity.
 
 ## Verification
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestLogout_Success` and `TestLogout_WithRefreshToken`. |
-| AC-2 | Inspection | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestLogout_WithRefreshToken` asserts `blacklist:refresh:<hash>` exists post-call; refresh consumption is covered in `TestRefreshAccessToken_BlacklistedToken`. |
-| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestLogout_WithLogoutEverywhere`. |
-| AC-4 | Inspection | `logout.go` provider-call wrapper logs and continues on provider error; reviewers verify the local revocation is unconditional. |
-| AC-5 | Inspection | The service's update-then-publish ordering uses the row's pre-revocation state; an already-revoked row is a no-op write. |
-| AC-6 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestLogout_WithLogoutEverywhere_ReturnsErrorWhenSessionRevocationFails`. |
+| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/logout_security_test.go::TestLogoutDerivesRealUserFromVerifiedToken` and `TestLogoutRejectsForgedToken`. |
+| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestBrowserLogoutWithoutRefreshTokenRevokesDurableFamilyDuringCacheOutage` and `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestLogout_DoesNotTrustSubmittedRefreshToken`. |
+| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/logout_security_test.go::TestLogoutEverywhereIsolatesUsers`. |
+| AC-4 | Test | `core/platformkit-backend-kit/security/authn/jwt_middleware_access_session_test.go::TestJWTMiddlewareAccessVerifierFailuresFailClosed` plus auth-management access-session verifier tests exercise inactive, mismatched, unavailable, and parser-cache paths. |
+| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestBrowserLogoutWithoutRefreshTokenRevokesDurableFamilyDuringCacheOutage`. |
+| AC-6 | Inspection | `modules/platformkit-business-modules/auth_management/features/authentication/logout.go` commits the local mutation before calling `AuthProvider.Logout` and logs provider failure at warning severity. |
+| AC-7 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/logout_browser_test.go::TestHandleLogoutBrowser_LogoutEverywhereUsesExistingLogoutFlow` plus browser logout cases cover invalid-session cleanup and cookie deletion. |
+| AC-8 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestLogout_WithLogoutEverywhere_ReturnsErrorWhenSessionRevocationFails` plus refresh/session mutation cases inject write failure; production requires the atomic mutation runner at startup. |
+| AC-9 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/logout_security_test.go::TestSingleLogoutRevokesOnlyPresentedSession` and `TestLogoutEverywhereIsolatesUsers`. |
+| AC-10 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_migration_test.go::TestDurableRefreshTokenMigrationContainsNoRawBearerColumn`. |
 
-## Edge cases & unhappy paths
+## Edge cases and unhappy paths
 
-- **Logout without a session token.** An empty bearer token
-  returns the typed `"no session"` error from the upstream
-  middleware before reaching this code path.
-- **Cookie present, server-side session gone.** A logout
-  against an unknown session id returns success (idempotent) so
-  the client can clear its cookie without an error spinner.
-- **Cache outage during logout.** If the blacklist cache write
-  fails, the session row is still marked revoked. The platform
-  defaults to "session-row-revocation is the source of truth"
-  and the cache is the optimisation; reviewers verify the
-  validate path consults the row, not just the cache.
-- **Logout-everywhere on a user with one session.** The flow
-  degenerates to single-session logout without an extra
-  iteration penalty.
+- **Cache outage.** Durable session and family revocation still commits. The
+  access-session and refresh-family validators continue to reject the bearer.
+- **Provider outage.** Local logout remains successful; provider state is
+  reconciled separately.
+- **Already inactive session.** The service does not mutate it again, while the
+  browser still clears its credential.
+- **Logout everywhere during another login.** Only sessions visible inside the
+  authenticated user's transaction are targeted; any later session must pass
+  its own authorization boundary and remains independently revocable.
+- **Typeless preview credentials.** Separately governed local preview tokens do
+  not claim PlatformKit access-session purpose and are outside this durable
+  family contract.
 
 ## Risk
 
-- **Likelihood:** Medium — logout is invoked on every active
-  user session at least once per device lifetime.
-- **Impact:** High — a logout that does not actually revoke is
-  a silent persistence of a credential the user believed they
-  had ended.
-- **Mitigations:** Server-side row-revocation as source of
-  truth (AC-5); blacklist-cache as defence in depth (AC-2);
-  provider fail-soft with observability (AC-4).
+- **Likelihood:** Medium — users routinely end sessions and operators force
+  logout during incidents.
+- **Impact:** Critical — a cosmetic logout preserves an attacker-controlled
+  bearer after the user believes it is dead.
+- **Mitigations:** Verified subject derivation, atomic durable session/family
+  revocation, per-request access-session checks, mandatory refresh rotation,
+  and cache-independent enforcement.
 
 ## Implements (cross-cutting)
 
-- **REQ-001 — Multi-tenant isolation.** Logout-everywhere is
-  scoped per (user-id, tenant), never globally.
-- **REQ-004 — Audit per mutation.** `auth.user.logged_out`
-  emitted on every revoke.
-- **REQ-005 — Fail-closed.** AC-2 + AC-3 default-deny on
-  subsequent token use; AC-6 surfaces partial failure.
+- **REQ-001 — Multi-tenant isolation.** Exact session ownership is verified and
+  another user's sessions are never selected.
+- **REQ-004 — Audit per mutation.** Logout state and audit/event intent commit
+  together.
+- **REQ-005 — Fail closed.** Unknown durable state cannot authorize subsequent
+  access or refresh.
 
 ## Compliance mapping
 
 | Control | Coverage |
 |---|---|
-| SOC2 CC6.1 | AC-1, AC-3 — explicit session termination on user request. |
-| SOC2 CC6.7 | AC-2 — revoked credentials cannot be replayed. |
-| ISO27001 A.9.4 | AC-1, AC-3 — logoff procedure with audit trail. |
+| SOC2 CC6.1 | AC-1, AC-2, AC-3 — authenticated, scoped session termination. |
+| SOC2 CC6.7 | AC-4, AC-5, AC-10 — revoked credentials cannot regain authority through cache loss or raw storage. |
+| ISO27001 A.9.4 | AC-2, AC-3, AC-6 — reliable logoff with local audit evidence. |
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/auth_management/features/authentication/logout.go` — handler
-  and orchestration.
-- `modules/platformkit-business-modules/auth_management/features/authentication/login_session.go` —
-  the session-mutation helpers `Logout` consumes.
-- `modules/platformkit-business-modules/auth_management/features/authentication/repository.go` —
-  session-row writes.
-- `modules/platformkit-business-modules/auth_management/features/authentication/logout_browser_test.go` —
-  HTML form coverage.
+- `auth_management/features/authentication/logout.go`
+- `auth_management/features/authentication/refresh_token_store.go`
+- `auth_management/features/authentication/access_session_verifier.go`
+- `platformkit-backend-kit/security/authn/jwt_middleware.go`
+- `auth_management/migrations/019_create_durable_refresh_token_families.up.sql`
 
 ## Related requirements
 
 - [REQ-AUTH-001 — Authentication umbrella](./REQ-AUTH-001-authentication.md)
-- [REQ-AUTH-010 — Password login](./REQ-AUTH-010-login-credentials.md) — the session this revokes.
-- [REQ-AUTH-011 — Refresh token](./REQ-AUTH-011-refresh-token.md) — the blacklist consumer.
-- [REQ-AUTH-016 — Token verification](./REQ-AUTH-016-token-verification.md) — the access-token validator the revocation propagates to.
+- [REQ-AUTH-010 — Password login](./REQ-AUTH-010-login-credentials.md)
+- [REQ-AUTH-011 — Refresh-token redemption](./REQ-AUTH-011-refresh-token.md)
+- [REQ-AUTH-016 — Token verification](./REQ-AUTH-016-token-verification.md)
+- [REQ-AUTH-017 — Session lifecycle](./REQ-AUTH-017-session-lifecycle.md)
+- [ADR 0067 — Refresh tokens use durable single-use families](../adr/0067-refresh-tokens-use-durable-single-use-families.md)

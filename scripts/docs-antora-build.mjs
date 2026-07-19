@@ -45,7 +45,7 @@ async function runAntora(cwd) {
       }
       reject(
         new Error(
-          "Antora build failed. Install local dependencies with `npm install` in pk-docs before rerunning.",
+          "Antora build failed. Install locked dependencies with `npm ci` in pk-docs before rerunning.",
         ),
       );
     });

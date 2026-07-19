@@ -62,6 +62,11 @@ collisions **shall** be reported in the returned
 against `entities.AllTenantDomainAliasSources` before any DB
 write; an invalid source returns an error before reading the DB.
 
+Infrastructure request-context resolution **shall** use
+`ResolveTenantByHost` as its only host/domain authority. A binding miss shall
+not consult `tenants.domain` and shall not derive a tenant slug from a host.
+Dotted header/query/cookie candidates use the same canonical binding table.
+
 ## Rationale
 
 Host resolution is the substrate for tenant context — every
@@ -122,6 +127,9 @@ batch on the first conflict.
   tenant row and refuses with a `tenant <id> not found` error
   if the tenant does not exist; this prevents dangling alias
   rows.
+- **AC-9 — One host authority.** Infrastructure host resolution and dotted
+  candidates call only `ResolveTenantByHost`; an unmapped tenant-shaped host
+  fails closed even when a matching tenant registry domain or slug exists.
 
 ## Verification
 
@@ -135,6 +143,7 @@ batch on the first conflict.
 | AC-6 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/tenant_domain_alias_repository_test.go::TestReconcile_NeverOverwritesManualRow`, `TestReconcile_NeverStealsHostFromDifferentTenant`, `TestReconcile_OwnedRowsAreTouchedNotReinserted`, `TestReconcile_PrunesOwnedRowsNotInDesiredSet`, `TestReconcile_EmptyDesiredSet_PrunesAllOwnedLeavesOthersAlone`, `TestReconcile_InsertsNewHosts`, `TestReconcile_DeduplicatesAndNormalizesHosts`. |
 | AC-7 | Inspection | `service_hosts.go::ReconcileHostAliases` lines 116–122 — `IsValid()` check + empty-source guard before any DB read. Dedicated test pending. |
 | AC-8 | Inspection | `service_hosts.go::ReconcileHostAliases` lines 128–134 — explicit tenant-existence check before alias write. Dedicated test pending. |
+| AC-9 | Test | `modules/platformkit-business-modules/infrastructure/tenant_context_resolver_test.go::TestResolver_HostBindingMissFailsClosed`, `TestResolver_DottedCandidateUsesCanonicalHostBinding`, and `TestTenantResolverSourceRejectsRetiredHostAuthorities`. |
 
 ## Edge cases & unhappy paths
 
@@ -194,7 +203,9 @@ batch on the first conflict.
 
 - `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_hosts.go::ResolveTenantByHost, ListHostAliases, ReconcileHostAliases`.
 - `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/tenant_domain_alias_repository.go` — the underlying repository.
-- `modules/platformkit-business-modules/tenant_management/entities/tenant.go::AllTenantDomainAliasSources` — the source enum.
+- `modules/platformkit-business-modules/tenant_management/entities/tenant_domain_alias.go::AllTenantDomainAliasSources` — the source enum.
+- `modules/platformkit-business-modules/tenant_management/migrations/020_backfill_canonical_tenant_domain_bindings.up.sql` — the forward-only transition of pre-binding tenant domains.
+- `modules/platformkit-business-modules/infrastructure/tenant_context_resolver.go` — the canonical-binding-only request resolver.
 
 ## Related requirements
 

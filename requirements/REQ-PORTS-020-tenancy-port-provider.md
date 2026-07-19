@@ -16,11 +16,11 @@ satisfied_by:
   adr: [ADR-0009]
   conventions: [C-14]
 implements_cross_cutting: [REQ-001, REQ-002, REQ-005]
-refines: REQ-TENANT-001
+refines: REQ-PORTS-001
 type: doc
 tags: [requirement, capability, tenant_management, tenant_lifecycle, ports]
-module: tenant_management
-feature: tenant_lifecycle
+module: platformkit_ports
+feature: contract
 capability: tenancy_port_provider
 capability_kind: inter_module_contract
 stakeholders:
@@ -49,7 +49,7 @@ The adapters **shall**:
 1. Map the rich `provides.TenantDTO` onto the minimal
    `tenancy.Tenant` view (`ID`, `Slug`, `Domain`, `Name` — string
    IDs, no GORM types);
-2. Surface absence as an error: a nil DTO (the legacy not-found
+2. Surface absence as an error: a nil DTO (the compatibility not-found
    convention) becomes the module's domain `ErrTenantNotFound`,
    because the value-typed `tenancy.Tenant` seam has no
    `(nil, nil)` convention;
@@ -74,7 +74,7 @@ Two properties carry the security weight and justify
 resolution: an empty active-tenant context must be an error, never
 a fallback tenant — a resolver that guessed would silently
 cross the isolation boundary (REQ-005). Second, the explicit
-not-found error: the legacy `(nil, nil)` convention of the backing
+not-found error: the compatibility `(nil, nil)` convention of the backing
 service cannot leak through a value-typed seam, or callers would
 operate on a zero-valued `Tenant{}` as if it were real.
 

@@ -14,15 +14,15 @@ compliance:
   - ISO27001_A.9.2.4   # Management of secret authentication information
   - OWASP_ASVS_2.6
 satisfied_by:
-  adr: [ADR-0009]
-  conventions: [C-04, C-14]
+  adr: [ADR-0009, ADR-0072]
+  conventions: [C-04, C-22, C-14]
 implements_cross_cutting: [REQ-001, REQ-004, REQ-005]
-refines: REQ-AUTH-002
-depends_on: [REQ-AUTH-015, REQ-AUTH-002]
+refines: REQ-AUTH-001
+depends_on: [REQ-AUTH-015, REQ-AUTH-010, REQ-AUTH-012]
 type: doc
-tags: [requirement, capability, auth_management, registration, password-reset]
+tags: [requirement, capability, auth_management, authentication, password-reset, bearer]
 module: auth_management
-feature: registration
+feature: authentication
 capability: password_reset
 capability_kind: state_machine
 stakeholders:
@@ -42,12 +42,17 @@ password at the password-reset endpoint, the system **shall**
 look up the recovery record by the hashed token, refuse the
 request if the token is missing/expired/consumed, validate the
 new password against the configured `PasswordPolicy`, hash the
-new password via `passhash`, persist the new credential through
-the `UserCredentialWriter` boundary, mark the token consumed,
+new password via `passhash`, atomically consume the token before
+invoking the `UserCredentialWriter` boundary, persist the new credential,
 revoke every active session bound to the user-id (defence in
 depth — a leaked credential is the trigger that drives users to
 reset, and the old sessions must die), and emit the
-catalogued `user.password.reset` audit event.
+catalogued `auth.password.reset` audit event.
+
+**When** the platform issues the one-time password-reset bearer, it **shall**
+persist only the SHA-256 digest in the purpose-bound `auth_login_tokens`
+ledger. The raw bearer **shall not** enter a database row, projection, log,
+audit, event, notification record, template, retry payload, or durable job.
 
 ## Rationale
 
@@ -63,28 +68,33 @@ REQ-AUTH-020 AC-4 — applying it to the reset path closes the
 loophole where a user could downgrade to a weaker password by
 going through the reset flow instead of an in-place change.
 
-The token-consume + sessions-revoke + credential-write trio
-must be ordered so a partial failure does not leave the user
-in an unauthenticatable-but-still-leaked-session state. The
-documented order: (1) write the new credential, (2) mark the
-token consumed, (3) revoke sessions. A failure between (1) and
-(2) is recoverable (the user retries the reset link with the
-same token); a failure between (2) and (3) is logged at Error
-for operator follow-up, and the user can self-revoke via the
-session-list surface.
+The token-consume + credential-write + sessions-revoke sequence must be ordered
+so concurrent submissions cannot race different passwords into the same
+account. The documented order is: (1) win the token's single-use
+compare-and-swap, (2) write the new credential, (3) revoke sessions. When the
+token ledger and credential owner cannot share a transaction, a failure after
+step (1) deliberately burns the token and the user requests a fresh one. This
+fail-safe tradeoff is preferable to calling the credential writer twice. A
+failure after the password write but before session revocation remains a
+high-severity operational error until the full orchestration is implemented.
+
+Password-reset authority moved to the shared purpose-bound login-token ledger.
+The earlier plaintext `auth_password_resets` table has no live owner and would
+retain unnecessary credential material in databases and backups. Its removal
+is therefore a security-irreversible cutover, not a recoverable downgrade.
 
 ## Acceptance criteria
 
 - **AC-1 — Happy path.** A valid token + policy-compliant
   password resets the credential, marks the token consumed,
   revokes the user's other sessions, and emits
-  `user.password.reset`.
+  `auth.password.reset`.
 - **AC-2 — Token reuse rejection.** A token whose `consumed_at`
   is non-nil returns the typed
-  `ErrInvalidVerificationToken` (uniform with the never-existed
+  `ErrLoginTokenInvalid` (uniform with the never-existed
   case so the response does not leak the prior consumption).
-- **AC-3 — Expiry rejection.** A token past its TTL returns
-  the typed `ErrVerificationTokenExpired`.
+- **AC-3 — Expiry rejection.** A token past its TTL returns the same typed
+  `ErrLoginTokenInvalid` result as an unknown or consumed reset credential.
 - **AC-4 — Policy enforcement.** A new password failing the
   configured `PasswordPolicy` returns the typed
   `ErrPasswordPolicyViolation`; the reset is not applied.
@@ -94,39 +104,48 @@ session-list surface.
   or token verification.
 - **AC-6 — Same-password rejection.** A new password byte-equal
   to the current password is rejected with a typed error so
-  users do not "reset" by replaying their existing credential.
-  (Implementation note: this requires a hash-compare; the
-  reset path performs it as a single extra `passhash.Compare`.)
-- **AC-7 — Audit emission.** The `user.password.reset` event
+  users do not "reset" by replaying their existing credential. This requires
+  a hash comparison before the credential write.
+- **AC-7 — Audit emission.** The `auth.password.reset` event
   carries the user id, tenant id, and the source IP / user
   agent (for operator anomaly-detection) but **never** the
   candidate password.
+- **AC-8 — Hash-only bearer authority.** Password-reset issuance stores only
+  the SHA-256 digest in `auth_login_tokens`, bound to the exact tenant, user,
+  `password_reset` purpose, expiry, and consumption state. Migration 023 drops
+  the unused plaintext credential table, and its down migration fails
+  explicitly instead of recreating raw-token storage.
 
 ## Verification
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Inspection | `modules/platformkit-business-modules/auth_management/features/registration/password_reset_test.go` (when present); reviewers verify `password_reset.go::Reset` exercises the orchestration order documented above. _Verification gap: pending — cited evidence is prose / pattern / non-Go and cannot be auto-resolved._ |
-| AC-2 | Inspection | `password_reset.go` — repository check for `consumed_at` before any other branch. |
-| AC-3 | Inspection | TTL check identical to REQ-AUTH-021 AC-3. |
-| AC-4 | Inspection | The same `validatePasswordPolicy` helper used by REQ-AUTH-020 AC-4. |
-| AC-5 | Inspection | Reviewers verify the reset flow calls into `Service::LogoutEverywhere` (REQ-AUTH-012 AC-3). |
-| AC-6 | Inspection | Code review — the same-password check happens after the policy gate. |
-| AC-7 | Inspection | Audit-event payload review; PII-redaction discipline mirrors `observability/logger/redactor`. |
+| AC-1 | Inspection | `modules/platformkit-business-modules/auth_management/features/authentication/login_link_service.go::ResetPasswordWithToken` implements consume-before-write; session revocation and event emission remain explicit verification gaps while this requirement is Proposed. |
+| AC-2 | Inspection | `login_link_service.go::consumeTokenInTransaction` rejects a lost versioned compare-and-swap as `ErrLoginTokenInvalid`. |
+| AC-3 | Inspection | `login_link_service.go::lookupPending` rejects expired state through the uniform `ErrLoginTokenInvalid` result. |
+| AC-4 | Inspection | Verification gap: the live path currently enforces a fixed minimum length rather than the full shared `PasswordPolicy`. |
+| AC-5 | Inspection | Verification gap: the live reset path does not yet invoke the REQ-AUTH-012 logout-everywhere boundary. |
+| AC-6 | Inspection | Verification gap: the live reset path does not yet compare the candidate with the current password hash. |
+| AC-7 | Inspection | Verification gap: the canonical `auth.password.reset` event contract exists, but the live reset path does not yet emit it. |
+| AC-8 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/password_reset_schema_retirement_test.go::TestPlaintextPasswordResetSchemaIsRetired`, `TestAuthenticationFeatureDoesNotExposeLegacyPasswordResetPersistence`, and `auth_management/migrations/023_retire_plaintext_password_reset_table.{up,down}.sql`. |
 
 ## Edge cases & unhappy paths
 
-- **No active sessions to revoke.** The session-revocation
-  step is a no-op; the audit row still records the reset.
+- **No active sessions to revoke.** In the completed orchestration, the
+  session-revocation step is a no-op and the audit event still records the
+  reset.
 - **Reset by an operator on a user's behalf.** Operator-driven
   reset uses a different code path that does not require a
   recovery token; this REQ scopes to the user-driven flow.
-- **Token issued for an inactive account.** A reset against
-  an inactive/suspended user fails closed — the reset path
-  refuses to set credentials on an account that cannot log in.
+- **Token issued for an inactive account.** A reset against an inactive or
+  suspended user must fail closed. Authoritative lifecycle revalidation is an
+  implementation gap alongside AC-4 through AC-7.
 - **Concurrent reset attempts.** Two redemptions of the same
   token race; whichever wins consumes the token, the other
-  sees `ErrInvalidVerificationToken`.
+  sees `ErrLoginTokenInvalid`.
+- **Plaintext-schema cutover.** Rows in the unused plaintext table are
+  discarded, not converted into live credentials. Credentials in the live
+  digest-only `auth_login_tokens` ledger are unaffected.
 
 ## Risk
 
@@ -137,13 +156,14 @@ session-list surface.
   the user thinks they have remediated.
 - **Mitigations:** Session revocation as part of the reset
   transaction (AC-5), single-use TTL-bound token (AC-2 + AC-3),
-  policy-enforced replacement password (AC-4 + AC-6).
+  policy-enforced replacement password (AC-4 + AC-6), and hash-only scoped
+  bearer authority (AC-8).
 
 ## Implements (cross-cutting)
 
 - **REQ-001 — Multi-tenant isolation.** Reset scoped to the
   user's tenant.
-- **REQ-004 — Audit per mutation.** `user.password.reset`
+- **REQ-004 — Audit per mutation.** `auth.password.reset`
   with operator-relevant metadata.
 - **REQ-005 — Fail-closed.** AC-2..AC-6 default-deny on any
   precondition failure.
@@ -154,19 +174,28 @@ session-list surface.
 |---|---|
 | SOC2 CC6.1 | AC-1 + AC-5 — credential replacement bundles session revocation. |
 | ISO27001 A.9.2.4 | AC-1, AC-4, AC-7 — secret-information lifecycle with policy + audit. |
-| OWASP ASVS 2.6 | AC-2..AC-7 — full coverage of the recovery + reset requirements. |
+| OWASP ASVS 2.6 | AC-2 through AC-8 define the required recovery and reset controls; the verification table records current gaps. |
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/auth_management/features/registration/password_reset.go` —
-  the reset orchestration.
-- `modules/platformkit-business-modules/auth_management/features/registration/verification_repository.go` —
-  the token-consume persistence.
-- `modules/platformkit-business-modules/auth_management/features/registration/register_user_service.go` —
-  the password-policy gate (`validatePasswordPolicy`).
+Only AC-2, AC-3, and AC-8 are fully implemented; the verification table above
+records the remaining Proposed gaps.
+
+- `modules/platformkit-business-modules/auth_management/features/authentication/login_link_service.go` —
+  purpose-bound digest issuance, read-only peek, and single-use consume.
+- `modules/platformkit-business-modules/auth_management/features/authentication/login_link.go` and `forgot_password.go` —
+  public request, read-only landing, and explicit reset submission.
+- `modules/platformkit-business-modules/auth_management/entities/login_token.go` —
+  the digest-only `auth_login_tokens` model.
+- `modules/platformkit-business-modules/auth_management/migrations/023_retire_plaintext_password_reset_table.up.sql` —
+  the security-irreversible plaintext-table retirement.
 
 ## Related requirements
 
-- [REQ-AUTH-002 — Registration umbrella](./REQ-AUTH-002-registration.md)
+- [REQ-AUTH-001 — Authentication umbrella](./REQ-AUTH-001-authentication.md)
+- [REQ-AUTH-010 — Login credentials](./REQ-AUTH-010-login-credentials.md)
+- [REQ-AUTH-020 — Account create](./REQ-AUTH-020-account-create.md) — the shared password-policy authority planned by AC-4.
 - [REQ-AUTH-015 — Forgot password](./REQ-AUTH-015-forgot-password.md) — the upstream initiator that mints the recovery token.
 - [REQ-AUTH-012 — Logout](./REQ-AUTH-012-logout.md) — the session-revocation primitive AC-5 invokes.
+- [ADR 0072 — One-time public authentication bearers use hash-only scoped ledgers](../adr/0072-one-time-public-authentication-bearers-use-hash-only-scoped-ledgers.md)
+- [Convention C-22](../conventions.md#c-22-one-time-public-authentication-bearers-use-hash-only-scoped-ledgers)

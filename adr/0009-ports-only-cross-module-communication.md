@@ -40,10 +40,16 @@ under `pk-modules/<other_module>/...` is off-limits
    import any module's `NewModule()` — they exist precisely to
    compose the graph.
 
-Everywhere else, cross-module calls go through an interface in
-`pk-modules/ports/`, declared via
-`standard.WithCategorizedDep` in the caller's `dependencies.go`.
-The consumer imports the port; the app wires the implementation.
+Everywhere else, cross-module calls go through an owner contract in
+`contracts/provides/` or a cross-cutting interface in
+`platformkit-business-modules/ports/`. The caller declares the typed dependency
+in `dependencies.go` with
+`standard.WithDep(module.RequiresPort[T](module.PortSpec{...}))` or the
+`OptionalPort[T]` variant. The consumer imports the contract; the app wires the
+implementation. Declarative admin/operator surface placement is not a registrar
+dependency: modules publish `surface.Contribution` values through a
+`ModuleSurfaceContributionProvider` in the `module_surface_contributions` Fx
+group.
 
 We're strict about this. One exception breeds ten.
 

@@ -1,8 +1,8 @@
 ---
 id: REQ-AUTH-021
-title: "Email verification consumes a single-use, time-bound token to activate a pending account"
-status: Proposed
-date: 2026-05-08
+title: "Email verification consumes a hash-only proof through owner-guarded activation"
+status: Active
+date: 2026-07-18
 slug: req-auth-021-email-verification
 category: auth
 ears_pattern: event-driven
@@ -12,15 +12,15 @@ verification_methods: [test, inspection]
 compliance:
   - SOC2_CC6.1
   - ISO27001_A.9.2.2
-  - OWASP_ASVS_2.5   # Identity proofing
+  - OWASP_ASVS_2.5
 satisfied_by:
-  adr: [ADR-0009]
-  conventions: [C-04, C-14]
-implements_cross_cutting: [REQ-001, REQ-004, REQ-005]
+  adr: [ADR-0006, ADR-0007, ADR-0009, ADR-0071]
+  conventions: [C-04, C-20, C-21, C-14]
+implements_cross_cutting: [REQ-001, REQ-003, REQ-004, REQ-005]
 refines: REQ-AUTH-002
 depends_on: [REQ-AUTH-020, REQ-USER-001]
 type: doc
-tags: [requirement, capability, auth_management, registration, email-verification]
+tags: [requirement, capability, auth_management, registration, email-verification, bearer, csrf]
 module: auth_management
 feature: registration
 capability: verify_email
@@ -28,164 +28,178 @@ capability_kind: state_machine
 stakeholders:
   - end-user (proving email ownership)
   - tenant administrator (account-validity policy)
+  - security reviewer (bearer confidentiality and replay resistance)
   - compliance auditor (identity-proofing audit)
 ---
 
 # REQ AUTH-021 — Email verification
 
-Status: **Proposed** (2026-05-08)
+Status: **Active** (2026-07-18)
 
 ## Statement
 
-**When** a caller submits an email-verification token at the
-verification endpoint, the system **shall** look up the
-verification record by the hashed token, refuse the request if
-the token is missing, expired, or already consumed, look up the
-target user via the boundary service, transition the user to
-status `active` with `email_verified=true`, mark the
-verification record consumed, and emit the catalogued
-`user.email.verified` event.
+**When** registration issues an email-verification credential, the system
+**shall** persist only a tenant-scoped SHA-256 digest of a 32-byte random
+bearer and **shall** confine the raw value to the in-memory sensitive-delivery
+attempt and browser confirmation form.
+
+**When** a browser opens the emailed GET URL, the system **shall not** consume
+the credential or mutate the account. **When** the recipient explicitly
+submits the CSRF-protected confirmation POST, the system **shall** atomically
+consume the exact unexpired digest and activate only the exact non-deleted,
+pending, unverified user whose tenant and current canonical email still match
+the verification record.
+
+**If** any credential, transaction, tenant, user, email, status, lifecycle,
+audit, or event predicate cannot be proved, the system **shall** fail closed
+and **shall not** leave either the credential or user transition partially
+committed.
 
 ## Rationale
 
-Email verification is the platform's identity-proofing
-checkpoint at registration: it converts "someone claimed this
-email" into "the holder of the email confirmed it". The
-token-mechanics discipline rests on three properties:
+The emailed URL is a bearer credential, not ordinary message content. Raw
+database, notification, retry, template, log, admin, CRUD, or MCP persistence
+would turn operational read access into account-activation authority. Digest-
+only storage limits disclosure while still supporting exact lookup.
 
-1. **Single-use.** A token consumed once cannot be replayed.
-   Without this, a leaked verification email becomes a
-   long-running account-takeover vector.
-2. **Time-bound.** Tokens expire at a configured TTL
-   (typically 24 hours). An unexpired-forever token is a
-   long-tail credential exposure.
-3. **Activation as the load-bearing side-effect.** The
-   verification record's `verified_at` flip is the signal,
-   but the actual user-state transition happens via the
-   boundary service's partial-update path so the producer
-   module never serialises the full `User` aggregate. This is
-   what keeps the `pending_verification → active` move
-   consistent across the platform's two interface families
-   (REQ-USER-001).
+The verification record proves control of one email at one point in time. It
+does not authorize reactivating a user who was later suspended, deleted,
+verified, moved, or changed to another address. User management therefore owns
+one exact compare-and-swap for the lifecycle transition; registration cannot
+replace it with a cacheable read and generic partial update.
 
-The verification-audit-row write is best-effort: the user has
-already been activated, and the audit trail is reconstructable
-from the `user.email.verified` event alone if the verification
-row write fails. The platform logs at Error so the operator
-can tell the gap exists without the user-facing flow being
-disrupted.
+Link scanners open URLs automatically, so safe GET and explicit CSRF POST are
+separate phases. Transactional credential consume, owner activation, audit,
+and typed event publication make replay, races, and partial state observable
+and deterministic.
 
 ## Acceptance criteria
 
-- **AC-1 — Happy path.** A valid, unexpired, unconsumed token
-  marks the verification record consumed
-  (`verified_at = now()`), updates the user's status to
-  `active` and `email_verified=true`, and publishes
-  `user.email.verified`.
-- **AC-2 — Single-use replay rejection.** A token that has
-  already been consumed (its `verified_at` is non-nil)
-  returns the typed `ErrEmailAlreadyVerified` error and does
-  not re-trigger the activation.
-- **AC-3 — Expiry rejection.** A token whose `expires_at` is
-  in the past returns the typed
-  `ErrVerificationTokenExpired` error and does not trigger
-  the activation.
-- **AC-4 — Unknown token.** A token that does not exist in
-  the verification repository returns
-  `ErrInvalidVerificationToken`. The response shape is
-  uniform with the expired-and-consumed cases so the user
-  cannot discriminate the failure mode.
-- **AC-5 — Missing user record.** If the verification record
-  exists but the bound user has been deleted, the request
-  returns `ErrUserNotFound`; the verification row stays
-  unconsumed so a recovery flow can re-issue.
-- **AC-6 — Boundary writer requirement.** The activation step
-  requires the user service to satisfy
-  `ports.UserBoundaryWriter`; an unwired writer returns the
-  typed configuration error rather than a silent success.
-- **AC-7 — Audit-row resilience.** A failure to update the
-  verification record after the user has been activated logs
-  at Error and propagates `nil` to the caller — the user
-  succeeds, the audit gap surfaces in metrics for operator
-  triage.
+- **AC-1 — Hash-only issuance.** A credential contains 32 cryptographically
+  random bytes represented as 64 hexadecimal characters. Persistence contains
+  only its 64-character SHA-256 digest, exact tenant, user, canonical email,
+  expiry, and consumption state. Raw bearer material is absent from entity,
+  JSON, UI, admin, CRUD, MCP, audit, event, log, metric, job, and notification
+  persistence.
+- **AC-2 — Sensitive delivery.** The verification email is dispatched as
+  sensitive inline content with no durable raw body or template data. Every
+  replacement credential uses a distinct delivery tracking identity so
+  notification idempotency cannot return a prior completed send.
+- **AC-3 — Scanner-safe confirmation.** GET `/verify-email?token=...` performs
+  no service verification or account mutation. A shape-valid bearer renders a
+  no-JavaScript POST form with the exact bearer, exact `/verify-email` action,
+  and response-authoritative CSRF token. Invalid shape produces a generic
+  terminal page without echoing the token.
+- **AC-4 — CSRF and response hardening.** POST `/verify-email` remains covered
+  by general CSRF middleware. Confirmation pages use `no-store`, suppress
+  referrers, deny framing, and remove the bearer from URLs, logs, and terminal
+  success or expected-failure responses.
+- **AC-5 — Atomic single use.** Redemption conditionally consumes exactly one
+  tenant-scoped, unexpired, unconsumed digest inside the ambient transaction.
+  Concurrent redemption has exactly one activation and one durable event.
+- **AC-6 — Uniform credential rejection.** Missing, malformed, unknown,
+  expired, and already-consumed credentials produce typed internal outcomes
+  and no activation. Browser failure copy does not disclose which predicate
+  failed.
+- **AC-7 — Owner-guarded activation.** User management activates through one
+  durable compare-and-swap requiring exact tenant ID, user ID, case-folded
+  canonical email, `pending` status, `email_verified=false`, and
+  `deleted_at IS NULL`, inside the caller's exact ambient transaction.
+- **AC-8 — Lifecycle changes fail closed.** Changed-email, active, inactive,
+  suspended, deleted-status, soft-deleted, already-verified, wrong-tenant,
+  cross-tenant, missing-user, and missing-transaction states do not mutate the
+  user and roll verification consumption back.
+- **AC-9 — Atomic audit and event.** Activation, verification consumption,
+  audit intent, and the typed `user.email.verified` version `2.0.0` event commit
+  together. A downstream event or audit failure rolls both state changes back.
+- **AC-10 — One catalog authority.** Runtime event type, version, typed payload,
+  module event registration, feature metadata, and generated catalog are
+  projected from the same typed event contract. `user.email_verified` is not a
+  compatibility alias.
+- **AC-11 — Security-irreversible cutover.** The append-only migration
+  invalidates pre-cutover pending bearers, hashes terminal history, constrains
+  digest shape and uniqueness, drops the raw-token column, and refuses a down
+  migration that would recreate bearer storage.
+- **AC-12 — Single schema owner.** Registration is the only owner of
+  `email_verifications`. Authentication must not declare, migrate, cache,
+  auto-migrate, or generically serve an alternate raw-token model for the same
+  table.
 
 ## Verification
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/registration/req_auth_002_test.go::TestVerifyEmail_SingleUse_AndExpiry` covers the success and the subsequent rejection. |
-| AC-1 | Demonstration | `modules/platformkit-business-modules/auth_management/features/registration/e2e.go` — browser flow `auth_management.registration.verify_email` (Fulfills binding), run against the showroom and published with requirement label `REQ-AUTH-021-AC-1` to the Allure project `e2e-showroom-smoke` at https://allure.staging.septagon.dev. |
-| AC-2 | Inspection | Same harness — second redemption returns `ErrEmailAlreadyVerified`. _Verification gap: pending — cited evidence is prose / pattern / non-Go and cannot be auto-resolved._ |
-| AC-3 | Inspection | `req_auth_002_test.go::TestVerifyEmail_SingleUse_AndExpiry/expired_token_rejected`. _Verification gap: pending — cited evidence is prose / pattern / non-Go and cannot be auto-resolved._ |
-| AC-4 | Inspection | `verify_email.go::VerifyEmail` — `s.verificationRepo.GetByToken` returning nil → `ErrInvalidVerificationToken`. |
-| AC-5 | Inspection | `verify_email.go::VerifyEmail` — `ResolveGetByIDDTO` returning nil → `ErrUserNotFound`. |
-| AC-6 | Inspection | `verify_email.go::VerifyEmail` — type assertion to `ports.UserBoundaryWriter` returns the typed error on failure. |
-| AC-7 | Inspection | `verify_email.go::VerifyEmail` — Error-log-and-return-nil branch when the verification update fails. |
+| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/registration/verification_security_test.go::TestEmailVerificationDigestIsNotProjected` and `resend_verification_test.go::TestResendVerification_ReplacesTokenBeforeDispatch`. |
+| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/registration/resend_verification_test.go::TestResendVerificationUsesDistinctSensitiveDeliveryIntentPerCredential`. |
+| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/registration/register_user_browser_test.go::TestEmailVerificationBrowserFlowRequiresExplicitCSRFProtectedPost`. |
+| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/registration/register_user_browser_test.go::TestEmailVerificationBrowserFlowRequiresExplicitCSRFProtectedPost`; inspection of `register_user_pages.go::newEmailVerificationPageOutput` and `setEmailVerificationPageHeaders` covers both response paths. |
+| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/registration/verification_security_test.go::TestVerifyEmailConcurrentRedemptionHasOneActivationAndOneDurableEvent`. |
+| AC-6 | Test | `modules/platformkit-business-modules/auth_management/features/registration/req_auth_002_test.go::TestVerifyEmail_SingleUse_AndExpiry`, `verify_email_public_semantics_test.go::TestVerifyEmailPublicAPIUsesOneCredentialRejection`, `TestVerifyEmailPublicAPISanitizesOperationalFailure`, and `register_user_browser_test.go::TestEmailVerificationBrowserExpectedRejectionsAreUniformAndTerminal`. |
+| AC-7 | Test | `modules/platformkit-business-modules/user_management/features/user/email_verification_activation_store_test.go::TestEmailVerificationActivationStoreRequiresExactAmbientAuthority` and `TestEmailVerificationActivationStoreJoinsCallerRollback`. |
+| AC-8 | Test | `modules/platformkit-business-modules/user_management/features/user/email_verification_activation_store_test.go::TestEmailVerificationActivationStoreRejectsEveryStaleOrIneligibleState`. |
+| AC-9 | Test | `modules/platformkit-business-modules/auth_management/features/registration/verification_security_test.go::TestVerifyEmailRollsBackCredentialAndActivationWhenDurableEventFails`. |
+| AC-10 | Test | `modules/platformkit-business-modules/auth_management/features/registration/event_contract_test.go::TestEmailVerifiedEventContractIsCanonical` and `TestRegistrationFeatureProjectsEmailVerifiedContractWithoutDrift`. |
+| AC-11 | Test | `modules/platformkit-business-modules/auth_management/features/registration/verification_security_test.go::TestEmailVerificationDigestMigrationIsSecurityIrreversible`. |
+| AC-12 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/legacy_email_verification_schema_test.go::TestAuthenticationFeatureCannotOwnEmailVerificationSchema`. |
 
-## Edge cases & unhappy paths
+## Edge cases and explicit limits
 
-- **Concurrent consumption.** Two simultaneous redemption
-  requests for the same token race on the verification-row
-  read. The single-use semantic survives because the
-  consumed-flag write is the source of truth; the second
-  redemption sees the verified-row state and returns
-  `ErrEmailAlreadyVerified`.
-- **User reactivation post-suspension.** A previously
-  suspended user who completes a fresh verification loop is
-  reactivated; the platform allows operator-mediated reset
-  flows that pre-stamp a new verification token.
-- **Email-change verification.** When a user changes email,
-  the same primitive issues a new token and reuses this
-  endpoint; the activation update narrows to the email
-  field rather than the status flip.
-- **Token TTL clock skew.** Verification clocks rely on
-  `time.Now()`; deployments distributed across regions with
-  drifting NTP see edge-of-window false negatives, mitigated
-  by the configured TTL being substantially larger than the
-  expected drift.
+- **Case differences.** Activation compares `LOWER(TRIM(email))` with the
+  canonical verification address while returning the owner row unchanged.
+- **Transaction retries.** A failed downstream audit or event leaves the
+  credential redeemable because its consume and the user activation roll back.
+- **Email changes.** A credential for the old address cannot verify or activate
+  the new address. A future email-change workflow must issue a new credential
+  bound to the new canonical value.
+- **Administrative recovery.** Verification is deliberately not an account-
+  reactivation endpoint. Suspended, inactive, or deleted users require an
+  explicit audited lifecycle decision.
+- **Notification failure.** Sensitive content is not retained for generic
+  retries. The user requests a fresh credential after the resend cooldown.
 
 ## Risk
 
-- **Likelihood:** Medium — every new account traverses this
-  path exactly once.
-- **Impact:** High — a verification bypass produces an active
-  account without proven email ownership, undoing the
-  identity-proofing checkpoint.
-- **Mitigations:** Single-use (AC-2), TTL bounded (AC-3),
-  uniform error opacity (AC-4), boundary-writer requirement
-  (AC-6).
+- **Likelihood:** High — every email/password registration traverses this
+  public bearer flow and scanners routinely prefetch links.
+- **Impact:** Critical — bearer disclosure or stale-state activation can grant
+  an attacker an active identity or reverse an administrator's suspension.
+- **Mitigations:** Hash-only persistence (AC-1), scanner-safe CSRF confirmation
+  (AC-3 and AC-4), atomic single use (AC-5), exact owner CAS (AC-7 and AC-8),
+  and transactionally coupled audit/event state (AC-9).
 
 ## Implements (cross-cutting)
 
-- **REQ-001 — Multi-tenant isolation.** The verification
-  record is scoped to the user's tenant; cross-tenant
-  redemption is rejected by the repository's tenant-bound
-  query.
-- **REQ-004 — Audit per mutation.** `user.email.verified`
-  emitted on every successful activation.
-- **REQ-005 — Fail-closed.** AC-2..AC-6 default-deny on any
-  precondition failure.
+- **REQ-001 — Multi-tenant isolation.** Credential consume and user activation
+  both require the exact request tenant and reject cross-tenant mode.
+- **REQ-003 — No account enumeration.** Browser failure copy does not reveal
+  unknown, expired, consumed, or ineligible account state.
+- **REQ-004 — Audit per mutation.** One typed event and audit intent commit with
+  every successful activation.
+- **REQ-005 — Fail closed.** Storage, transaction, port, lifecycle, audit, and
+  event uncertainty returns no activation.
 
 ## Compliance mapping
 
 | Control | Coverage |
 |---|---|
-| SOC2 CC6.1 | AC-1 — verified email as a precondition for active account status. |
-| ISO27001 A.9.2.2 | AC-1 — formal user-provisioning checkpoint. |
-| OWASP ASVS 2.5 | AC-2 + AC-3 — identity-proofing token discipline. |
+| SOC2 CC6.1 | AC-5 through AC-9 preserve verified identity and lifecycle authority. |
+| ISO27001 A.9.2.2 | AC-7 and AC-8 enforce the formal provisioning transition. |
+| OWASP ASVS 2.5 | AC-1 through AC-6 enforce bounded, single-use identity-proof credentials. |
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/auth_management/features/registration/verify_email.go` —
-  the verifier and orchestration.
-- `modules/platformkit-business-modules/auth_management/features/registration/verification_repository.go` —
-  the persistence layer.
-- `modules/platformkit-business-modules/auth_management/features/registration/register_user_service.go::sendVerificationEmail` —
-  the producer side that mints tokens.
+- `modules/platformkit-business-modules/auth_management/features/registration/register_user_service.go` — hash-only issuance and sensitive delivery.
+- `modules/platformkit-business-modules/auth_management/features/registration/register_user_pages.go` — scanner-safe CSRF browser confirmation.
+- `modules/platformkit-business-modules/auth_management/features/registration/verification_repository.go` — tenant-scoped conditional digest consume.
+- `modules/platformkit-business-modules/user_management/features/user/email_verification_activation_store.go` — exact owner-guarded activation compare-and-swap.
+- `modules/platformkit-business-modules/auth_management/migrations/022_hash_and_atomically_consume_email_verifications.up.sql` — security-irreversible cutover.
+- `modules/platformkit-business-modules/auth_management/contracts/events.go` — canonical typed event contract.
 
 ## Related requirements
 
 - [REQ-AUTH-002 — Registration umbrella](./REQ-AUTH-002-registration.md)
-- [REQ-AUTH-020 — Account create](./REQ-AUTH-020-account-create.md) — the producer of the verification token this capability consumes.
-- [REQ-AUTH-024 — Resend verification](./REQ-AUTH-024-resend-verification.md) — the recovery path when the original email is lost.
-- [REQ-USER-001 — User](./REQ-USER-001-user.md) — the record this capability transitions to active.
+- [REQ-AUTH-020 — Account create](./REQ-AUTH-020-account-create.md)
+- [REQ-AUTH-024 — Resend verification](./REQ-AUTH-024-resend-verification.md)
+- [REQ-USER-001 — User](./REQ-USER-001-user.md)
+- [ADR 0071](../adr/0071-email-verification-uses-hash-only-proofs-and-owner-guarded-activation.md)
+- [Convention C-21](../conventions.md#c-21-email-verification-bearers-are-hash-only-and-owner-guarded)

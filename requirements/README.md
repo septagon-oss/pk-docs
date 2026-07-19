@@ -71,8 +71,9 @@ headers and tests. The number range is the tier signal:
    module. The `{MODULE}` segment matches the business-module short
    tag (`AUTH`, `USER`, `TENANT`, `AUDIT`, `NOTIF`, `BILL`, `ADMIN`,
    `CONTENT`, `SITE`, `MAIL`, `CHAT`, `HEALTH`, `OP`, `ENTITLE`,
-   `TRANS`, `APIKEY`). One umbrella per feature, capped at 9 per
-   module.
+   `TRANS`, `APIKEY`) or a platform contract short tag (`SAAS`,
+   `DATA`, `INFRA`, `PORTS`, `TEST`, `NAMING`). One umbrella per feature,
+   capped at 9 per module or platform-contract family.
 3. **Capability REQs (REQ-{MODULE}-NNN where NNN ≥ 010)** name a
    single discipline within a feature that the cross-cutting REQs
    alone cannot deliver. A capability REQ exists only when the
@@ -129,7 +130,8 @@ fall into three states:
   `audit_management`, `api_key_management`, `notification_management`,
   `billing_management`, `content_management`, `admin_management`,
   `site_management`, `health_management`, `translation_management`,
-  `entitlement_management`, `chat_management`, `mail_management`.
+  `entitlement_management`, `chat_management`, `mail_management`, and
+  the `platformkit_ports` design authority.
 - **Cross-cutting-only by design.** The feature is pure CRUD or pure
   rendering and the cross-cutting REQs (REQ-001..017) carry the entire
   discipline. No capability REQ is owed for pure rendering or other
@@ -167,8 +169,67 @@ gains acceptance criteria the cross-cuttings cannot express.
 - [REQ-016 — Module composition is declarative via Fx](./REQ-016-fx-composition-declarative.md)
 - [REQ-017 — Platform agent surfaces authenticate as service-account principals](./REQ-017-platform-agent-principal-substitution.md)
 - [REQ-018 — Renderable entities declare read permissions; renderer fails closed on undeclared](./REQ-018-permission-coverage-fail-closed.md)
+- [REQ-019 — Live A2UI delivery is signed, audience-bound, and replay-resistant](./REQ-019-live-a2ui-delivery-is-signed-and-replay-resistant.md)
 
 ### Feature REQs by module
+
+#### Shared quality authority (REQ-TEST-NNN)
+
+- [REQ-TEST-001 — Shared quality primitives execute deterministically and preserve governed evidence](./REQ-TEST-001-shared-quality-authority.md)
+
+#### Canonical naming authority (REQ-NAMING-NNN)
+
+- [REQ-NAMING-001 — Canonical identifier and source-layout grammar](./REQ-NAMING-001-canonical-identifier-layout-grammar.md)
+
+#### SaaS control plane (REQ-SAAS-NNN)
+
+- [REQ-SAAS-001 — Governed lifecycle transitions](./REQ-SAAS-001-governed-lifecycle-transitions.md)
+- [REQ-SAAS-002 — Commercial projection reconciliation](./REQ-SAAS-002-commercial-projection-reconciliation.md)
+- [REQ-SAAS-003 — Durable resumable execution](./REQ-SAAS-003-durable-resumable-execution.md)
+
+#### data lifecycle assurance (REQ-DATA-NNN)
+
+- [REQ-DATA-001 — Recovery evidence gate](./REQ-DATA-001-recovery-evidence-gate.md)
+- [REQ-DATA-002 — Tenant-data governance evidence gate](./REQ-DATA-002-tenant-data-governance-gate.md)
+- [REQ-DATA-003 — Executable recovery drill](./REQ-DATA-003-executable-recovery-drill.md)
+- [REQ-DATA-004 — Executable tenant-data drill](./REQ-DATA-004-executable-tenant-data-drill.md)
+
+#### infrastructure deployment lifecycle (REQ-INFRA-NNN)
+
+- [REQ-INFRA-004 — Request-derived deployment verification](./REQ-INFRA-004-request-derived-verification.md)
+- [REQ-INFRA-005 — Reproducible deployment artifact identity](./REQ-INFRA-005-deployment-artifact-identity.md)
+- [REQ-INFRA-006 — Serialized closed-loop deployment](./REQ-INFRA-006-closed-loop-deployment.md)
+- [REQ-INFRA-007 — Exact verified-baseline rollback](./REQ-INFRA-007-verified-baseline-rollback.md)
+
+#### platformkit_ports design authority (REQ-PORTS-NNN)
+
+Feature umbrellas (NNN ≤ 009):
+
+- [REQ-PORTS-001 — Port contract identity](./REQ-PORTS-001-port-contract-identity.md)
+- [REQ-PORTS-002 — Typed event and schema authority](./REQ-PORTS-002-typed-event-schema-authority.md)
+- [REQ-PORTS-003 — Code-authored module descriptor](./REQ-PORTS-003-code-authored-module-descriptor.md)
+- [REQ-PORTS-004 — Portable error taxonomy](./REQ-PORTS-004-portable-error-taxonomy.md)
+- [REQ-PORTS-005 — Authored contract index](./REQ-PORTS-005-authored-contract-index.md)
+- [REQ-PORTS-006 — Port admission and conformance](./REQ-PORTS-006-port-admission-conformance.md)
+
+Capability-level (NNN ≥ 010):
+
+- [REQ-PORTS-010 — Audit port provider](./REQ-PORTS-010-audit-port-provider.md)
+- [REQ-PORTS-011 — Audit driver conformance](./REQ-PORTS-011-audit-driver-conformance.md)
+- [REQ-PORTS-012 — Typed event transport](./REQ-PORTS-012-typed-event-transport.md)
+- [REQ-PORTS-013 — Event driver conformance](./REQ-PORTS-013-event-driver-conformance.md)
+- [REQ-PORTS-014 — Authorization contract](./REQ-PORTS-014-authorization-contract.md)
+- [REQ-PORTS-015 — Authorization driver conformance](./REQ-PORTS-015-authorization-driver-conformance.md)
+- [REQ-PORTS-016 — Structured-log audit adapter](./REQ-PORTS-016-structured-log-audit-adapter.md)
+- [REQ-PORTS-017 — Channel event adapter](./REQ-PORTS-017-channel-event-adapter.md)
+- [REQ-PORTS-018 — Static authorization adapter](./REQ-PORTS-018-static-authorization-adapter.md)
+- [REQ-PORTS-019 — Entitlement contract and OSS default](./REQ-PORTS-019-entitlement-contract-and-oss-default.md)
+- [REQ-PORTS-020 — Tenancy port provider](./REQ-PORTS-020-tenancy-port-provider.md)
+- [REQ-PORTS-021 — Domain vocabulary admission gate](./REQ-PORTS-021-domain-vocabulary-admission-gate.md)
+- [REQ-PORTS-022 — Conformance-kit admission gate](./REQ-PORTS-022-conformance-kit-admission-gate.md)
+- [REQ-PORTS-023 — Tenancy port and immutable catalog](./REQ-PORTS-023-tenancy-port-and-immutable-catalog.md)
+- [REQ-PORTS-024 — Surface vocabulary authority](./REQ-PORTS-024-surface-vocabulary-authority.md)
+- [REQ-PORTS-025 — Manifest surface hygiene](./REQ-PORTS-025-manifest-surface-hygiene.md)
 
 #### auth_management (REQ-AUTH-NNN)
 
@@ -196,6 +257,9 @@ Capability-level (NNN ≥ 010):
 - [REQ-AUTH-021 — Email verification](./REQ-AUTH-021-email-verification.md)
 - [REQ-AUTH-022 — Password reset](./REQ-AUTH-022-password-reset.md)
 - [REQ-AUTH-023 — Availability check](./REQ-AUTH-023-availability-check.md)
+- [REQ-AUTH-024 — Resend verification](./REQ-AUTH-024-resend-verification.md)
+- [REQ-AUTH-025 — Magic-link tenant self-enrollment](./REQ-AUTH-025-magic-link-self-enrollment.md)
+- [REQ-AUTH-026 — Interactive-provider tenant self-enrollment](./REQ-AUTH-026-interactive-provider-self-enrollment.md)
 - [REQ-AUTH-030 — TOTP enrollment](./REQ-AUTH-030-totp-enrollment.md)
 - [REQ-AUTH-031 — TOTP verification](./REQ-AUTH-031-totp-verification.md)
 - [REQ-AUTH-032 — Backup-code recovery](./REQ-AUTH-032-backup-code-recovery.md)

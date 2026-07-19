@@ -43,7 +43,7 @@ the contract, coordinator, validation, failure policy, audit hooks, and tests.
 Delivery modules provide channels. App bootstraps compose the graph. Provider
 packages adapt concrete vendors to the owning module's interface. This means:
 
-- `auth_management` owns login, sessions, MFA, approval redemption, permission
+- `auth_management` owns login, sessions, MFA, permission
   policy, and authentication failure semantics.
 - `notification_management`, `mail_management`, and `chat_management` own
   delivery channels, templates, inbox/chat state, and delivery telemetry; they
@@ -53,18 +53,17 @@ packages adapt concrete vendors to the owning module's interface. This means:
   isolation enforcement remains a cross-cutting invariant that every stateful
   module must respect.
 - `platformkit-apps/*/bootstrap` owns topology, routes, and composition only. It
-  may inject an auth-owned coordinator into a mobile login route, but it must
-  not own the MFA state machine.
+  composes the auth-owned `AuthenticationService`; it does not own an MFA state
+  machine or retain authentication credentials between requests.
 - Provider implementations live behind contracts owned by the decision module.
-  A NoOp provider may be registered by default so OSS and local builds compose,
-  but security-sensitive code must fail closed when a configured provider
-  errors.
+  Security-sensitive capability absence is explicit at composition time; NoOp
+  providers do not stand in for missing security behavior.
 
-The MFA approval move follows this rule. The stable contract is
-`auth_management/contracts/provides.MFAApprovalService`; the coordinator and
-redeem route are in `auth_management/mobileauth`; the default provider is
-`auth_management/providers/mfa/noop`; the app mobile routes only call the
-optional auth-owned coordinator after password authentication succeeds.
+The MFA challenge path follows this rule. `AuthenticationService` returns a
+typed `AuthenticationChallengeError`; auth validates the subsequent
+second-factor input before issuing a session, and mobile transport only maps
+that typed response. The former in-memory coordinator and redeem route are
+deleted.
 
 ## What we gave up
 
@@ -73,9 +72,8 @@ optional auth-owned coordinator after password authentication succeeds.
 - Standalone "transport modules" for every provider idea. If the lifecycle is an
   auth decision, the provider belongs behind auth, even when the user-visible
   artifact is a notification.
-- Some DI simplicity. NoOp defaults are useful, but real provider replacement
-  needs explicit configuration and conflict checks instead of relying on package
-  import order.
+- Some DI simplicity. Security providers require explicit configuration and
+  conflict checks instead of relying on defaults or package import order.
 - A universal "security module" bucket. Security ownership still has subdomains:
   authentication belongs in auth, tenant lifecycle in tenant, audit evidence in
   audit, and delivery evidence in notification/mail/chat.
@@ -103,16 +101,15 @@ optional auth-owned coordinator after password authentication succeeds.
   domain behavior.
 - **Review rule** — delivery modules may deliver, retry, template, track, and
   expose inbox/history state. They must not decide another module's lifecycle.
-- **Review rule** — NoOp providers are allowed only when they make absence
-  explicit. Security paths must either fall through because the capability is
-  intentionally unavailable for the user, or fail closed when a configured
-  provider errors.
+- **Review rule** — security capabilities are either explicitly composed or
+  absent. Security paths do not use NoOp providers; missing configuration and
+  provider errors fail closed.
 - **Existing analyzer** — ADR 0009 still applies. Cross-module behavior goes
   through public contracts and ports, not direct imports into implementation
   packages.
-- **Existing tests** — `auth_management/mobileauth` owns MFA coordinator tests:
-  no-device fallthrough, pending approval creation, pending redemption, approved
-  redemption, and fail-closed provider errors.
+- **Existing tests** — `auth_management/mobileauth` and
+  `auth_management/features/authentication` own typed MFA challenge mapping,
+  second-factor verification, and fail-closed session issuance tests.
 - **Gap** — provider conflict detection is still review/configuration driven.
   The follow-up is a DI/catalog check that rejects multiple concrete providers
   for the same security-sensitive interface unless a selector explicitly picks
@@ -127,9 +124,9 @@ optional auth-owned coordinator after password authentication succeeds.
 - [ADR 0017 — Dependency injection is the composition boundary](./0017-fx-dependency-injection-as-composition.md).
 - [ADR 0019 — Every port works over HTTP and NATS](./0019-dual-path-transport-symmetry.md).
 - [ADR 0025 — Mobile surfaces are module-owned capabilities composed by apps](./0025-module-owned-mobile-surfaces.md).
-- `pk-modules/auth_management/contracts/provides/mfa_approval.go`.
-- `pk-modules/auth_management/mobileauth/approval.go`.
-- `pk-modules/auth_management/providers/mfa/noop/noop.go`.
+- `pk-modules/auth_management/contracts/v1/authentication.go`.
+- `pk-modules/auth_management/mobileauth/submit.go`.
+- `pk-modules/auth_management/features/authentication/login_2fa.go`.
 - `platformkit-apps/*/internal/bootstrap/mobile_ui_routes.go`.
 - Thoughtworks, "Lightweight Architecture Decision Records" — keep important
   architectural decisions with context and consequences in source control:

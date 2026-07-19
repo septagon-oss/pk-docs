@@ -31,8 +31,7 @@ return nil
 
 It's a **dual write**: one to the DB (state change), one to the
 event bus (domain event). When the bus write fails — a transient
-outage, a network partition, or the bus simply configured with a
-noop provider mid-migration — the event is lost, the state is
+outage or a network partition — the event is lost, the state is
 persisted, and the downstream subscribers (audit projections,
 integration webhooks, projection caches) never learn about the
 change. No durable record captured the intent to publish, so
@@ -86,7 +85,7 @@ adopts it. Shape:
 - **`Service.EnqueueEvent(ctx, evt event.Event) (*Event, error)`**
   — convenience entry point for producers that already construct a
   full `event.Event`.
-- **`Service.DrainOnce(ctx, batchSize) (int, error)`** — the
+- **`Service.DrainOnceWithReport(ctx, batchSize) (DrainReport, error)`** — the
   worker-side API. Lists pending rows whose
   `next_attempt_at ≤ now`, publishes each, marks `published` on
   success or schedules retry on failure. Per-row failure isolation
@@ -113,6 +112,28 @@ Adoption happens module by module. Each producer migrates its
 `bus.Publish(evt)` site to `outbox.EnqueueEvent(ctx, evt)` inside
 an existing transaction, and the deployment schedules a worker via
 `jobs.JobScheduler`.
+
+### Forward-only execution contract
+
+The worker path has no compatibility mode. `jobs.JobScheduler` is
+an executing contract: implementations MUST claim work atomically,
+persist terminal failures, expose payload-free execution inspection
+and redrive operations, and schedule recurring work with an explicit
+stable key through `ScheduleRecurringWithKey`. Unkeyed recurring
+scheduling, non-executing schedulers, optional inspection capabilities,
+and payload-bearing job listings are not supported.
+
+River on Postgres is the canonical provider. Redis/Asynq is an explicit
+alternative; both run with concurrency `2` unless an application makes a
+deliberate override. A deployment without an executing scheduler fails
+composition instead of accepting work that cannot run.
+
+The outbox store follows the same fail-closed rule. `ClaimBatch`,
+`MarkFailed`, and `MarkDead` are mandatory store operations. Dispatchers
+MUST NOT fall back to unclaimed reads, convert dead-letter transitions
+into delivered rows, or retry a pre-claim SQL update path. A schema that
+cannot support atomic claiming is incompatible and must be migrated
+before the worker starts.
 
 ## What we gave up
 

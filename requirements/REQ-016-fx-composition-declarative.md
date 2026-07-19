@@ -66,13 +66,16 @@ a notification-management module just to satisfy an import.
   (`fx.New(...).Run()` or equivalent) that consumes the catalog.
 - **AC-3** Required vs optional dependencies are declared in each
   module's `dependencies.go` via
-  `standard.WithCategorizedDep(... required bool ...)`. The
+  `standard.WithDep(module.RequiresPort[T](module.PortSpec{...}))` or
+  `standard.WithDep(module.OptionalPort[T](module.PortSpec{...}))`. Governed
+  UI/admin/operator placement is published separately through
+  `ModuleSurfaceContributionProvider` values in the
+  `module_surface_contributions` Fx group. The
   contract-check analyzer fails the build if a declared required
   dep is unsatisfied.
 - **AC-4** The assembled FX graph is introspectable at runtime via
-  the platform catalog API
-  (`GET /api/_platform/modules`,
-  `GET /api/_platform/graph`).
+  the governed platform catalog tools (`platform.ListModules` and
+  `platform.GetDependencyGraph`).
 
 ## Verification
 
@@ -81,7 +84,7 @@ a notification-management module just to satisfy an import.
 | AC-1 | Analysis | `make check-structure` (`platformkit-devtools/internal/modulechecks/structure.go`) — verifies every module declares `NewModule`, `GetModule`, and `GetFeatures`. |
 | AC-2 | Inspection | Code review checklist: `platformkit-apps/complete-saas-monolith/main.go` is the canonical reference; new entrypoints follow the same shape. |
 | AC-3 | Analysis | `make check-module-deps` (catalog contract check) — fails on unresolved required deps. |
-| AC-4 | Test | `modules/platformkit-business-modules/catalog/runtimecatalog/catalog_test.go::TestPlanSkipsWarningOnlyHTTPRouting` exercises `Plan()` against subsets of the registered modules. |
+| AC-4 | Test | `core/platformkit-backend-kit/core/mcp/platform_tools_test.go::TestPlatformTools_ListModules` verifies catalog-tool registration and module introspection; `core/platformkit-backend-kit/core/mcp/ai_agent_e2e_test.go::TestAIAgentFullWorkflow` invokes `platform.GetDependencyGraph` through the governed runtime. |
 
 ## Satisfied by
 

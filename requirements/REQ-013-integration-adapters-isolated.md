@@ -78,7 +78,7 @@ platform booting even when an optional integration is unreachable.
 |---|---|---|
 | AC-1 | Inspection | Directory walk: every `platformkit-integrations/<domain>/` has at least one `provider.go` or interface-declaring file. |
 | AC-2 | Inspection | Same walk: every leaf directory is a single provider's adapter. |
-| AC-3 | Analysis | `platformkit-backend-kit/analysis/importboundary` rejects business-module imports of concrete adapter packages. |
+| AC-3 | Analysis | `core/platformkit-backend-kit/analysis/importboundary` rejects business-module imports of concrete adapter packages. |
 | AC-4 | Inspection | Each optional integration lists its `providers/noop/` peer in its module's `dependencies.go` declarations. |
 
 ## Satisfied by

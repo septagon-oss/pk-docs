@@ -1,6 +1,6 @@
 ---
 id: REQ-ADMIN-011
-title: "Setting writes route through the transactional outbox when configured; direct publish remains for stripped builds"
+title: "Setting writes and cache-invalidation events commit atomically; missing durable publication fails closed"
 status: Proposed
 date: 2026-05-08
 slug: req-admin-011-settings-outbox
@@ -16,7 +16,7 @@ compliance:
 satisfied_by:
   adr: [ADR-0007]
   conventions: [C-04, C-14]
-implements_cross_cutting: [REQ-004, REQ-014]
+implements_cross_cutting: [REQ-004, REQ-005]
 refines: REQ-ADMIN-009
 type: doc
 tags: [requirement, capability, admin_management, settings, outbox]
@@ -42,23 +42,18 @@ the settings feature **shall**:
 
 1. Persist the new value through the resolver / repository in
    the same transaction;
-2. **If** the platform has wired a transactional outbox
-   (ADR-0007), enqueue the
-   `admin.settings.changed` event on the outbox so the
-   delivery is atomic with the persist — a crash between
-   persist and publish cannot leave the change un-announced;
-3. **If** no outbox is wired (minimal / stripped builds),
-   fall through to the explicit direct-publish path: the event
-   is published on the in-process bus immediately after the
-   persist returns;
-4. **If** the row already exists, update the value and emit
+2. Enqueue the `admin.settings.changed` event through the durable
+   publisher in that same transaction, so a crash between persist
+   and delivery cannot leave the change un-announced;
+3. **If** the publisher is missing or enqueue fails, roll back the
+   setting write and return an error. There is no direct-publish
+   fallback because it would reintroduce a dual-write hole;
+4. **If** the row already exists, update the value and enqueue
    the same change event (the audit ledger captures the
    transition).
 
-The outbox path **shall** be the production default for
-deployments with `audit_management` wired; the direct-publish
-path is reserved for unit tests and minimal builds where the
-outbox infrastructure is absent.
+Every composition that permits settings mutation **shall** wire the
+durable publisher supplied by `eventing_management`.
 
 ## Rationale
 
@@ -78,10 +73,10 @@ prevents:
    rolled back. The outbox path serialises through the DB
    commit so subscribers cannot see a phantom value.
 
-The direct-publish branch is documented operator-side:
-deployments without `audit_management` get the simpler
-behaviour and operators understand the at-most-once-delivery
-trade-off.
+Failing closed on missing publication is deliberate. A stripped
+composition may still read settings, but it cannot claim a successful
+mutation while omitting the invalidation event required by other
+replicas.
 
 ## Acceptance criteria
 
@@ -93,9 +88,9 @@ trade-off.
 - **AC-2 — Outbox path on update.** When the setting row
   exists, the same outbox-enqueue happens on the
   update path.
-- **AC-3 — Explicit direct-publish path.** When no outbox
-  is wired, `SetSettingValue` persists and then publishes
-  the event directly on the in-process bus.
+- **AC-3 — Missing publisher fails closed.** When no durable
+  publisher is wired, `SetSettingValue` returns an actionable error
+  and the transaction commits neither a setting row nor an outbox row.
 
 ## Verification
 
@@ -103,7 +98,7 @@ trade-off.
 |---|---|---|
 | AC-1 | Test | `modules/platformkit-business-modules/admin_management/features/settings/service_outbox_test.go::TestSetSettingValue_OutboxPath_EnqueuesInsteadOfDirectPublish`. |
 | AC-2 | Test | `modules/platformkit-business-modules/admin_management/features/settings/service_outbox_test.go::TestSetSettingValue_OutboxPath_OnUpdate`. |
-| AC-3 | Test | `modules/platformkit-business-modules/admin_management/features/settings/service_outbox_test.go` covers the no-outbox direct publish branch. |
+| AC-3 | Test | `modules/platformkit-business-modules/admin_management/features/settings/service_outbox_test.go::TestSetSettingValue_MissingPublisherRollsBack`. |
 
 ## Edge cases & unhappy paths
 
@@ -116,11 +111,9 @@ trade-off.
 - **Concurrent SetSettingValue on the same key.**
   Last-commit-wins; the outbox row order matches the
   commit order.
-- **Subscriber error on direct-publish path.** The direct
-  path's `eventBus.Publish` is best-effort; a failed
-  subscriber does not roll back the persist (no
-  transaction). This is the trade-off operators accept
-  with the direct path.
+- **Publisher missing or enqueue failure.** The transaction rolls
+  back and the caller receives an error; no setting value becomes
+  visible without its corresponding invalidation event.
 
 ## Risk
 
@@ -128,22 +121,23 @@ trade-off.
 - **Impact:** High — defective publish leaves caches
   stale; defective persist confuses operators about
   whether the change took effect.
-- **Mitigations:** Atomic outbox path (AC-1, AC-2),
-  explicit direct path for stripped builds (AC-3), commit-order
-  preservation in the outbox (ADR-0007).
+- **Mitigations:** Atomic outbox path (AC-1, AC-2), fail-closed
+  missing-publisher behavior (AC-3), commit-order preservation in
+  the outbox (ADR-0007).
 
 ## Implements (cross-cutting)
 
 - **REQ-004 — Audit per mutation.** The
   `admin.settings.changed` event is the audit signal.
-- **REQ-014 — Graceful degradation.** AC-3 — minimal
-  builds without outbox still announce changes.
+- **REQ-005 — Authorisation gates fail closed.** AC-3 applies the
+  same fail-closed posture to a required consistency boundary: an
+  incomplete mutation is rejected, never reported as successful.
 
 ## Compliance mapping
 
 | Control | Coverage |
 |---|---|
-| SOC2 CC7.2 (System monitoring) | AC-1..AC-3 — every settings change is observable. |
+| SOC2 CC7.2 (System monitoring) | AC-1..AC-3 — every successful settings change is durably observable. |
 | SOC2 CC8.1 (Change management) | AC-1, AC-2 — atomic persist + announce. |
 | ISO27001 A.12.4 (Logging) | AC-1 — outbox row is the durable event log. |
 

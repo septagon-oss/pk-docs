@@ -271,7 +271,8 @@ Domain-wide risks that don't belong inside any single module.
   (`audit_management/features/audit_compliance`) is currently a
   cron stub. Closing the gap is a Phase-2 follow-up to ADR 0017.
 - **Change_management coverage gaps.** Not every write that
-  *should* go through change does. `WithCategorizedDep((*ports.ChangeRegistrar)(nil), ...)`
+  *should* go through change does.
+  `standard.WithDep(module.OptionalPort[changeprovides.ChangeRegistrar](module.PortSpec{...}))`
   is optional today, so a module can write straight to the
   database without registering a change. The
   `check-change-coverage` analyzer is on the backlog and is the

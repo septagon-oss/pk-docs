@@ -147,5 +147,5 @@ shows menu" (consumer). Three properties:
 ## Related requirements
 
 - [REQ-ADMIN-005 — Discovery](./REQ-ADMIN-005-discovery.md)
-- [REQ-ADMIN-008 — Section renderer](./REQ-ADMIN-008-section-renderer.md)
+- [REQ-ADMIN-008 — Profile](./REQ-ADMIN-008-profile.md)
 - [REQ-002 — Modules independently deployable](./REQ-002-independently-deployable-modules.md)

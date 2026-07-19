@@ -36,8 +36,9 @@ another goroutine scheduled by `infrastructure/jobs`.
 
 **When to choose it.**
 - Self-hosted deployments by customers on their own infra.
-- The default dev loop — `platformkit app up --app monolith`
-  spins up a full tenant-scoped app with one command.
+- The workspace dev loop — `platformkit dev --app monolith` starts the exact
+  monolith module. An initialized project bundle uses
+  `platformkit app up --dir <app-root>` for its compose lifecycle.
 - Small-to-mid-sized production deployments where module-level
   horizontal scaling isn't needed.
 
@@ -69,8 +70,8 @@ flowchart TB
 
 **Per-module deployables, NATS-backed RPC.** Cross-module calls go
 through `platformkit-module-bindings`' NATS proxy clients that
-satisfy the port interfaces (`UserServiceNATSClient` satisfies
-`ports.UserService`, for example). The consumer's code doesn't
+satisfy the port interfaces (`UserBoundaryServiceNATSClient` satisfies
+`ports.UserBoundaryService`, for example). The consumer's code doesn't
 know which transport it's talking to.
 
 **When to choose it.**
@@ -160,9 +161,9 @@ interface.
 
 Three tiers, common across both topologies:
 
-- **Dev** — local. `platformkit app up --app monolith` starts a
-  monolith on localhost with a local Postgres. No NATS, no
-  observability stack.
+- **Dev** — local. `platformkit dev --app monolith` runs the exact workspace
+  monolith module; `platformkit app up --dir <app-root>` starts an initialized
+  project's monolith and local Postgres. No NATS, no observability stack.
 - **Staging** — mirrors production topology. The microservices
   composition exercised here catches dual-path flow drift before
   production.

@@ -206,9 +206,10 @@ This ADR keeps the current solution and adds a runtime layer around it.
   for built-in remote-capable modules.
 - `publish_nats_service=true` remains the way an extracted module
   service publishes its local ports over NATS.
-- `tenant_management.enabled_modules` is treated as the compatibility
-  seed for tenant-scoped module enablement, then migrated to richer
-  `tenant_module_mounts` state.
+- `tenant_management.enabled_modules` is the current explicit tenant mount
+  list; empty means no modules. When richer `tenant_module_mounts` state lands,
+  migrate durable rows and delete the superseded field and readers in the same
+  release wave.
 
 The first production implementation should not attempt to mount unknown
 Go interfaces at runtime. For compiled PlatformKit modules, the typed
@@ -366,8 +367,8 @@ module-service packaging.
 
 ### Phase 6 - Add tenant-scoped mounts
 
-Replace coarse `enabled_modules` behavior with explicit tenant mount
-state while keeping the old field as a compatibility input.
+Replace `enabled_modules` with explicit tenant mount state through a one-way
+durable migration. Do not retain the old field as a compatibility input.
 
 Rules:
 

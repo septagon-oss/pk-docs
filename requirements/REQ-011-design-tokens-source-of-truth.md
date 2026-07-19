@@ -75,7 +75,7 @@ whole-catalog review process.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Analysis | `platformkit-frontend-kit/cmd/guard-tokens` (via direct invocation or `golangci-lint` integration) rejects literal hex/rgb/named-color usage in component code. |
+| AC-1 | Analysis | `frontend/platformkit-frontend-kit/cmd/guard-tokens` rejects literal hex/rgb/named-color usage in component code. |
 | AC-2 | Inspection | Code-review checklist over admin shell renderers confirms style consumption via `theme.Tokens` only. |
 | AC-3 | Inspection | Code-review checklist over tenant branding paths confirms overlays are applied through `platformkit-design-system/overlays/` and the registered token pipeline. |
 | AC-4 | Inspection | Design-system catalog review confirms token categories are fully enumerated from `platformkit-design-system/tokens/` and `platformkit-shared/tokens/`. |

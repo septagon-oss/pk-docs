@@ -1,6 +1,6 @@
 ---
 id: REQ-CHAT-010
-title: "Send message persists the chat row, returns the typed info, and emits the message event when the bus is wired"
+title: "Send message persists the chat row and durable event, returns typed info, and fans out in real time when possible"
 status: Proposed
 date: 2026-05-08
 slug: req-chat-010-send-message
@@ -44,12 +44,14 @@ content)`, the chat-messaging feature **shall**:
    `Content`, and a server-generated timestamp;
 2. Convert the persisted row into a typed
    `ports.ChatMessageInfo` and return it to the caller;
-3. **If** the configured `event.EventBus` is non-nil,
-   publish a chat-message event so downstream consumers
-   (notifications, audit trail, analytics) can react.
-   **If** the bus is nil, complete successfully without
-   the event — the persist is the load-bearing
-   guarantee, and the event surface is best-effort.
+3. Enqueue the durable `chat.message_sent` event in the same
+   transaction as the message row (the atomicity contract is specified
+   by REQ-CHAT-016);
+4. **If** a tenant-addressable `chat.Publisher` is configured, fan the
+   persisted message out to connected clients after commit. This
+   realtime transport is best-effort: a missing publisher, missing
+   tenant context, or transport error does not turn an accepted message
+   into a failed send because clients can reconcile from history.
 
 `ListMessages` **shall** return rows for a room ordered
 by send time and **shall** filter out nil entries
@@ -63,17 +65,14 @@ only the new tail.
 Chat is the platform's lowest-friction interaction
 surface. Three properties:
 
-1. **Persist before publish.** Persisting first means a
-   message that lands in the room will eventually
-   propagate even if the event-bus hop drops; an event
-   that fires without a row would leave consumers
-   chasing a phantom message id. The persist is the
-   ledger of truth.
-2. **Bus-nil tolerance.** Some deployments (minimal
-   builds, isolated unit tests, on-prem stripped
-   compositions) do not wire the event bus. The send
-   path must work without it; a nil-check is cheaper
-   and clearer than a stub bus.
+1. **Durable domain delivery.** The message row and outbox row commit
+   atomically, so downstream consumers see neither lost events nor
+   events for rolled-back messages. REQ-CHAT-016 owns the detailed
+   envelope and rollback criteria.
+2. **Realtime-transport tolerance.** Some deployments do not wire a
+   realtime chat publisher, and a connected-client transport can fail
+   after commit. The send path still succeeds because the canonical
+   history and durable outbox remain intact.
 3. **Defensive list filtering.** The wrapped CRUD
    service occasionally hands back nil entries when
    row deserialisation fails on one of N rows.
@@ -89,14 +88,13 @@ surface. Three properties:
 - **AC-2 — Send propagates create errors.** A
   CRUD-layer `Create` failure returns the wrapped error
   to the caller; no event is published.
-- **AC-3 — Event published when bus available.** When
-  the service is constructed with a non-nil
-  `event.EventBus`, the event is published after the
-  successful persist.
-- **AC-4 — No event when bus is nil.** A service with
-  `eventBus == nil` returns success on
-  `SendMessage` without panicking and without
-  emitting an event.
+- **AC-3 — Durable event enqueued.** A successful send enqueues the
+  `chat.message_sent` outbox event. The message/outbox atomicity and
+  rollback behavior refine this criterion in REQ-CHAT-016.
+- **AC-4 — Realtime fan-out degrades safely.** A configured
+  `chat.Publisher` receives the tenant-addressed message after commit;
+  a nil publisher, missing tenant context, or publisher error leaves the
+  successful send result unchanged.
 - **AC-5 — List returns all room messages.** A
   `ListMessages(roomID, limit, offset)` returns every
   persisted message in the room, ordered by the
@@ -118,8 +116,8 @@ surface. Three properties:
 |---|---|---|
 | AC-1 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestSendMessage_CreatesMessageAndReturnsInfo`. |
 | AC-2 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestSendMessage_PropagatesCreateError`. |
-| AC-3 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestSendMessage_PublishesEventWhenBusAvailable`. |
-| AC-4 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestSendMessage_NoEventWhenBusIsNil`. |
+| AC-3 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestSendMessage_EnqueuesOutboxEvent`. |
+| AC-4 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestSendMessage_PublishesToChatTransport`, `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestSendMessage_PublisherErrorDoesNotFailCall`, and `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestSendMessage_PublisherSkippedWhenNoTenantInContext`. The nil-publisher branch is also exercised by `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestSendMessage_CreatesMessageAndReturnsInfo`. |
 | AC-5 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestListMessages_ReturnsAllRoomMessages`. |
 | AC-6 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestListMessages_FiltersNilMessages`. |
 | AC-7 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestListMessages_PropagatesError`. |
@@ -133,9 +131,9 @@ surface. Three properties:
 - **Sender on a closed room.** The service does not
   re-check room status; the room-lifecycle owner
   (REQ-CHAT-011) is the gate.
-- **Event-bus failure.** When the bus is non-nil but
-  `Publish` errors, the persist already happened; the
-  error surfaces but the row remains in place.
+- **Realtime transport failure.** Logged after commit and not returned;
+  connected clients reconcile from canonical history while durable
+  subscribers receive the outbox event.
 - **Cross-tenant leak.** `RoomID` is a UUID; the
   caller must be authorised for the room. The
   service trusts the upstream authorisation.
@@ -148,8 +146,8 @@ surface. Three properties:
 - **Likelihood:** High — every chat send.
 - **Impact:** Medium — defective send loses messages
   or fires false events.
-- **Mitigations:** Persist-before-publish (AC-1, AC-3),
-  bus-nil tolerance (AC-4), defensive list filtering
+- **Mitigations:** Atomic message/outbox persistence (AC-1, AC-3),
+  realtime-transport tolerance (AC-4), defensive list filtering
   (AC-6).
 
 ## Implements (cross-cutting)
@@ -158,14 +156,14 @@ surface. Three properties:
   `RoomID` is the tenant boundary in the room layer.
 - **REQ-009 — Observability.** AC-3 — event emission
   is the observability hook.
-- **REQ-014 — Graceful degradation.** AC-4 — nil bus
-  degrades cleanly.
+- **REQ-014 — Graceful degradation.** AC-4 — optional realtime
+  transport degrades cleanly without weakening durable delivery.
 
 ## Compliance mapping
 
 | Control | Coverage |
 |---|---|
-| SOC2 CC7.2 (System monitoring) | AC-3 — every send produces an audit-able event when wired. |
+| SOC2 CC7.2 (System monitoring) | AC-3 — every successful send produces a durable, auditable outbox event. |
 | ISO27001 A.13.2 (Information transfer) | AC-1 — every message has a persisted ledger row. |
 
 ## Satisfied by
@@ -177,3 +175,4 @@ surface. Three properties:
 - [REQ-CHAT-001 — Messaging umbrella](./REQ-CHAT-001-messaging.md)
 - [REQ-CHAT-011 — Room lifecycle](./REQ-CHAT-011-room-lifecycle.md)
 - [REQ-CHAT-012 — Public chat with assistant](./REQ-CHAT-012-public-chat-assistant.md)
+- [REQ-CHAT-016 — Durable chat events](./REQ-CHAT-016-durable-chat-events.md)

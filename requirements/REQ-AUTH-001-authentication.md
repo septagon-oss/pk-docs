@@ -9,11 +9,11 @@ ears_pattern: event-driven
 verification_methods: [test, inspection]
 compliance: [SOC2_CC6.1, SOC2_CC7.2, ISO27001_A.9.4]
 satisfied_by:
-  adr: [ADR-0009]
-  conventions: [C-04, C-14]
+  adr: [ADR-0009, ADR-0067, ADR-0070]
+  conventions: [C-04, C-19, C-20, C-14]
 implements_cross_cutting: [REQ-003, REQ-004, REQ-005, REQ-009]
 type: doc
-tags: [requirement, feature, auth_management]
+tags: [requirement, feature, auth_management, csrf]
 module: auth_management
 feature: authentication
 ---
@@ -63,10 +63,17 @@ A.9.4 compliance.
   reason; the rate-limit short-circuit is observable as a metric
   counter on the standard `auth.login` metric (label
   `reason=rate_limit`), not as a separate event.
-- **AC-4** Logout revokes the session and any refresh token; **when
-  `RotateRefreshTokens` is enabled** in the service config, refresh
-  tokens are single-use — a redeemed refresh that arrives a second
-  time fails closed.
+- **AC-4** Logout durably revokes the exact session and refresh family.
+  Refresh tokens are always single-use: redemption atomically replaces the
+  current family generation, replay revokes the family and session, and cache
+  loss cannot restore either access or refresh authority.
+- **AC-5** The server-rendered credential and MFA login form submits the CSRF
+  token established for that response without requiring JavaScript. On a first
+  safe load, the hidden `csrf_token` equals the newly issued response cookie.
+  After a valid mutating request, middleware rotates before handler execution
+  and an error re-render uses the exact replacement token rather than the stale
+  request token. Custom auth-page flavors receive and render the same
+  response-authoritative value.
 
 ## Verification
 
@@ -75,7 +82,8 @@ A.9.4 compliance.
 | AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_Success` + `TestCompleteInteractiveAuthentication_PersistsPlatformSession` + `TestAuthenticate_MetricsRecorded` (covers session + audit + metrics). |
 | AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/req_auth_001_test.go::TestAuthenticate_HTTPFailureShape_IsIndistinguishable` asserts that `apierrors.AuthErrorMapper` collapses `ErrInvalidCredentials`, `ErrAccountLocked`, `ErrAccountSuspended`, and `ErrEmailNotVerified` to a uniform 401 + uniform "Invalid email or password" message. Rate-limit (429) is kept distinct as it is not account-state-revealing. |
 | AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_RateLimited` + `TestAuthenticate_CacheBasedRateLimit`. |
-| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestLogout_Success` + `TestLogout_WithRefreshToken` + `modules/platformkit-business-modules/auth_management/features/authentication/req_auth_001_test.go::TestRefresh_SingleUse_FailsOnReplay` (validates the rotation-enabled branch). |
+| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestDurableRefreshSequentialReplayRevokesFamilyAndSession`, `TestDurableRefreshConcurrentRedemptionHasExactlyOneWinner`, and `TestBrowserLogoutWithoutRefreshTokenRevokesDurableFamilyDuringCacheOutage`; `modules/platformkit-business-modules/auth_management/features/authentication/req_auth_001_test.go::TestRefresh_SingleUse_FailsOnReplay` pins the umbrella contract. |
+| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/login_csrf_test.go::TestLoginPageCSRFSupportsNoJavaScriptFirstLoadAndRotatedErrorRender` and `TestLoginFlavorReceivesResponseAuthoritativeCSRFToken`; core `security/csrf/middleware_test.go::TestMiddleware_SetsCookie` and `TestMiddleware_ContextCarriesRotatedToken` prove that the renderer context and response cookie carry the same first-load or rotated token. |
 
 ## Implements (cross-cutting)
 
@@ -91,7 +99,9 @@ A.9.4 compliance.
 - `modules/platformkit-business-modules/auth_management/features/authentication/login_2fa.go`, `twofactor_store.go` — MFA branch.
 - `modules/platformkit-business-modules/auth_management/features/authentication/logout.go`, `refresh_token.go`, `forgot_password.go` — session lifecycle.
 - `modules/platformkit-business-modules/auth_management/features/authentication/login_rate_limit.go` — bounded-retry policy.
-- `modules/platformkit-business-modules/auth_management/features/authentication/handler.go`, `routes.go` — HTTP surface.
+- `modules/platformkit-business-modules/auth_management/features/authentication/handler.go` and feature-owned registration files — HTTP surface.
+- `modules/platformkit-business-modules/auth_management/features/authentication/login_viewer.go`, `components/login_form.go`, and `ports/auth_page_renderer.go` — response-authoritative CSRF propagation for default and custom login forms.
+- `core/platformkit-backend-kit/security/csrf/middleware.go` — first-load token context and pre-handler mutation rotation.
 - `modules/platformkit-business-modules/auth_management/features/authentication/repository.go` — tenant-scoped session persistence.
 
 ## Related requirements

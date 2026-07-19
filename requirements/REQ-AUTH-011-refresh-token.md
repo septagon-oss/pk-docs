@@ -1,8 +1,8 @@
 ---
 id: REQ-AUTH-011
-title: "Refresh-token redemption mints a new access token while preserving session continuity"
+title: "Refresh-token redemption atomically rotates one durable current family generation"
 status: Proposed
-date: 2026-05-08
+date: 2026-07-18
 slug: req-auth-011-refresh-token
 category: auth
 ears_pattern: event-driven
@@ -11,180 +11,161 @@ risk: high
 verification_methods: [test, inspection]
 compliance:
   - SOC2_CC6.1
+  - SOC2_CC6.7
   - ISO27001_A.9.4
-  - OWASP_ASVS_3.2.1   # Token lifetime / rotation
+  - OWASP_ASVS_3.2.1
 satisfied_by:
-  adr: [ADR-0009]
-  conventions: [C-04, C-14]
+  adr: [ADR-0006, ADR-0007, ADR-0067]
+  conventions: [C-04, C-19, C-14]
 implements_cross_cutting: [REQ-001, REQ-004, REQ-005]
 refines: REQ-AUTH-001
-depends_on: [REQ-AUTH-010, REQ-AUTH-016]
+depends_on: [REQ-AUTH-010, REQ-AUTH-012, REQ-AUTH-016]
 type: doc
-tags: [requirement, capability, auth_management, authentication, refresh, token]
+tags: [requirement, capability, auth_management, authentication, refresh, token, replay]
 module: auth_management
 feature: authentication
 capability: refresh_token
 capability_kind: state_machine
 stakeholders:
-  - end-user (web/mobile client)
-  - operator (incident responder; needs replay-detection signals)
-  - compliance auditor (token-lifetime hygiene)
+  - end-user
+  - operator
+  - compliance auditor
 ---
 
-# REQ AUTH-011 — Refresh-token redemption
+# REQ AUTH-011 — Durable single-use refresh redemption
 
-Status: **Proposed** (2026-05-08)
+Status: **Proposed** (2026-07-18)
 
 ## Statement
 
-**When** a caller presents a refresh token at the
-`RefreshAccessToken` endpoint, the system **shall** verify the
-token's signature, blacklist status, and bound session, then
-issue a new short-lived access token. **Where**
-`RotateRefreshTokens` is enabled in the service config, the
-system **shall** also blacklist the consumed refresh token and
-mint a replacement so the original cannot be redeemed twice
-(single-use semantic). **If** the token is invalid, expired,
-revoked, blacklisted, or its bound user is no longer eligible
-to log in, the redemption **shall** fail closed with a typed
-error and never produce a new token.
+**When** a caller presents a PlatformKit refresh token, the system **shall**
+cryptographically validate it and atomically exchange the one currently
+authorized family generation for a new access token and refresh token. The
+durable authority **shall** contain only a one-way digest and exact
+user/tenant/session binding. **If** any cryptographic, durable, session,
+account, membership, or transaction precondition is missing or uncertain, the
+system **shall** fail closed and return no credential.
 
 ## Rationale
 
-Refresh tokens are the long-lived half of the platform's
-session model — they let a client renew its access token without
-forcing the user to re-enter credentials. That convenience comes
-with two countervailing concerns:
+Refresh tokens are long-lived bearer credentials. A cache blacklist cannot
+prove single use: cache entries can disappear and a read followed by a write
+allows two replicas to accept the same token. A raw bearer stored on a session
+row also turns every row projection or database disclosure into credential
+disclosure.
 
-1. **Replay risk.** A stolen refresh token is a long-running
-   credential. The single-use rotation discipline (the "rotating
-   refresh token" pattern documented in OWASP ASVS 3.2.1) shrinks
-   the attacker's effective window to "between this redemption
-   and the next" rather than the full token TTL. The blacklist
-   step is what makes a redeemed token unusable a second time.
-2. **State-change propagation.** A user who has just been
-   suspended or had their roles revoked must lose their access on
-   the next refresh — not days later when their access token
-   finally expires. The user-status revalidation in this path is
-   how role-revocation actually reaches the client.
-
-The fail-closed posture for any precondition (invalid signature,
-session expired, user inactive) reflects REQ-005: a refresh that
-cannot be safely renewed must produce no token, even at the cost
-of forcing the user back to the login flow.
+The family ledger solves both problems. One session has one current digest and
+generation. A database lock plus compare-and-swap gives exactly one redemption
+winner, while reuse revokes the whole family and session. Current user,
+membership, and role state is resolved during rotation so the renewed access
+token does not preserve stale authority.
 
 ## Acceptance criteria
 
-- **AC-1 — Happy path.** A valid, non-blacklisted refresh token
-  bound to an active session and active user returns a new
-  access token whose claims (`user_id`, `tenant_id`, `session_id`)
-  match the refreshed session.
-- **AC-2 — Single-use rotation.** When `RotateRefreshTokens` is
-  configured, the consumed refresh token is blacklisted via the
-  cache (`blacklist:refresh:<hash>`) and a fresh refresh token is
-  returned alongside the new access token. A second redemption
-  with the original refresh token returns
-  `"refresh token revoked"`.
-- **AC-3 — Empty / malformed input.** An empty `RefreshToken`
-  returns `"refresh token is required"`; a token whose JWT
-  signature does not verify against the configured secret
-  returns `"invalid refresh token"` — neither path mutates state.
-- **AC-4 — Blacklist precedence.** A token explicitly blacklisted
-  (because the user logged out, or rotation already consumed it)
-  is rejected before any further validation; the cache lookup is
-  the first hop.
-- **AC-5 — Session continuity.** A refresh whose claimed
-  `session_id` no longer maps to a session row returns
-  `"session expired"`. The session row is updated with the
-  current refresh time so subsequent reads see a fresh
-  `last_active_at`.
-- **AC-6 — User-status revalidation.** A refresh against a user
-  whose status has flipped to `inactive`, `suspended`, or
-  `pending_verification` since the original login fails closed
-  with the typed status error and is not silently downgraded to
-  a generic "invalid token".
-- **AC-7 — Cache outage tolerance.** If the blacklist-cache
-  lookup fails (network error against the shared cache), the
-  service logs the failure at Warn and continues with the rest
-  of the validation chain. This is an explicit availability
-  trade-off documented at `refresh_token.go:174-178` — the
-  alternative ("reject every refresh while cache is down") would
-  amplify the outage; reviewers verify the trade-off remains
-  acceptable for the deployed cache implementation.
+- **AC-1 — Complete cryptographic validation.** Only HS256 refresh-purpose
+  tokens with valid signature, `iat`, `exp`, configured issuer and audience,
+  and non-empty `jti`, family, generation, user, tenant, and session claims may
+  reach durable redemption.
+- **AC-2 — Hash-only durable authority.** The family row stores one 32-byte
+  SHA-256 digest, never the raw bearer, and has exactly one session, user,
+  tenant, positive generation, expiry, and complete revocation state.
+- **AC-3 — Mandatory atomic rotation.** Redemption locks the family and uses a
+  generation-plus-digest compare-and-swap. Rotation cannot be disabled, and
+  two concurrent submissions have exactly one successful exchange.
+- **AC-4 — Reuse containment.** A stale generation, stale digest, or exact
+  binding mismatch returns `refresh token revoked` and durably revokes both the
+  family and its session. The newly rotated token cannot outlive detected
+  family reuse.
+- **AC-5 — Live authority revalidation.** Before minting, the service requires
+  the exact active session and user, the same tenant, an active membership when
+  tenancy is composed, and current roles. A durable guest membership replaces
+  every stale or orphan elevated role with the guest ceiling.
+- **AC-6 — Transactional no-credential boundary.** Family replacement, session
+  activity, audit intent, and the catalogued refresh event commit together. A
+  write, audit, outbox, or store error returns no token and leaves the original
+  generation usable unless the transaction committed an intentional denial.
+- **AC-7 — Cache independence.** Cache availability and cache blacklist content
+  do not grant or deny refresh authority. A cache outage cannot permit replay;
+  a durable-store outage cannot produce a token.
+- **AC-8 — Atomic initial issuance.** A remembered login returns its initial
+  refresh bearer only after generation one has been registered durably. Failure
+  to register the digest returns no bearer.
+- **AC-9 — Missing or orphan authority fails closed.** Empty, malformed,
+  expired, wrong-purpose, missing-family, revoked-family, expired-session, and
+  inactive-account cases return no token. A signed orphan family claim causes
+  conservative revocation of its exact session when that session is present.
+- **AC-10 — Tenant continuity.** Refresh never selects or changes a tenant;
+  tenant switching requires a separately authorized session transition.
 
 ## Verification
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/req_auth_001_test.go::TestRefresh_SingleUse_FailsOnReplay` (first redemption must succeed before the second can fail). |
-| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/req_auth_001_test.go::TestRefresh_SingleUse_FailsOnReplay` exercises the rotation discipline end-to-end. |
-| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestRefreshAccessToken_EmptyToken` and the JWT-parsing branch in `validateRefreshToken`. |
-| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestRefreshAccessToken_BlacklistedToken`. |
-| AC-5 | Inspection | `refresh_token.go:194-197` — typed `"session expired"` return when `getSession` returns nil. |
-| AC-6 | Inspection | `refresh_token.go:206-208` — `validateRefreshTokenUserStatus` propagates the typed status errors. |
-| AC-7 | Inspection | `refresh_token.go:174-178` — Warn-and-continue branch on cache error, with the documented trade-off. |
+| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestDurableRefreshValidatesConfiguredIssuerAndAudience` plus the malformed and purpose-claim cases in the authentication service suite. |
+| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_migration_test.go::TestDurableRefreshTokenMigrationContainsNoRawBearerColumn` and `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestInitialRememberedIssuanceRegistersDigestBeforeReturn`. |
+| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestDurableRefreshConcurrentRedemptionHasExactlyOneWinner` and `modules/platformkit-business-modules/auth_management/features/authentication/req_auth_001_test.go::TestRefresh_SingleUse_FailsOnReplay`. |
+| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestDurableRefreshSequentialReplayRevokesFamilyAndSession` and `TestDurableRefreshRejectsInactiveRevokedAndMismatchedState`. |
+| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestDurableRefreshRejectsInactiveRevokedAndMismatchedState` and `modules/platformkit-business-modules/auth_management/features/authentication/login_link_membership_test.go::TestRefreshAccessTokenGuestCeilingReplacesOrphanAdminClaim`. |
+| AC-6 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestDurableRefreshDoesNotReturnTokenWhenSessionTouchFails`. |
+| AC-7 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestDurableRefreshIgnoresCacheOutageAndFailsClosedOnLedgerOutage` and `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestRefreshAccessToken_DoesNotTreatCacheAsAuthority`. |
+| AC-8 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestInitialRememberedIssuanceRegistersDigestBeforeReturn`. |
+| AC-9 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestRefreshAccessToken_EmptyToken` and the durable inactive/revoked/mismatch table test. |
+| AC-10 | Inspection | Family and JWT tenant IDs must match exactly; tenant change remains owned by REQ-AUTH-017. |
 
-## Edge cases & unhappy paths
+## Edge cases and unhappy paths
 
-- **Clock skew at sign-time.** A JWT signed slightly in the
-  future (clock skew across sign + verify hosts) is currently
-  rejected as malformed. Acceptable while the platform runs all
-  components against an NTP-synced clock; revisit if the
-  acceptable skew widens.
-- **Concurrent redemption race.** Two redemptions of the same
-  refresh token issued in rapid succession can both pass the
-  blacklist check and the second invalidation can race. The
-  current cache implementation is best-effort under contention;
-  for stricter guarantees the deployment must use a cache that
-  supports atomic compare-and-set.
-- **Refresh token without rotation.** Deployments that explicitly
-  disable rotation (`RotateRefreshTokens: false`) trade the
-  single-use guarantee for a longer-lived token. AC-2 does not
-  apply in that mode; reviewers confirm the deployment's threat
-  model accepts the trade.
-- **Tenant override at refresh time.** The `tenant_id` claim is
-  preserved across refresh; switching tenants requires
-  `SwitchTenantSession` (REQ-AUTH-017), not a refresh.
+- **Concurrent duplicate delivery.** One request can complete rotation before a
+  duplicate is recognized. The duplicate then revokes the family, including
+  the just-issued generation. This availability cost is intentional reuse
+  containment.
+- **State change after a read.** The access token is still subject to live
+  session, user, and tenant-membership checks on use. Revocation does not rely
+  solely on the snapshot embedded in the token.
+- **Migration.** Migration 019 invalidates pre-migration remembered bearers and
+  is security-irreversible; it does not copy recoverable bearer material.
+- **Cache outage.** Rotation continues from durable state. Cache remains useful
+  for short-circuit JTI denial but is not consulted as refresh authority.
 
 ## Risk
 
-- **Likelihood:** High — refresh paths are exercised on every
-  active session.
-- **Impact:** High — a successful replay reissues an access token
-  that the attacker can use until rotation closes the window.
-- **Mitigations:** Single-use rotation (AC-2), blacklist-first
-  ordering (AC-4), user-status revalidation (AC-6), short access-
-  token TTL (`AccessTokenTTL`, separate from this REQ).
+- **Likelihood:** High — every remembered session uses this path repeatedly.
+- **Impact:** Critical — replay can mint a fresh authenticated session after
+  credential theft or logout.
+- **Mitigations:** Hash-only storage, mandatory compare-and-swap rotation,
+  family-wide reuse revocation, live authority checks, and transactional audit
+  and event publication.
 
 ## Implements (cross-cutting)
 
-- **REQ-001 — Multi-tenant isolation.** AC-1 preserves tenant
-  binding across the rotation.
-- **REQ-004 — Audit per mutation.** Rotation events (rejected
-  blacklisted, rejected expired, rejected user-status) flow
-  through the standard audit path.
-- **REQ-005 — Fail-closed.** AC-3..AC-6 default-deny when any
-  precondition is missing.
+- **REQ-001 — Multi-tenant isolation.** Exact tenant binding is immutable
+  throughout a family.
+- **REQ-004 — Audit per mutation.** Successful rotation and terminal revocation
+  commit with their audit intent and catalogued event.
+- **REQ-005 — Fail closed.** Unknown durable or eligibility state emits no
+  credential.
 
 ## Compliance mapping
 
 | Control | Coverage |
 |---|---|
-| SOC2 CC6.1 | AC-1, AC-6 — only active users renew access. |
-| ISO27001 A.9.4 | AC-2 (rotation) + AC-4 (revocation propagation). |
-| OWASP ASVS 3.2.1 | AC-2 — single-use rotating refresh tokens are the documented pattern. |
+| SOC2 CC6.1 | AC-1, AC-5, AC-9 — only current eligible principals renew access. |
+| SOC2 CC6.7 | AC-2, AC-3, AC-4 — bearer secrecy, single use, and reuse containment. |
+| ISO27001 A.9.4 | AC-4, AC-5, AC-7 — durable revocation and live access control. |
+| OWASP ASVS 3.2.1 | AC-3 and AC-4 — rotating refresh credentials with replay detection. |
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token.go` —
-  the verifier + rotator.
-- `modules/platformkit-business-modules/auth_management/features/authentication/login_session.go::generateAccessToken` /
-  `generateRefreshToken` — the token-mint helpers.
-- `modules/platformkit-business-modules/auth_management/features/authentication/req_auth_001_test.go` — replay-rejection coverage.
+- `auth_management/features/authentication/refresh_token.go`
+- `auth_management/features/authentication/refresh_token_store.go`
+- `auth_management/features/authentication/login_session.go`
+- `auth_management/migrations/019_create_durable_refresh_token_families.up.sql`
+- `auth_management/features/authentication/refresh_token_durable_test.go`
 
 ## Related requirements
 
 - [REQ-AUTH-001 — Authentication umbrella](./REQ-AUTH-001-authentication.md)
-- [REQ-AUTH-010 — Password login](./REQ-AUTH-010-login-credentials.md) — the path that mints the original tokens.
-- [REQ-AUTH-012 — Logout](./REQ-AUTH-012-logout.md) — the session-revocation counterpart whose blacklist this path consults.
-- [REQ-AUTH-016 — Token verification](./REQ-AUTH-016-token-verification.md) — the access-token validator the new token feeds.
+- [REQ-AUTH-010 — Password login](./REQ-AUTH-010-login-credentials.md)
+- [REQ-AUTH-012 — Logout](./REQ-AUTH-012-logout.md)
+- [REQ-AUTH-016 — Token verification](./REQ-AUTH-016-token-verification.md)
+- [REQ-AUTH-017 — Session lifecycle](./REQ-AUTH-017-session-lifecycle.md)
+- [ADR 0067 — Refresh tokens use durable single-use families](../adr/0067-refresh-tokens-use-durable-single-use-families.md)

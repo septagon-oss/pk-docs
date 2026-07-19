@@ -186,5 +186,5 @@ ringing despite the user having "marked all read"
 
 ## Related requirements
 
-- [REQ-NOTIF-001 — Notification umbrella](./REQ-NOTIF-001-notification.md)
+- [REQ-NOTIF-001 — Email notifications](./REQ-NOTIF-001-email-notifications.md)
 - [REQ-NOTIF-011 — Send orchestration](./REQ-NOTIF-011-send-orchestration.md) — the producer of the notifications this feature reads.

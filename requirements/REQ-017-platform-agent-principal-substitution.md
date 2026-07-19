@@ -93,12 +93,13 @@ or operate on tenant B by changing tabs.
   authority gates resolve their permissions from the API key, not from
   the human's role grants.
 
-- **AC-2** `ports.APIKeyService.EnsurePlatformAPIKey(ctx, tenantID,
-  name, scopes)` is idempotent. Re-calling with the same `(tenantID,
-  name)` returns the existing key UUID without creating a duplicate
-  row. A first-call race on the unique-constraint surfaces as a
-  follow-up lookup that returns the canonical row, never as a
-  caller-visible error.
+- **AC-2** The owner-exported
+  `api_key_management/contracts/provides.APIKeyService` contract exposes
+  `EnsurePlatformAPIKey(ctx, tenantID, name, scopes)` as an idempotent
+  operation. Re-calling with the same `(tenantID, name)` returns the
+  existing key UUID without creating a duplicate row. A first-call race
+  on the unique constraint resolves through a follow-up lookup that
+  returns the canonical row, never as a caller-visible error.
 
 - **AC-3** `auth_management.PermissionService.CheckPermission`
   dispatches by principal kind. When the principal in ctx is an API
@@ -138,11 +139,11 @@ or operate on tenant B by changing tabs.
 | AC-2 | Test | `modules/platformkit-business-modules/api_key_management/features/key_management/ensure_platform_api_key_test.go::TestEnsurePlatformAPIKey_IdempotentAndTenantScoped` |
 | AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/permissions/service_test.go::TestService_CheckPermission_APIKeyPrincipalUsesAPIKeyPermissions` |
 | AC-4 | Test | `modules/platformkit-business-modules/api_key_management/features/key_management/ensure_platform_api_key_test.go::TestEnsurePlatformAPIKey_IdempotentAndTenantScoped` (the same test asserts cross-tenant isolation; a key issued for tenant A is invisible to tenant B's lookup) |
-| AC-5 | Test | `platformkit-agent-runtime/service_test.go::TestAgentRuntimeService_RecordActionUsesContextActorForPermission` and `platformkit-agent-runtime/service_test.go::TestAgentRuntimeService_RecordActionStampsOnBehalfOfMetadata` |
+| AC-5 | Test | `runtime/platformkit-agent-runtime/service_test.go::TestAgentRuntimeService_RecordActionUsesContextActorForPermission` and `runtime/platformkit-agent-runtime/service_test.go::TestAgentRuntimeService_RecordActionStampsOnBehalfOfMetadata` |
 | AC-6 | Test | `modules/platformkit-business-modules/operator_management/features/operator/html_handler_test.go::TestNewHTMLRenderHandler_FailsClosedWhenAPIKeyServiceMissing` |
 | AC-7 | Test | `modules/platformkit-business-modules/operator_management/tests/e2e/flows_test.go::TestOperatorFlows` — runs the `operator.render-as-service-account` flow defined in `flows.go` (build tag `e2e`) against the running composition. |
-| AC-1 | Analysis | `platformkit-backend-kit/analysis/importboundary` — confirms `operator_management` does not import `api_key_management` directly; the principal swap goes through `ports.APIKeyService`. |
-| AC-5 | Inspection | `platformkit-agent-runtime/service.go::recordAudit` — every audit-row writer reads the principal from ctx via `appcontext.GetOperatorPrincipalFromContext` and stamps `on_behalf_of` into the `Metadata` map when present. |
+| AC-1 | Analysis | `core/platformkit-backend-kit/analysis/importboundary` — confirms `operator_management` consumes the API-key owner contract rather than importing its feature implementation; `modules/platformkit-business-modules/operator_management/dependencies.go` declares `apikeyprovides.APIKeyService` as a required typed dependency. |
+| AC-5 | Inspection | `runtime/platformkit-agent-runtime/service_support.go::recordAudit` and `resolveAuditActor` — audit writers resolve the API-key principal from context and stamp `on_behalf_of` into metadata when present. |
 
 ## Satisfied by
 
@@ -152,17 +153,18 @@ or operate on tenant B by changing tabs.
 - `modules/platformkit-business-modules/auth_management/features/permissions/service.go::CheckPermission`
   — the principal-kind dispatch; API-key principals resolve from the
   key's embedded scopes, user principals use the user-role graph.
-- `platformkit-backend-kit/app/appcontext/context.go::WithOperatorPrincipal`,
+- `core/platformkit-backend-kit/app/appcontext/context.go::WithOperatorPrincipal`,
   `GetOperatorPrincipalFromContext` — the principal-substitution ctx
   helpers used at the operator surface boundary.
 - `modules/platformkit-business-modules/operator_management/features/operator/html_handler.go::authorizeAndSwapPrincipal`
   — the explicit boundary that authorises the human, ensures the
   service-account key, and swaps the principal in ctx before the
   LLM tier is invoked.
-- `platformkit-agent-runtime/service.go::StartRun`, `RecordAction`
-  — both gates resolve permissions from the principal in ctx; both
-  record audit rows attributing the action to the API key with the
-  human carried as `on_behalf_of` metadata.
+- `runtime/platformkit-agent-runtime/service_runs.go::StartRun`,
+  `runtime/platformkit-agent-runtime/service_actions.go::RecordAction`, and
+  `runtime/platformkit-agent-runtime/service_support.go::recordAudit` — both gates resolve permissions
+  from the principal in ctx; their audit rows attribute the action to
+  the API key with the human carried as `on_behalf_of` metadata.
 
 ## Compliance traceability
 
@@ -181,12 +183,18 @@ conventions on 2026-05-07. Findings:
 
 - **ADR 0009 (ports-only cross-module communication)** —
   `modules/platformkit-business-modules/operator_management/features/operator/html_handler.go` imports
-  only `ports.APIKeyService` and `ports.SurfaceRenderer`, never
-  `modules/platformkit-business-modules/api_key_management/...`. The `EnsurePlatformAPIKey` extension
-  lives on the existing `ports.APIKeyService` (in
-  `modules/platformkit-business-modules/ports/api_key.go`) and is implemented
-  by the `api_key_management` module, with the operator side
-  consuming it through `WithCategorizedDep` in `dependencies.go`.
+  the API-key owner's published `apikeyprovides.APIKeyService` contract and
+  the cross-cutting `ports.SurfaceRenderer`, never an
+  `api_key_management/features/...` implementation package. The
+  `EnsurePlatformAPIKey` operation is declared in
+  `modules/platformkit-business-modules/api_key_management/contracts/provides/api_key_service.go`
+  and implemented by the `api_key_management` service, with the operator side
+  consuming that owner contract through
+  `standard.WithDep(module.RequiresPort[apikeyprovides.APIKeyService](module.PortSpec{...}))`
+  in `modules/platformkit-business-modules/operator_management/dependencies.go`.
+  The operator's admin-shell placement is independently published by
+  `modules/platformkit-business-modules/operator_management/surfaces.go` through the
+  `module_surface_contributions` group rather than an admin registrar.
   ✓ Compliant.
 
 - **ADR 0028 (domain-owned security and delivery capabilities)** —
@@ -230,9 +238,11 @@ conventions on 2026-05-07. Findings:
 
 - **REQ 007 (explicit cross-tenant access)** — the API key
   principal's permissions never resolve under a different tenant's
-  context. The `apiKeyPermissionEvaluator` in
-  `platformkit-backend-kit/security/authn/api_key.go` enforces
-  tenant equality before evaluating the embedded scopes.
+  context.
+  `modules/platformkit-business-modules/auth_management/features/permissions/service.go::checkAPIKeyPermission`
+  enforces tenant equality before evaluating the embedded scopes; the
+  cross-tenant denial is pinned by
+  `modules/platformkit-business-modules/auth_management/features/permissions/service_test.go::TestService_CheckPermission_APIKeyPrincipalUsesAPIKeyPermissions`.
   ✓ Compliant.
 
 - **REQ 008 / ADR 0029 (every file declares its purpose)** — see

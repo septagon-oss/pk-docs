@@ -86,7 +86,7 @@ know or care which transport they're talking to.
   both topologies because the dual-path check enforces it at CI
   time.
 - Transport-agnostic consumers. A module that depends on
-  `ports.UserService` doesn't know whether the other end is
+  `ports.UserBoundaryService` doesn't know whether the other end is
   in-process or NATS-backed.
 
 ## How we enforce it

@@ -72,9 +72,9 @@ review.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `platformkit-backend-kit/core/entity/repository/gorm_security_test.go::TestScopedDB_AppliesTenantFilter` |
-| AC-2 | Test | `platformkit-backend-kit/core/entity/repository/gorm_security_test.go::TestScopedDB_RejectsMissingTenantContext` |
-| AC-3 | Test | `platformkit-backend-kit/core/entity/repository/gorm_tenant_test.go::TestScopedDB_HonoursCrossTenantMarker` |
+| AC-1 | Test | `core/platformkit-backend-kit/core/entity/repository/gorm_security_test.go::TestScopedDB_AppliesTenantFilter` |
+| AC-2 | Test | `core/platformkit-backend-kit/core/entity/repository/gorm_security_test.go::TestScopedDB_RejectsMissingTenantContext` |
+| AC-3 | Test | `core/platformkit-backend-kit/core/entity/repository/gorm_tenant_test.go::TestScopedDB_HonoursCrossTenantMarker` |
 | AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_UsesCrossTenantLookupBeforeTenantMembershipResolution` exercises the membership-verification path; cross-tenant probing is rejected before session minting. **Verification gap: a dedicated tenant-override-without-membership test is pending.** |
 | AC-2 | Analysis | `make check-module-deps` (run from `pk-modules`) — rejects business-module → business-module implementation imports that would bypass the tenant scope. |
 

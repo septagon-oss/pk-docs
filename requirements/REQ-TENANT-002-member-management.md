@@ -60,7 +60,7 @@ semantically without reaching into the user-management module.
 | AC | Method | Evidence |
 |---|---|---|
 | AC-1 | Inspection | `tenant_management/features/member_management/` has 4 files: `feature.go`, `permissions.go`, `routes.go`, `e2e.go`. No `service.go`, no `repository.go`, no `entities/`. |
-| AC-2 | Inspection | Code review of the admin-UI handlers that consume the `member_management` permissions: every list/get/invite/remove path resolves through `ports.UserService` or the permissions service. |
+| AC-2 | Inspection | Code review of the admin-UI handlers that consume the `member_management` permissions: every list/get/invite/remove path resolves through DTO-only `ports.UserBoundary*` contracts or the permissions service. |
 
 ## Implements (cross-cutting)
 

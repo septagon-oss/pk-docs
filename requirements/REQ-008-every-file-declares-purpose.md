@@ -21,16 +21,28 @@ Status: **Active** (2026-05-06)
 
 ## Statement
 
-Every `.go` file the workspace owns **shall** carry a leading comment
-block, in the first 30 lines after the `package` declaration, that
-includes at least one reference to a registered governance ID
-(`REQ-NNN`, `ADR-NNNN`, or `C-NN`). Each referenced ID **shall** resolve
-to a real entry in `pk-docs/requirements/`,
-`pk-docs/adr/`, or `pk-docs/conventions.md`.
+Every governed hand-authored `.go` file the workspace owns **shall** carry a
+structured purpose header within the first 100 physical lines, before imports
+or other declarations. The header may appear before or after `package`, and
+**shall** contain all three roles as exactly three adjacent `//` comment lines
+in this order:
+
+- `Implements:` (or `Validates:` for test evidence) with a registered
+  `REQ-NNN`, `REQ-{OWNER}-NNN`, or `PKBM-{MODULE}-REQ-NNN`;
+- `Per:` with a registered `ADR-NNNN`; and
+- `Discipline:` with registered `C-14`.
+
+A compact one-line triplet, reordered roles, or prose inserted between the
+three lines does not satisfy the header contract.
+
+Every referenced ID **shall** resolve to the configured requirement, ADR, or
+convention registry. A generated-looking filename is not an exemption;
+generated Go is outside this rule only when its parsed pre-package comments
+contain Go's canonical `// Code generated ... DO NOT EDIT.` marker.
 
 ## Rationale
 
-A workspace with 22 repos and ~3,500 Go files accretes silent intent.
+A large multi-repository workspace accretes silent intent.
 Cohesion choices — why this file owns this concern, why a refactor
 landed, which discipline the file follows — live in commit messages
 and tribal memory rather than the file itself. Readers walking in cold
@@ -46,27 +58,35 @@ documents alive by making them part of the build.
 
 ## Acceptance criteria
 
-- **AC-1** Every `.go` file under the configured workspace roots either
-  carries a registered `REQ-NNN` / `ADR-NNNN` / `C-NN` reference in
-  its leading comment block, or appears in the explicit exclusion
-  allowlist at `.claude/check-file-purpose.yaml`.
-- **AC-2** Every reference resolves: a typo, a stale ID, or a reference
-  to a retired convention fails the build.
-- **AC-3** The exclusion allowlist names the exact categories that
-  legitimately escape the rule (generated code, manifest schemas,
-  migrations, atom/molecule definition seeds, `cmd/*` generators).
-- **AC-4** `make check-file-purpose` runs in CI on every push; the
-  build is red until the missing reference is added or the
-  exclusion is justified by a one-line YAML diff.
+- **AC-1** Every governed hand-authored `.go` file has the requirement,
+  `Per:` ADR, and explicit `Discipline: C-14` roles on three adjacent `//`
+  lines in that order within the leading 100 physical lines.
+- **AC-2** Every cited requirement, ADR, and convention resolves; a typo,
+  stale ID, or invented owner-prefixed requirement fails the gate.
+- **AC-3** Hand-authored tests, command and generator implementations, and Go
+  migration wrappers remain governed. Only explicit non-source directories
+  and canonically marked generated Go are excluded.
+- **AC-4** Every owned Go module is covered by a configured scan root. This
+  includes root `go.work` members and standalone `go.mod` modules discovered
+  outside explicit archive, recovery, generated, dependency-cache, vendor, and
+  Git-worktree trees; an omitted module is a hard configuration error.
+- **AC-5** Historical violations are acknowledged only by an exact
+  path-and-SHA-256 snapshot of unchanged committed content. New, untracked,
+  edited, deleted, or newly conformant files cannot silently consume or retain
+  an acknowledgement.
+- **AC-6** Workspace `make check-file-purpose` exits non-zero for any new or
+  changed incomplete header, unknown ID, or stale baseline entry.
 
 ## Verification
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Analysis | `make check-file-purpose` (`platformkit-devtools/cmd/check-file-purpose`). |
-| AC-2 | Analysis | `make check-file-purpose` — `loadValidIDs` cross-checks references against `conventions.md`, the `adr/` directory, and the `requirements/` directory; unknown IDs fail with exit 1. |
-| AC-3 | Analysis | `make check-file-purpose` reads exclusions from `.claude/check-file-purpose.yaml`. New entries require a deliberate one-line diff. |
-| AC-4 | Analysis | CI workflow invokes the tool; the build is red on any failure. |
+| AC-1 | Test | `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestPurposeHeaderRequiresStructuredRequirementADRAndC14Roles`. |
+| AC-2 | Test | `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestPrefixedRequirementCannotHideBehindValidConvention` and `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestLoadValidIDsIncludesEveryRequirementShapeAndLegacyADRDirectories`. |
+| AC-3 | Test | `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestScanExcludesCanonicalGeneratedSourceByProvenance`, `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestGeneratedMarkerAfterPackageCannotBypassGuard`, and `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestMarkerlessGeneratedSuffixCannotBypassGuard`. |
+| AC-4 | Test | `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestValidateModuleCoverageRejectsOmittedGoWorkModules` and `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestValidateModuleCoverageRejectsStandaloneOwnedModules`. |
+| AC-5 | Test | `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestScanBaselinesOnlyExactHistoricalContent`, `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestScanRejectsConformedAndDeletedBaselineEntriesAsStale`, `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestBaselineFromGitHEADDoesNotBlessWorkingTreeEdits`, and `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestBaselineFromGitHEADDoesNotBlessUnversionedModule`. |
+| AC-6 | Analysis | Workspace `make check-file-purpose`; the root target is the canonical blocking invocation. |
 
 ## Satisfied by
 

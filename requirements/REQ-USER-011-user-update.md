@@ -37,16 +37,16 @@ Status: **Proposed** (2026-05-08)
 
 ## Statement
 
-**When** a caller invokes `Service.UpdateUser(userID,
-ports.UserUpdate)`, the user feature **shall**:
+**When** a caller invokes `Service.UpdateUserPartialDTO(userID,
+porttypes.UserUpdateDTO)`, the user feature **shall**:
 
-1. Read the *pre-image* via `userService.GetUser` so the audit
+1. Read the *pre-image* via `userService.GetByIDDTO` so the audit
    row carries the before-state;
 2. Apply the sparse partial DTO — every field is a typed pointer
-   (`*string`, `*UserStatus`, `*time.Time`); a nil pointer
+   (`*string`, `*time.Time`); a nil pointer
    leaves the field untouched, a non-nil pointer is the
    authoritative new value;
-3. Persist the result through the wrapped `userService.UpdateUser`;
+3. Persist the result through `userService.UpdateUserPartialDTO`;
 4. Increment `user.account.updated` and emit `user.update` with
    the (oldUser, newUser) pair in the audit row's `before`/`after`
    fields.

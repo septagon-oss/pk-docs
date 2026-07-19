@@ -86,7 +86,7 @@ flowchart TB
    `ctx` carries trace id, tenant id, user id, permissions.
 3. The handler delegates to its service. The service might:
    - Call a CRUD repo for persistence.
-   - Call a port for a cross-module capability (`ports.UserService`
+   - Call a port for a cross-module capability (`ports.UserBoundaryReader`
      for identity, `ports.AuditService` for audit trail).
    - Open a transaction via `repo.WithTransaction(ctx, fn)` if the
      operation touches more than one entity
@@ -117,7 +117,7 @@ sequenceDiagram
     Tx->>DB: Update domain state
     Tx->>Outbox: INSERT event row
     Tx-->>DB: atomic commit
-    Worker->>Outbox: DrainOnce(batch)
+    Worker->>Outbox: DrainOnceWithReport(batch)
     Outbox-->>Worker: pending rows
     Worker->>Bus: Publish(event)
     Bus-->>Subscriber: deliver
@@ -149,16 +149,16 @@ SQL can't slip through.
 ```mermaid
 sequenceDiagram
     participant Consumer as Consumer.Service
-    participant Port as ports.UserService
+    participant Port as ports.UserBoundaryReader
     participant Binding as User service binding
     participant Provider as user_management
 
-    Consumer->>Port: GetUser(ctx, id)
+    Consumer->>Port: GetByIDDTO(ctx, id)
     Port->>Binding: in-process method call
-    Binding->>Provider: ResolveUser(ctx, id)
-    Provider-->>Binding: User
-    Binding-->>Port: User
-    Port-->>Consumer: User
+    Binding->>Provider: GetByIDDTO(ctx, id)
+    Provider-->>Binding: UserDTO
+    Binding-->>Port: UserDTO
+    Port-->>Consumer: UserDTO
 ```
 
 In the monolith, the port interface is satisfied by a direct
@@ -171,28 +171,28 @@ nanoseconds.
 ```mermaid
 sequenceDiagram
     participant Consumer as Consumer service
-    participant Port as ports.UserService
-    participant Proxy as UserServiceNATSClient
+    participant Port as ports.UserBoundaryService
+    participant Proxy as UserBoundaryServiceNATSClient
     participant NATS
     participant Server as User service
     participant Provider as user_management
 
-    Consumer->>Port: GetUser(ctx, id)
-    Port->>Proxy: GetUser(ctx, id)
-    Proxy->>NATS: request("users.get", {id})
+    Consumer->>Port: GetByIDDTO(ctx, id)
+    Port->>Proxy: GetByIDDTO(ctx, id)
+    Proxy->>NATS: request("GetByIDDTO", {id})
     NATS->>Server: deliver
-    Server->>Provider: ResolveUser(ctx, id)
-    Provider-->>Server: User
+    Server->>Provider: GetByIDDTO(ctx, id)
+    Provider-->>Server: UserDTO
     Server-->>NATS: response
-    NATS-->>Proxy: User
-    Proxy-->>Port: User
-    Port-->>Consumer: User
+    NATS-->>Proxy: UserDTO
+    Proxy-->>Port: UserDTO
+    Port-->>Consumer: UserDTO
 ```
 
 Same port interface, different wiring. In microservices the port
 is satisfied by a NATS-backed proxy from
-`platformkit-module-bindings` (`UserServiceNATSClient` satisfies
-`ports.UserService`). The serialised call rides NATS to the user
+`platformkit-module-bindings` (`UserBoundaryServiceNATSClient` satisfies
+`ports.UserBoundaryService`). The serialised call rides NATS to the user
 service's server handler, which dispatches into the real
 `user_management` implementation.
 

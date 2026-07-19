@@ -28,7 +28,7 @@ The admin feature **shall** materialise the platform's admin
 sidebar by walking the live FX module set, asking each feature
 whose metadata declares an `AdminUI` block (with
 `IncludeInSidebar: true`) what entries it contributes, and
-composing those into a single `ModuleSurfaceContribution`. The
+composing those into a single `surface.Contribution`. The
 discovery + composition path **shall** be cached but
 re-derivable; modules that register a dedicated
 `AdminCapabilityProvider` take precedence so their
@@ -58,7 +58,7 @@ migration.
   `adminRegistry`) are filtered out of the auto-discovery path so
   their custom render is the single source of truth for that
   module's sidebar entries.
-- **AC-3** The composed `ModuleSurfaceContribution` is cached
+- **AC-3** The composed `surface.Contribution` is cached
   (`featureBasedAdminCache`) and invalidated when the registry
   reference changes (`SetAdminRegistry` increments
   `cacheVersion` and clears the cache).

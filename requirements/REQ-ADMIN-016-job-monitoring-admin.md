@@ -1,9 +1,9 @@
 ---
-id: REQ-OPS-014
+id: REQ-ADMIN-016
 title: "Job monitoring admin surface gates mutations on jobs:manage, audits every mutation, and degrades gracefully"
 status: Proposed
 date: 2026-07-02
-slug: req-ops-014-job-monitoring-admin
+slug: req-admin-016-job-monitoring-admin
 category: governance
 ears_pattern: event-driven
 priority: must
@@ -29,15 +29,15 @@ stakeholders:
   - lean compositions (boot without audit_management wired)
 ---
 
-# REQ OPS-014 — Job monitoring admin
+# REQ ADMIN-016 — Job monitoring admin
 
 Status: **Proposed** (2026-07-02)
 
 ## Statement
 
-The job-monitoring feature **shall** give admins visibility into
+The job-monitoring feature **shall** give admins payload-free visibility into
 background jobs — overview stats, the scheduled-jobs list, and job
-history rendered from `jobs.JobScheduler.ListScheduledJobs` — on
+history rendered from `jobs.ExecutionInspector.ListExecutions` — on
 pages gated by the `jobs:view` permission, and **shall** expose
 three mutation endpoints: cancel
 (`POST /admin/jobs/api/scheduled/{id}/cancel`), reschedule
@@ -54,8 +54,9 @@ RFC3339), and retry (`POST /admin/jobs/api/history/{id}/retry`).
    non-RFC3339 `execute_at` → `400` with the scheduler untouched;
    retry of a job whose original is no longer listed → `404`
    rather than fabricating a payload);
-3. Delegate to the scheduler (`Cancel`, `Reschedule`, or
-   `Schedule` with the original type + payload for retry);
+3. Delegate to the scheduler (`Cancel`, `Reschedule`, or provider-native
+   `RedriveExecution` for retry). Redrive **shall not** expose or reconstruct
+   the original payload outside the scheduler backend;
 4. Emit one structured audit event per attempt — action
    `job.cancel` / `job.reschedule` / `job.retry`, resource type
    `job`, resource id, actor from the request context, outcome
@@ -104,10 +105,10 @@ concern (REQ-004 / ADR-0007), not this handler's.
 - **AC-4 — Input validation before action.** A reschedule with a
   non-RFC3339 `execute_at` returns `400` and never reaches the
   scheduler.
-- **AC-5 — Retry requires the original.** Retry re-enqueues the
-  original job's type + payload via `Schedule`; when the original
-  is no longer in the scheduler's listing, the endpoint returns
-  `404` and schedules nothing.
+- **AC-5 — Retry requires an archived execution.** Retry invokes
+  `RedriveExecution` for the tenant-scoped archived execution without
+  exposing its payload. A missing execution returns `404`; any non-archived
+  execution returns `409`; neither case schedules anything.
 - **AC-6 — Read surface degrades gracefully.** Overview stats and
   the scheduled/history lists render from the scheduler; listing
   errors and empty result sets render empty/error states rather

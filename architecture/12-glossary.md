@@ -50,17 +50,20 @@ Claude Design, containing `brand.json`, DTCG `tokens.json`, 106
 component JSON files, and 55 icon SVGs. See
 [ADR 0022](../adr/0022-pkds-cue-authored-design-system-pipeline.md).
 
-**Business module.** A self-contained vertical slice under
-`pk-modules/<name>/`: DB schema, domain logic,
-HTTP API, admin UI, declared contracts. Synonym of *module* when
-no ambiguity with fx's or Go's use of the word.
+**Business module.** A self-contained vertical slice under the full
+distribution's `modules/platformkit-business-modules/<name>/`: DB schema,
+domain logic, HTTP API, admin UI, and declared contracts. The public
+`pk-modules/pkg/<name>` packages are smaller reference implementations of the
+same boundary. Synonym of *module* when no ambiguity with fx's or Go's use of
+the word.
 
 ## C
 
-**Catalog.** `pk-modules/catalog/` — the
-registry of modules, their tier claims, their preset memberships,
-and module-set definitions. The source of truth for what modules
-exist.
+**Catalog.** Typed `ModuleContract` and `ModuleSet` values under the full
+distribution's `catalog/modulecontracts/`. They own module identity, tier,
+preset membership, and named sets. The public `pk-modules/pkg` reference pack
+does not duplicate this catalog. See
+[ADR 0048](../adr/0048-go-authored-catalog-and-generated-exports.md).
 
 **Claude Design.** Anthropic's AI design tool (launched
 2026-04-17) that consumes a PlatformKit `brand-context.tgz` as
@@ -187,7 +190,7 @@ record of every source file that contributed. See
 **Module binding.** A NATS-backed port proxy in
 `platformkit-module-bindings/` that satisfies a port interface
 for the microservices topology. E.g.
-`UserServiceNATSClient` satisfies `ports.UserService`.
+`UserBoundaryServiceNATSClient` satisfies `ports.UserBoundaryService`.
 
 **Module set.** A curated collection of modules with explicit
 guarantees. E.g. `assurance-core` selects `tier: core-certified
@@ -223,15 +226,16 @@ and icon. See
 `contractvar`, `interopimport`, `accesscontract`,
 `eventcontract`, `buildtags`.
 
-**Port.** An interface in
-`pk-modules/ports/` that cross-module calls
-flow through. Type-aliases or re-declares the contract in the
-provider module's `contracts/provides/`. See
+**Port.** An interface in the full distribution's
+`modules/platformkit-business-modules/ports/` that cross-module calls flow
+through. A module's provider contract lives in `contracts/provides/`. Public
+reference packages expose their OSS-facing interfaces from the package itself.
+See
 [ADR 0009](../adr/0009-ports-only-cross-module-communication.md).
 
-**Preset.** A named membership set of modules. A module declares
-preset membership in `module_contracts.yaml`'s
-`compatibility.presets` list. Apps compose from presets. See
+**Preset.** A typed named membership label in a module's
+`ModuleContract.Compatibility.Presets`. Full-distribution apps resolve presets
+through the authored Go catalog; serialized YAML is an export only. See
 [ADR 0016](../adr/0016-module-sets-and-preset-composition.md).
 
 **Provider.** (a) A business module that exposes a port for
@@ -241,7 +245,7 @@ Redis provider, noop provider).
 
 ## R
 
-**Repo-split.** The workspace's 21-repo topology. Enforced
+**Repo-split.** The workspace's 58-repo topology. Enforced
 boundary between server-producing repos and dev/test repos that
 carry heavy dependencies. See
 [C-05](../conventions.md#c-05-server-binaries-dont-ship-browsers-or-docker).
@@ -272,7 +276,8 @@ navigation, page-pattern selections. See
 `tenant_management` middleware.
 
 **Tier.** `core-certified` / `supported` / `experimental`.
-Declared per module in `catalog/module_contracts.yaml`. See
+Declared as a typed `Tier` in the full distribution's authored Go catalog. The
+public reference pack does not maintain a parallel tier catalog. See
 [ADR 0015](../adr/0015-module-tiering.md).
 
 **Tone.** The semantic-intent axis of a component's styling

@@ -273,6 +273,90 @@ repo_topics:
     diataxis: explanation
     collection: adr
     adr_number: 28
+  - id: adr-0029-every-file-declares-its-purpose
+    title: Every Go file declares its purpose with structured traceability
+    path: adr/0029-every-file-declares-its-purpose.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 29
+  - id: adr-0030-progressive-disclosure-for-claude-context
+    title: CLAUDE.md and adjacent docs follow progressive disclosure
+    path: adr/0030-progressive-disclosure-for-claude-context.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 30
+  - id: adr-0031-atomic-component-tiers
+    title: Frontend components use strict atomic tiers and a matching registry
+    path: adr/0031-atomic-component-tiers.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 31
+  - id: adr-0033-chat-as-a-pluggable-transport-with-domain-on-top
+    title: Chat is a pluggable transport with the domain layered on top
+    path: adr/0033-chat-as-a-pluggable-transport-with-domain-on-top.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 33
+  - id: adr-0048-go-authored-catalog-and-generated-exports
+    title: The catalog is Go-authored; serialized formats are generated exports
+    path: adr/0048-go-authored-catalog-and-generated-exports.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 48
+  - id: adr-0064-file-purpose-traceability-is-a-blocking-workspace-invariant
+    title: File-purpose traceability is a blocking workspace invariant
+    path: adr/0064-file-purpose-traceability-is-a-blocking-workspace-invariant.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 64
+  - id: adr-0065-reusable-application-secrets-use-versioned-aead-envelopes
+    title: Reusable application secrets use versioned authenticated-encryption envelopes
+    path: adr/0065-reusable-application-secrets-use-versioned-aead-envelopes.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 65
+  - id: adr-0066-federated-identities-bind-verified-issuer-and-subject
+    title: Federated identities bind verified issuer and subject, not mutable claims
+    path: adr/0066-federated-identities-bind-verified-issuer-and-subject.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 66
+  - id: adr-0067-refresh-tokens-use-durable-single-use-families
+    title: Refresh tokens use durable single-use families
+    path: adr/0067-refresh-tokens-use-durable-single-use-families.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 67
+  - id: adr-0070-interactive-browser-authentication-uses-durable-one-time-bound-proofs
+    title: Interactive browser authentication uses durable one-time bound proofs
+    path: adr/0070-interactive-browser-authentication-uses-durable-one-time-bound-proofs.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 70
+  - id: adr-0071-email-verification-uses-hash-only-proofs-and-owner-guarded-activation
+    title: Email verification uses hash-only proofs and owner-guarded activation
+    path: adr/0071-email-verification-uses-hash-only-proofs-and-owner-guarded-activation.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 71
+  - id: adr-0072-one-time-public-authentication-bearers-use-hash-only-scoped-ledgers
+    title: One-time public authentication bearers use hash-only scoped ledgers
+    path: adr/0072-one-time-public-authentication-bearers-use-hash-only-scoped-ledgers.md
+    dita_type: concept
+    diataxis: explanation
+    collection: adr
+    adr_number: 72
 
 # This repo hosts no Go modules — pilot_modules intentionally empty.
 pilot_modules: []

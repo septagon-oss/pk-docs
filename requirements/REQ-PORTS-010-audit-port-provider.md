@@ -16,11 +16,11 @@ satisfied_by:
   adr: [ADR-0009]
   conventions: [C-14]
 implements_cross_cutting: [REQ-002, REQ-004]
-refines: REQ-AUDIT-001
+refines: REQ-PORTS-001
 type: doc
 tags: [requirement, capability, audit_management, audit_trail, ports]
-module: audit_management
-feature: audit_trail
+module: platformkit_ports
+feature: contract
 capability: audit_port_provider
 capability_kind: inter_module_contract
 stakeholders:

@@ -189,4 +189,4 @@ properties:
 
 - [REQ-BILL-010 — Subscription create](./REQ-BILL-010-subscription-create.md) — limits are copied here.
 - [REQ-BILL-012 — Plan change](./REQ-BILL-012-plan-change.md) — limits are recopied on plan change.
-- [REQ-ENTITLE-010 — Entitlement grants](./REQ-ENTITLE-010-grants.md) — the entitlement layer that consumes metered limits.
+- [REQ-ENTITLE-010 — Entitlement grants](./REQ-ENTITLE-010-grant-subscriber.md) — the entitlement layer that consumes metered limits.

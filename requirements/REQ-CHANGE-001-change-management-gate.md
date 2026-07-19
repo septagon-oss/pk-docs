@@ -23,9 +23,11 @@ Status: **Active** (2026-05-10)
 ## Statement
 
 Every producer-side mutation that the platform classifies as governed
-**shall** be submitted via `change_management.ChangeService.SubmitChange`
-before the underlying side effect is applied. The change_management
-module **shall** look up the per-`ChangeType` workflow and either:
+**shall** be submitted via the owner-exported
+`modules/platformkit-business-modules/change_management/contracts/provides/change_service.go::ChangeService.SubmitChange`
+contract
+before the underlying side effect is applied. The change_management module
+**shall** look up the per-`ChangeType` workflow and either:
 
 1. apply the mutation inline (Tier 2 — `AutoApprove=true`, audit-only), or
 2. persist a `ChangeRecord(status=pending)` and create a paired
@@ -34,10 +36,11 @@ module **shall** look up the per-`ChangeType` workflow and either:
 3. allow the producer to bypass entirely (Tier 3 — fire-and-forget,
    reads, reconciliation jobs).
 
-In all three tiers the producer's `ApplyChange` callback **shall** emit
-an `audit.change.tracked` event via `ports.AuditBoundaryRecorder` so
-that the entity history reflects the mutation regardless of approval
-shape.
+For Tier 1 and Tier 2, the gate **shall** persist the `ChangeRecord` that
+captures the decision and final status. The producer remains responsible
+for its ordinary domain event and audit obligations under REQ-004; the
+change gate does not synthesize a second `audit.change.tracked` event.
+Tier-3 operations bypass this gate by definition.
 
 ## Rationale
 
@@ -57,35 +60,45 @@ the discipline.
 
 ## Acceptance criteria
 
-- **AC-1** Every producer service in `pk-modules`
-  with mutating operations registers a `ChangeHandlerProvider` via
-  `ChangeRegistrar.RegisterChangeProvider` at module-init time.
+- **AC-1** Every producer that classifies a mutation as Tier 1 or Tier 2
+  registers the owner-exported `ChangeHandlerProvider` through
+  `ChangeRegistrar.RegisterChangeProvider` during composition startup.
 - **AC-2** A Tier-1 mutation called via the producer's public API
-  returns `apperrors.ApprovalRequired(changeID)` rather than applying
-  the change. The HTTP middleware maps this to `202 Accepted`.
+  returns a `PendingApprovalError` carrying the change ID rather than
+  applying the change. Frontend-kit recognises its
+  `PendingChangeID()` contract and maps the deferred result to
+  `202 Accepted`.
 - **AC-3** A Tier-2 mutation applies inline and persists a
-  `ChangeRecord(status=applied)` plus an `audit.change.tracked` event.
+  `ChangeRecord(status=applied)`.
 - **AC-4** Approving a pending `ChangeRecord` triggers
-  `ChangeDispatcher.OnApproved` which calls the producer's
+  `change_tracking.Dispatcher.OnApproved` which calls the producer's
   `ApplyChange(ctx, request)` and updates `ChangeRecord.Status` to
   `applied` (or `apply_failed` on error).
-- **AC-5** When `change_management` is absent from a composition,
-  producers fall back to the audited direct-apply path with audit
-  emission preserved (lean install).
+- **AC-5** A producer whose public API exposes Tier-1 or Tier-2 mutations
+  declares `ChangeService` and `ChangeRegistrar` as required composition
+  dependencies. Missing change-management wiring fails startup; a manually
+  constructed producer fails closed before any side effect.
 
 ## Verification
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Analysis | `make check-module-port-event-audit` enumerates registered providers per module. |
-| AC-2 | Test | `tenant_management/features/tenant_lifecycle/service_test.go` asserts `ErrPendingApproval` for `DeleteTenant`. |
-| AC-3 | Test | `change_management/features/change_tracking/service_test.go` asserts inline apply + audit event. |
-| AC-4 | Test | `change_management/tests/e2e/approval_flow_test.go`. |
-| AC-5 | Test | Lean composition smoke test in `tenant_management/tests/`. |
+| AC-1 | Analysis | `modules/platformkit-business-modules/tenant_management/dependencies.go` declares the owner-exported `ChangeService` and `ChangeRegistrar` contracts; `tenant_management/invocations.go` registers the canonical first consumer's provider during composition startup. |
+| AC-2 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_change_routing_test.go::TestDeleteTenantTier1ReturnsPendingApprovalError`. |
+| AC-2 | Inspection | `frontend/platformkit-frontend-kit/renderer/ui/entity_html_handler.go::serveDelete` detects `PendingChangeID()` and returns `202 Accepted`. |
+| AC-3 | Test | `modules/platformkit-business-modules/change_management/features/change_tracking/service_test.go::TestSubmitChangeAutoApproveAppliesInline`. |
+| AC-4 | Test | `modules/platformkit-business-modules/change_management/features/change_tracking/service_test.go::TestDispatcherOnApprovedAppliesViaProvider` covers the approval callback and applied transition. |
+| AC-4 | Inspection | `modules/platformkit-business-modules/change_management/features/change_tracking/dispatcher.go::Dispatcher.OnApproved` calls `MarkApplyFailed` when the producer's `ApplyChange` returns an error. |
+| AC-5 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_change_routing_test.go::TestGovernedTenantMutationsFailClosedWithoutChangeService` covers every public governed tenant mutation; `TestTenantMutationSourceRejectsDirectApplyFallbacks` prevents reintroduction of optional wiring and direct-apply branches. |
 
 ## Satisfied by
 
 - (Pending) ADR documenting the change_management gate.
+- `modules/platformkit-business-modules/change_management/contracts/provides/change.go`
+  and
+  `modules/platformkit-business-modules/change_management/contracts/provides/change_service.go`
+  — the owner-exported registrar, provider, request, record, and
+  submission contracts.
 - `modules/platformkit-business-modules/change_management/` — the gate
   implementation.
 - `modules/platformkit-business-modules/audit_management/features/change_approval/` —
@@ -94,12 +107,15 @@ the discipline.
 ## Related requirements
 
 - [REQ-004 — Audit event per mutation](REQ-004-audit-event-per-mutation.md) —
-  every tier emits `audit.change.tracked`; this REQ guarantees the
-  emission point.
-- [REQ-TENANT-GATE-001 — Tenant mutations classified into the three-tier policy](REQ-TENANT-GATE-001-tenant-three-tier-policy.md) —
+  producer-owned domain mutation paths retain the platform audit
+  obligation independently of this gate's `ChangeRecord` ledger.
+- [REQ-TENANT-006 — Tenant mutations classified into the three-tier policy](REQ-TENANT-006-three-tier-change-policy.md) —
   the canonical first consumer.
 
 ## References
 
-- `modules/platformkit-business-modules/ports/change.go` — interface definitions.
+- `modules/platformkit-business-modules/change_management/contracts/provides/change.go`
+  and
+  `modules/platformkit-business-modules/change_management/contracts/provides/change_service.go`
+  — owner-exported interface definitions.
 - May 2026 change_management module landing.

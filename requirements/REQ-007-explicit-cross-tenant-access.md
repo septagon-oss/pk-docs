@@ -74,9 +74,9 @@ access; the trail proves it was intentional.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `platformkit-backend-kit/app/appcontext/cross_tenant_test.go::TestWithExpectedCrossTenantAccess_RejectsEmptyReason` |
+| AC-1 | Test | `core/platformkit-backend-kit/app/appcontext/cross_tenant_test.go::TestWithExpectedCrossTenantAccess_RejectsEmptyReason` |
 | AC-2 | Inspection | Code-review checklist + planned `pkvet` analyzer that flags empty-string reason calls. |
-| AC-3 | Test | `platformkit-backend-kit/core/entity/repository/gorm_tenant_test.go::TestScopedDB_HonoursCrossTenantMarker` |
+| AC-3 | Test | `core/platformkit-backend-kit/core/entity/repository/gorm_tenant_test.go::TestScopedDB_HonoursCrossTenantMarker` |
 | AC-4 | Inspection | The cross-tenant reason propagates from the request context to the audit row through the standard enrichment path documented in REQ-AUDIT-010 AC-1. **Verification gap: a dedicated `TestAuditEvent_CarriesCrossTenantReason` covering the field-propagation path is pending.** |
 
 ## Satisfied by

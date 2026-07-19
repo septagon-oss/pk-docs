@@ -31,6 +31,13 @@ ADR if the underlying decision needs to change.
 - [C-08 Workspace guards emit a single output format](#c-08-workspace-guards-emit-a-single-output-format)
 - [C-09 Runtime startup is explicit and one-way](#c-09-runtime-startup-is-explicit-and-one-way)
 - [C-10 Shared builders return errors, not panics](#c-10-shared-builders-return-errors-not-panics)
+- [C-17 Reusable application secrets use versioned AEAD envelopes](#c-17-reusable-application-secrets-use-versioned-aead-envelopes)
+- [C-18 Federated login binds stable provider subjects](#c-18-federated-login-binds-stable-provider-subjects)
+- [C-19 Refresh bearers have one durable current authority](#c-19-refresh-bearers-have-one-durable-current-authority)
+- [C-20 Interactive browser authentication uses one-time bound proofs](#c-20-interactive-browser-authentication-uses-one-time-bound-proofs)
+- [C-21 Email-verification bearers are hash-only and owner-guarded](#c-21-email-verification-bearers-are-hash-only-and-owner-guarded)
+- [C-22 One-time public authentication bearers use hash-only scoped ledgers](#c-22-one-time-public-authentication-bearers-use-hash-only-scoped-ledgers)
+- [C-23 Live A2UI delivery has one app-owned signed boundary](#c-23-live-a2ui-delivery-has-one-app-owned-signed-boundary)
 - [C-14 Every Go file declares its purpose](#c-14-every-go-file-declares-its-purpose)
 
 ---
@@ -66,14 +73,14 @@ work doesn't collide with itself.
 
 **How it's enforced.**
 
-- Review rule — reviewers reject any PR that modifies an
-  already-committed migration file.
-- Soft guard — `platformkit scaffold` emits fresh sequence numbers.
-- Runbook — `pk-docs/sync/README.md` mirrors this
-  discipline for doc sync for the same reason.
-- Gap — no CI check yet; `check-migrations-append-only` (a
-  `git diff --name-only HEAD~<n>..HEAD` guard) is tracked as a
-  follow-up.
+- `check-migrations-append-only`
+  (`platformkit-business-modules/scripts/check_migrations_append_only.sh`)
+  compares the branch against its merge base and rejects modified, deleted,
+  or renamed migration files. It runs in `verify-modules` / `precommit`.
+- Workspace write guards (`.claude/hooks/guard_migrations.py` and the tracked
+  pre-commit guard) reject the same operations before CI.
+- `platformkit scaffold` emits fresh sequence numbers so the normal authoring
+  path starts compliant.
 
 **Motivating ADRs.** Data-durability hygiene. Related:
 [ADR 0005 — no silent failures](./adr/0005-error-handling-discipline.md),
@@ -120,19 +127,16 @@ innocent.
    invoked via `platformkit verify module structure`, wired as
   `make check-structure`) verifies every module declares
   top-level `NewModule`, `GetModule`, and `GetFeatures` in
-  `module.go`. It does *not* inspect the body of `NewModule` or
-  verify that the backing variable is a
-  `*module.Singleton[T]` — a module could satisfy `check-structure`
-  with `NewModule` written as a plain factory.
+  `module.go`.
+- The `singletonpattern` pkvet analyzer inspects business-module roots and
+  rejects module types that lack a package-level `*module.Singleton[T]`.
 - Scaffolder seed — `platformkit scaffold module` emits the
   singleton shape.
-- Gap — no analyzer enforces `module.NewSingleton` usage. A
-  follow-up `pkvet` analyzer is tracked.
-- Gap — no runtime assertion of single-instance. A duplicate
-  `NewModule` call today would succeed at boot with two parallel
-  fx option bundles. The convention prevents it; the runtime
-  doesn't yet catch violators. Both gaps are explicit, not
-  oversights.
+- Runtime registration is idempotent for the same singleton instance;
+  `TryGetAndRegister` returns an error for a different instance with the same
+  module name and `GetAndRegister` surfaces that contract violation as a
+  panic. The registry therefore does not silently accept parallel module
+  instances.
 
 **Motivating ADR.**
 [ADR 0017 — Fx is the composition model](./adr/0017-fx-dependency-injection-as-composition.md).
@@ -187,32 +191,22 @@ modules is a directory copy that carries its routes with it.
 
 **When you're adding a feature.** Use the scaffolder
 (`platformkit scaffold feature`) — it emits the `FeatureBuilder` +
-`RouteHandler[H]` shape correctly. When you add or rename an
-endpoint, update both `feature.go`'s `EndpointDefinition` list and
-`handler.go`'s `RegisterRoutes` body; drift is currently only
-caught in review.
+`RouteHandler[H]` shape correctly. `feature.go` is the single source of truth
+for `EndpointDefinition` metadata; route binding remains in the feature-owned
+handler where Huma registration is required. Do not duplicate endpoint lists
+in `routes.go`, `handler.go`, contracts, or the module root.
 
 **How it's enforced.**
 
-- Scaffolder seed — `platformkit scaffold module` and
-  `platformkit scaffold feature` emit the correct shape.
-- `check-feature-activation`
-  (`pk-modules/scripts/check_feature_activation.sh`)
-  enforces a *related* invariant: every directory under
-  `<module>/features/` must be referenced from a module-root Go
-  file. It says nothing about where route binding happens inside
-  the feature.
-- Not a guard here — `check-module-route-registration-audit`
-  tracks the separate typed-routing migration
-  (normalised/hybrid/manual classification), not route placement.
-- Not a guard here — `check-module-capability-matrix` tracks
-  per-module summaries, not individual routes.
-- Gap — no static analyzer rejects `huma.Register(...)` /
-  `routing.Register(...)` / `router.*(...)` calls outside
-  `<module>/features/<feature>/` source files.
-- Gap — no analyzer cross-checks the declared
-  `EndpointDefinition` list against actual `huma.Register` call
-  sites.
+- The `featureroute` pkvet analyzer rejects route-registration calls outside
+  feature packages and rejects `EndpointDefinition` values or helper lists
+  outside `<module>/features/<feature>/feature.go`. Its dated allowlist is
+  wired by business-modules `check-pkvet`.
+- `check-feature-activation` verifies every feature directory is referenced
+  from module-root assembly.
+- Scaffolder templates emit the feature-owned shape.
+- Gap — Huma operation bodies and endpoint metadata are different artifacts;
+  no analyzer performs a full call-graph equivalence proof between them.
 
 **Motivating ADRs.**
 [ADR 0009 — modules only talk through ports](./adr/0009-ports-only-cross-module-communication.md),
@@ -232,11 +226,11 @@ Every module exposes its public surface via two packages:
   `ModuleDescription`, `ModuleVersion`, `ModuleBasePath`)
   re-exported from one source so metadata stays consistent.
 
-Implementation code lives outside `contracts/`. Cross-module port
-declarations in `pk-modules/ports/` reference
-contracts, not implementations: `ports.UserService` type-aliases
-or re-declares
-`user_management/contracts/provides.UserService`.
+Implementation code lives outside `contracts/`. Cross-module boundaries
+either import an owner module's public contract or use neutral,
+boundary-owned DTOs. The user boundary follows the latter model:
+`ports.UserBoundaryReader` returns `porttypes.UserDTO` and never aliases
+`user_management` persistence entities.
 
 **Why we do it this way.** ADR 0009 requires cross-module calls to
 go through interfaces. *Where* those interfaces live determines
@@ -358,17 +352,27 @@ harness's per-module entry points.
 
 ## C-06 Test coverage scales with tier
 
-The intent, encoded in
-`pk-modules/scripts/module_archetypes.csv` and
-in the `check-module-maturity` /
-`check-module-assurance-evidence` audits:
+The intent is joined from three typed authorities and their audits:
+
+- `catalog/modulecontracts/authored_catalog.go` declares each module's tier
+  and archetype;
+- `catalog/modulequality/authored_policy.go` declares the tier- and
+  archetype-aware maturity floors;
+- `check-module-maturity` and `check-module-assurance-evidence` compare those
+  claims with live repository evidence.
+
+These authorities and targets describe the full
+`modules/platformkit-business-modules` distribution. The public
+`github.com/septagon-oss/pk-modules/pkg` reference pack has no parallel tier
+catalog; its packages keep their tests beside the implementation and are
+verified by that repository's own `make verify`.
 
 - **core-certified** — ≥1 test file per feature, integration
   tests for every exposed port method, BDD tests for public
   scenarios, meaningful line coverage across feature code.
 - **supported** — ≥1 test file per feature, coverage for every
   happy-path per feature.
-- **experimental** — at least a module smoke test; the `notes:`
+- **experimental** — at least a module smoke test; the `Notes`
   field in the contract must acknowledge the posture.
 
 Test files are colocated with code (`*_test.go` beside the
@@ -384,14 +388,14 @@ system — a single global floor would either force experimental
 modules to meet the bar (slowing iteration) or permit the lie.
 
 **When you're claiming a tier.** The claim isn't aspirational.
-If you add `tier: supported` to a module, it needs ≥1 test file
-per feature and happy-path coverage — before CI will let the
+If you change a module's `Tier` to `TierSupported` in
+`authored_catalog.go`, it needs the supported evidence before CI will let the
 catalog edit through. Demote the claim or add the tests.
 
 **How it's enforced.**
 
 - `check-tests-floor` —
-  `pk-modules/Makefile` target →
+  `platformkit-business-modules/Makefile` target →
   `platformkit verify module test-floor` →
   `platformkit-devtools/internal/modulechecks/test_floor.go`.
   Current enforcement is a flat floor: every module must ship ≥1
@@ -400,23 +404,31 @@ catalog edit through. Demote the claim or add the tests.
   `until=YYYY-MM-DD` field. Tier-specific line-coverage
   thresholds are NOT enforced by this script today.
 - `check-module-maturity`
-  (`scripts/check_module_maturity.sh`) — validates the tier claim
-  in `module_contracts.yaml` against archetype expectations from
-  `module_archetypes.csv`. Blocks a `supported` claim when the
-  tested surface is thin.
+  (`scripts/check_module_maturity.sh`) — runs
+  `cmd/module-maturity-check`, which loads
+  `modulecontracts.Authored()` and `modulequality.AuthoredPolicy()`. Archetype
+  comes from the typed `ModuleContract`; policy comes from
+  `modulequality/authored_policy.go`. It joins those values with live
+  manifest, feature, route, permission, integration, and test-file evidence
+  and blocks a tier claim when the measured surface is too thin.
 - `check-module-assurance-evidence`
-  (`scripts/generate_module_assurance_evidence.sh --check`) — for
-  modules with `assuranceEligible: true`, verifies BDD and
-  integration test directories exist and the generated evidence
-  report matches what's on disk.
+  (`scripts/generate_module_assurance_evidence.sh --check`) — reads
+  `AuthoredCatalog` and `AuthoredModuleSets`, validates the
+  `assurance-core` selector/membership relationship, and verifies that the
+  generated evidence report and its hashed inputs match the authored state.
+- `test-with-coverage` + `check-tier-coverage` — generate a Go coverage
+  profile and enforce the checked-in per-module no-regression ratchet.
+  `check-tier-coverage-strict` applies the stated 70% core-certified / 50%
+  supported thresholds; experimental remains reported with no minimum.
 - Build-tag discipline — the `buildtags` pkvet analyzer keeps
   E2E opt-in by forcing `//go:build e2e` on `tests/e2e/` and
   `tests/bdd/` files (see
   [C-05](#c-05-server-binaries-dont-ship-browsers-or-docker)).
-- Gap — no tier-aware line-coverage gate.
-  `check-tests-floor` doesn't compute coverage percentages or
-  cross-reference the tier. Raising the gate to enforce
-  ≥70% / ≥50% per tier requires wiring a coverage pass into CI.
+- Gap — the tier-aware coverage command is not part of the default
+  `verify-modules` chain. Both coverage make targets skip when
+  `coverage.out` is absent, and the strict 70% / 50% thresholds are opt-in;
+  callers must run `test-with-coverage` (ratchet) or generate the profile and
+  invoke `check-tier-coverage-strict` explicitly.
 - Gap — no per-feature test-file requirement. A core-certified
   module with one module-level test file and zero per-feature
   tests passes `check-tests-floor` today.
@@ -618,14 +630,463 @@ returns errors for `BuildProject` and `GenerateProjectManifest`.
 
 ---
 
+## C-17 Reusable application secrets use versioned AEAD envelopes
+
+A secret the application must recover later is encrypted at the persistence
+adapter with a versioned authenticated-encryption envelope. Plaintext may exist
+only for the bounded in-memory operation that needs it. It must not enter an
+entity projection, durable event, log, metric label, job payload, or API response
+other than the intentional one-time enrollment response.
+
+Every envelope records a schema version that unambiguously selects its
+algorithm, a non-secret key identifier, fresh cryptographic nonce, and
+ciphertext with its authentication tag. The AEAD associated data includes a
+stable PlatformKit domain plus the owning identity, tenant, or aggregate
+identifier. A ciphertext copied to another owner must fail to open even when
+both rows use the same key.
+
+**Key discipline.** Every non-development environment requires a dedicated,
+explicitly configured 256-bit active key. It may not silently derive one from
+JWT, database, or other cross-protocol credentials. Development may use a
+documented domain-separated derivation so local bootstrap stays self-contained.
+Readers may accept a bounded previous-key ring for rotation; writers always use
+the active key. Unknown, duplicate, weak, or malformed keys fail startup.
+
+**Rotation and historical data.** Deploy key-capable readers before changing the
+active writer key. Keep the old key as previous, rewrap every old-key envelope,
+verify the remaining count is zero, then remove it. Plaintext compatibility is
+an explicit migration mode, never format guessing: production either rewrites
+through an audited optimistic update or rejects/clears the plaintext state and
+requires re-enrollment. A rollback must not reintroduce plaintext writers.
+
+**Choose hashing when recovery is unnecessary.** Passwords, backup codes,
+bearer tokens, and API keys remain one-way hashes with the appropriate salt or
+pepper. Encrypting them would create an avoidable decryption capability.
+
+**How it's enforced.**
+
+- Production constructors for reusable-secret stores require a protected-store
+  capability and reject plaintext-only adapters.
+- Unit and integration tests cover randomized sealing, plaintext opacity,
+  tamper and wrong-owner rejection, active/previous key behavior, production
+  configuration failure, and append-only migration integrity.
+- Code review rejects raw secret assignment into persistent entities or durable
+  payloads. Gap — a workspace analyzer for classified reusable-secret fields is
+  still to be added after the shared `internal/secretbox` extraction.
+
+**Motivating ADR.**
+[ADR 0065 — reusable application secrets use versioned authenticated-encryption envelopes](./adr/0065-reusable-application-secrets-use-versioned-aead-envelopes.md).
+
+---
+
+## C-18 Federated login binds stable provider subjects
+
+OIDC and SAML callbacks identify a principal by an immutable durable tuple:
+tenant, normalized protocol, stable tenant-owned connection key, verified
+issuer or SAML entity ID, and signed stable subject. Email, username, display
+name, group claims, and other mutable attributes are never repeat-login keys.
+SAML transient NameIDs are not linkable identities.
+
+**First link.** A canonical provider-verified email is used only for global
+collision detection. The adapter serializes the exact subject and canonical
+email, then creates an identity with no roles, permissions, or tenant
+membership only when no account owns the address. If an account already owns
+it, the callback fails with a link-required conflict. A separately
+authenticated proof-of-possession flow or explicit audited administrator
+operation must create that binding. Identity creation and binding commit in
+one atomic transaction.
+
+**Repeat login.** Resolve the binding before reading email and return its exact
+platform identity. Provider claims do not rewrite the platform profile or
+account status. If the provider runtime supplies a platform identity ID and
+the business boundary cannot reload that exact active identity, authentication
+fails; it does not fall back to an email lookup.
+
+**Uniqueness and change.** One exact subject tuple maps to one platform user,
+and one user has at most one subject for a tenant/provider/connection. Issuer,
+entity-ID, connection-key, and subject changes require an explicit audited
+migration or relink. Provider constructors reject directories that cannot
+atomically persist and resolve these bindings.
+
+**How it's enforced.**
+
+- The provider-neutral `FederatedDirectory` contract requires exact-subject
+  resolution and atomic first link.
+- Append-only auth migrations enforce exact-key and per-user/connection
+  uniqueness; the production adapter uses subject and global-email locks.
+- OIDC/SAML and business tests cover mutable-email repeat login,
+  existing-account collision, concurrent first links, conflicting bindings, and
+  authoritative-ID failure without email fallback.
+
+**Motivating ADR.**
+[ADR 0066 — federated identities bind verified issuer and subject, not mutable claims](./adr/0066-federated-identities-bind-verified-issuer-and-subject.md).
+
+---
+
+## C-19 Refresh bearers have one durable current authority
+
+Every remembered session has one durable refresh-token family and exactly one
+currently redeemable generation. Persistence stores a one-way 32-byte digest,
+never the raw bearer. Redemption locks the family, verifies its exact
+user/tenant/session/generation binding, and replaces the digest and generation
+with one atomic compare-and-swap inside the same transaction as session
+activity, audit intent, and event publication.
+
+Rotation is mandatory. A missing, expired, revoked, mismatched, or stale family
+fails closed. A stale generation or digest revokes the family and session as
+suspected reuse. A cache lookup, get-then-set sequence, process mutex, or JWT
+signature alone is not redemption authority. Storage uncertainty never emits a
+credential.
+
+Logout durably revokes the session and family. Cache blacklist entries are
+defence in depth only. Every PlatformKit token explicitly marked `type=access`
+is checked against its exact active durable session and active user on each
+request, so a cache outage or eviction cannot resurrect it. Typeless
+development-preview and separately governed external credentials are outside
+this session-family contract.
+
+Pre-migration raw refresh-token columns are removed through an append-only,
+security-irreversible migration. The migration invalidates existing bearers
+instead of copying them; rollback must not restore recoverable bearer storage.
+
+**How it's enforced.**
+
+- The family-store contract requires durable transactions, row locking, and
+  generation-plus-digest compare-and-swap; production composition fails when
+  these capabilities are absent.
+- Database constraints require one family per session, unique fixed-length
+  current digests, positive generations, and complete terminal revocation
+  metadata.
+- Service, race, and middleware tests cover exactly-one-winner redemption,
+  reuse revocation, cache independence, storage failure, logout, and live
+  session/user enforcement.
+
+**Motivating ADR.**
+[ADR 0067 — refresh tokens use durable single-use families](./adr/0067-refresh-tokens-use-durable-single-use-families.md).
+
+---
+
+## C-20 Interactive browser authentication uses one-time bound proofs
+
+An OIDC or SAML browser login has two independent proofs: provider protocol
+material and a cryptographically random 256-bit browser binding. At start, the
+service writes one durable flow row containing only SHA-256 digests of the
+complete OIDC `state` or SAML `RelayState` and the browser binding, plus the
+exact tenant ID, normalized provider, stable connection key, expiry, and
+consumption state. Raw protocol material remains confined to the redirect and
+callback protocol channel, and the raw binding remains confined to its browser
+cookie; neither enters durable rows, entities, admin/CRUD/MCP projections,
+logs, metrics, audits, events, or jobs.
+
+OIDC `state` and SAML `RelayState` each use a randomized, purpose-bound
+`pkps:v1` AES-256-GCM envelope with a distinct purpose, never a readable signed
+claim set. OIDC protects the nonce, PKCE verifier, redirect, bounded
+issue/expiry times, tenant, connection subject, configured issuer, and client
+audience. SAML protects the required tenant, connection, authentication-request
+ID, absolute ACS URL, issue/expiry times, configured issuer, connection subject
+and audience, plus an optional return target. Its issue-to-expiry interval is
+at most five minutes plus the explicit 30-second clock-skew allowance.
+
+Completion authenticates and decrypts the protocol-specific envelope, then
+requires all mandatory fields, bounded time and issuer/subject/audience claims,
+the exact connection, and callback tenant/provider/connection authority. SAML
+also requires the callback ACS authority to equal the protected absolute ACS
+URL, before assertion parsing. Tampered, malformed, wrong-purpose, and
+signed-readable JWT continuations fail closed without a compatibility fallback.
+This is a deliberate security cutover: a prior readable continuation may be
+invalidated in flight for no more than its former five-minute lifetime.
+
+The callback consumes that row with one conditional durable update matching
+both digests, every authority field, unexpired state, and `consumed_at IS NULL`.
+Consumption occurs before provider completion. Exactly one callback wins; a
+mismatch does not burn another flow. A missing or non-durable store, storage
+error, absent or ambiguous cookie, expired row, or authority mismatch fails
+closed without calling the provider or creating a platform session.
+
+Flow cookies are host-only, `HttpOnly`, scoped to the provider callback path,
+and bounded by the durable flow expiry. OIDC uses `SameSite=Lax` and adds
+`Secure` over HTTPS. SAML HTTP-POST uses `SameSite=None; Secure`; non-local
+deployed SAML login fails when HTTPS cannot be proven. Loopback-only
+development may use Lax over HTTP because browsers reject `None` without
+`Secure`, but that exception must not be admitted in a deployed environment.
+Terminal success or denial clears the flow cookie.
+
+A local-MFA continuation retains the browser-binding digest, flow reference,
+tenant/provider/connection tuple, verified platform identity reference, return
+target, and bounded expiry. It compares the presented binding in constant time,
+revalidates the exact tuple, and is itself single-use. It never calls the
+provider again or creates tenant membership, a platform session, audit state,
+or auth events before local MFA succeeds. Provider `acr`, `amr`, and similarly
+named metadata are not local-MFA evidence.
+
+Provider adapters may hold exchange credentials only in bounded local memory
+while verifying the provider response. OIDC ID/access/refresh bearers, raw SAML
+assertions, and other upstream session credentials must not appear in the
+provider-neutral session result, PlatformKit session fields or metadata,
+entities, logs, events, audits, metrics, or jobs. Platform session persistence
+uses a fresh platform-owned opaque reference.
+
+A magic-link confirmation uses the corresponding browser gate before token
+lookup. A successful, non-mutating GET creates a separate 256-bit nonce in a
+host-only, `HttpOnly`, Lax cookie and matching hidden form field. The POST
+validates their shape and constant-time equality; when present, `Origin` must
+equal the request origin and `Sec-Fetch-Site` must be `same-origin`. The nonce
+is retained through a local-MFA form, cleared on success or terminal denial,
+and never substitutes for the mailed token's durable single-use authority.
+Confirmation responses are non-cacheable, suppress referrers, and deny framing.
+
+Credential-login forms consume the response-authoritative CSRF token from the
+middleware request context. A safe first load renders the newly issued cookie
+value; after valid mutation the middleware rotates before handler execution and
+the error page renders that exact replacement. Default and custom auth-page
+renderers must put the supplied value in a hidden `csrf_token` field, so the
+login contract remains correct without JavaScript and never reuses a stale
+request token.
+
+**How it's enforced.**
+
+- The interactive-flow schema constrains 32-byte digests, exact supported
+  providers, non-empty connections, bounded expiry, and one unique state
+  digest; the store uses one authority-complete conditional update.
+- `interactive_flow_security_test.go` exercises mismatch-without-burning,
+  concurrent single consumption, expiry, outage, raw-material opacity, SAML
+  RelayState, registration failure, and provider-error consumption.
+- `interactive_flow_browser_security_test.go` exercises protocol-specific
+  cookie attributes, insecure SAML rejection, cross-browser denial, concurrent
+  tabs, cleanup, and MFA browser continuity. Magic-link confirmation tests
+  cover nonce pairing, origin/fetch-site rejection, and scanner-safe GET.
+- `security/protectedstate/codec_test.go`, OIDC begin/authority tests, SAML
+  `TestBeginAuthentication_BuildsRedirectFlowWithProtectedRelayState`, and
+  `TestValidateSAMLRelayStateAuthorityRequiresExactConnectionAndCallbackMetadata`
+  exercise opaque randomized state, purpose separation, bounded claim
+  validation, tamper and malformed-input rejection, no readable signed
+  fallback, and exact callback authority before assertion parsing.
+- Provider-adapter tests reject bearer-valued provider-neutral session fields
+  and metadata projections; OIDC completion returns a fresh 256-bit reference
+  after discarding exchange credentials.
+- Core CSRF context tests and auth
+  `TestLoginPageCSRFSupportsNoJavaScriptFirstLoadAndRotatedErrorRender` plus
+  `TestLoginFlavorReceivesResponseAuthoritativeCSRFToken` pin first-load,
+  rotation, no-JavaScript, and custom-renderer behavior.
+
+**Motivating ADR.**
+[ADR 0070 — interactive browser authentication uses durable one-time bound proofs](./adr/0070-interactive-browser-authentication-uses-durable-one-time-bound-proofs.md).
+
+---
+
+## C-21 Email-verification bearers are hash-only and owner-guarded
+
+An email-verification token is account-activation authority. Generate 32
+random bytes, expose the hexadecimal bearer only to the in-memory delivery
+link and browser confirmation exchange, and persist only its SHA-256 digest.
+Raw tokens and URLs do not belong in database columns, notification rows,
+template data, retry jobs, entities, admin/CRUD/MCP projections, logs, metrics,
+audits, or events.
+
+Issuance deletes the prior pending record and creates its replacement in one
+transaction. A notification carrying the link is marked sensitive and uses a
+tracking identity unique to that exact credential. Pre-cutover plaintext
+authority is invalidated rather than copied into the digest model, and the
+security-irreversible migration never recreates a raw-token column.
+
+The emailed GET is read-only. It may validate token shape and render a form,
+but only a CSRF-protected POST consumes the credential. The form uses the
+response-authoritative middleware token and works without JavaScript. The page
+is non-cacheable, uses `Referrer-Policy: no-referrer`, denies framing, and
+removes the bearer from URLs and terminal output after submission. Custom auth
+flavors preserve the host-supplied token, CSRF token, exact form action, and
+confirmation state; none of those fields becomes independent authority.
+
+Consumption is one tenant-scoped conditional update over digest, expiry, and
+unconsumed state. User activation occurs inside the same transaction through a
+narrow owner-provided compare-and-swap requiring the exact tenant, user,
+canonical email, pending status, unverified state, and non-deleted row. Do not
+replace this with a cacheable read plus a generic update. A suspended,
+inactive, deleted, changed-email, active, or previously verified account fails
+closed, and the verification consume rolls back.
+
+The successful audit and canonical typed `user.email.verified` event share the
+same transaction. Runtime publication, feature metadata, and generated catalog
+use the typed contract's name, version, and payload schema; underscore and dot
+variants are not aliases.
+
+Public resend applies an atomic cooldown before account lookup. The key is a
+tuple of the exact tenant and the SHA-256 digest of the canonical email, never
+the raw address. A wired shared cache must implement atomic set-if-absent;
+outage or unsupported capability prevents mutation. A process-local locked
+fallback is acceptable only when no cache is wired and must be documented as
+single-replica. Limited, unknown, verified, eligible, and failed requests keep
+one opaque public response, and a suppressed request performs no lookup,
+rotation, or delivery.
+
+**When you're editing email verification.**
+
+- Treat any new field containing the raw token, URL, body, or template data as
+  a credential leak until proved otherwise.
+- Keep registration as verification-record owner and user management as user-
+  lifecycle owner; cross the boundary only through the narrow activation port.
+- Add predicates to the owner's compare-and-swap when eligibility tightens;
+  never pre-read and assume the row remains eligible.
+- Keep GET safe and POST explicit. Do not add a compatibility route that
+  mutates on link open.
+- Apply abuse control before all account-state branches and preserve identical
+  public responses.
+- Add a new append-only migration for schema changes. Never restore recoverable
+  bearer material in a down migration.
+
+**How it's enforced.**
+
+- Migration and schema-boundary tests reject raw-token persistence and retired
+  authentication ownership of `email_verifications`.
+- Repository and user-owner store tests prove exact tenant/email/status
+  predicates, ambient-transaction participation, rollback, expiry, replay, and
+  concurrent single-winner behavior.
+- Browser tests exercise scanner GET, CSRF failure, no-JavaScript POST, security
+  headers, and post-confirmation bearer removal; renderer-contract inspection
+  verifies host-supplied custom-flavor payload propagation.
+- Notification tests require sensitive inline delivery and credential-unique
+  tracking identities.
+- Cache-provider and resend tests prove atomic cooldown, concurrency, fail-
+  closed shared-cache errors, and zero side effects while suppressed.
+- Typed event-contract and catalog tests reject `user.email_verified` drift.
+
+**Motivating ADR.**
+[ADR 0071 — email verification uses hash-only proofs and owner-guarded activation](./adr/0071-email-verification-uses-hash-only-proofs-and-owner-guarded-activation.md).
+
+---
+
+## C-22 One-time public authentication bearers use hash-only scoped ledgers
+
+A PlatformKit-issued bearer that crosses a public authentication boundary and
+is intended for one-time use has at least 256 bits of cryptographic
+unpredictability. Prefer 32 random bytes from a cryptographically secure
+source. Resend-coalesced credentials may use a domain-separated HMAC-SHA-256
+under a secret of at least 32 bytes and a unique random identifier; never store
+the derivation key beside the credential record.
+
+Persist only SHA-256 of the complete presented bearer. Bind that digest to the
+exact tenant, purpose, subject or identity, bounded expiry, and consumption
+state. Add every authority field the protocol needs. Raw values do not belong
+in entities, JSON, admin, CRUD, UI, MCP, notification rows, template data,
+retry jobs, audits, events, logs, metrics, or durable errors.
+
+Consume with one conditional durable transition over digest, exact scope,
+expiry, and unconsumed state. Never authorize from a read followed by an
+unconditional update. Join consumption to the protected durable mutation when
+the participating owners share an atomic boundary; otherwise order the consume
+before the irreversible side effect and document the fail-safe tradeoff.
+
+An emailed GET is read-only. It may validate shape or peek at pending state,
+then renders an explicit POST. Protect the POST with the bearer and with CSRF
+or a purpose-specific browser binding whenever ambient browser state or
+session swapping matters. Provider callbacks that cannot require a human POST
+instead prove exact protocol callback authority, one-time state, and browser
+binding before creating a platform session.
+
+Sensitive email delivery is immediate and persists only a redacted,
+non-retryable intent. A plaintext cutover invalidates or discards pending
+authority, removes the raw column or table, and fails explicitly on downgrade.
+
+**When you're adding or changing a one-time authentication proof.**
+
+- Write down every authority dimension before designing the persistence row.
+- Treat the raw credential and every URL containing it as secret material.
+- Keep safe GET separate from state-changing POST for emailed browser links.
+- Add concurrency, expiry, purpose-confusion, tenant-mismatch, scanner, raw-
+  material, and storage-outage tests appropriate to the flow.
+- Use a new append-only migration for a cutover and never restore plaintext
+  bearer storage in its down migration.
+
+**How it's enforced.**
+
+- Provider-callback, login-link, password-reset, and email-verification tests
+  prove their specialized digest, scope, expiry, and single-consume rules.
+- Notification tests reject bearer persistence and deferred sensitive delivery.
+- Migration tests reject recoverable plaintext downgrades and retired raw-token
+  tables or columns.
+- Purpose-specific [C-20](#c-20-interactive-browser-authentication-uses-one-time-bound-proofs)
+  and [C-21](#c-21-email-verification-bearers-are-hash-only-and-owner-guarded)
+  add stricter callback-binding and activation rules.
+
+**Motivating ADR.**
+[ADR 0072 — one-time public authentication bearers use hash-only scoped ledgers](./adr/0072-one-time-public-authentication-bearers-use-hash-only-scoped-ledgers.md).
+
+---
+
+## C-23 Live A2UI delivery has one app-owned signed boundary
+
+Every live renderable A2UI document is a complete signed runtime envelope.
+Shared code constructs and signs it atomically. Modules return an in-process
+complete replacement intent; the composed app validates that intent, binds the
+exact request audience and a fresh durable revision, signs it, and clears the
+intent before serialization. Do not add a public unsigned constructor,
+sign-later helper, patch, raw complete-spec response, or pre-populated action
+replacement path.
+
+Keep the root private key offline. Configure the online leaf, root-signed
+current/next/revoked keyset, root public key, bounded validity policy, native-app
+audience map, and PostgreSQL revision authority explicitly. Never generate or
+substitute signing material at startup. Encode uint64 revisions as positive
+decimal JSON strings.
+
+Native app identity is distinct from the active client slug. Resolve the
+bundle/package ID from the server's native-app profile and permit only declared
+client slugs. Bind platform, bundle/package, active tenant, environment, and
+response origin into the signature. Request headers select configured policy;
+they do not supply values copied into signed authority.
+
+Verify the pinned root, keyset signature/revision/expiry/revocation, leaf
+signature, canonical spec and extension hashes, schema, screen, exact audience,
+protocol versions, validity window, app bounds, and revision before decoding or
+rendering. Advance keyset and per-audience/per-screen/per-canonical-route floors atomically in
+durable native secure storage. Live mode has no memory fallback and does not
+restore decoded unsigned surface snapshots.
+
+Top-level action extensions may carry non-rendering protocol data only. Any
+manifest, navigation, theme, screen, component tree, or renderer-contract
+change belongs inside the signed replacement envelope. Reject unknown
+top-level action-response fields.
+
+**When you're adding or changing live A2UI delivery.**
+
+- Start from [REQ 019](./requirements/REQ-019-live-a2ui-delivery-is-signed-and-replay-resistant.md)
+  and identify the exact app, client, tenant, environment, and origin audience.
+- Add the native-app/client allowlist and root/leaf material to explicit
+  environment configuration; never add a generated fallback.
+- Preserve one app finalizer for home, surface, and action replacement paths.
+- Add Go/TypeScript golden, tamper, wrong-audience, expiry, revocation, replay,
+  restart, equivocation, storage-failure, and app-version tests.
+- Rotate with current/next/revoked keyset state and an app/server overlap
+  window. Removing old trust early is a deliberate fail-closed cutover.
+
+**How it's enforced.**
+
+- Shared retirement ratchets reject reintroduction of unsigned constructors,
+  sign-later APIs, and patch types.
+- App signer/config/route tests prove explicit boot material, exact audience,
+  trusted replacement finalization, and public root-signed keyset bootstrap.
+- Native golden and transport tests prove verification-before-decode, strict
+  action responses, durable replay floors, and process-restart resistance.
+
+**Motivating ADR.**
+[ADR 0073 — runtime A2UI surfaces cross an app-owned signed delivery boundary](./adr/0073-runtime-a2ui-surfaces-cross-an-app-owned-signed-delivery-boundary.md).
+
+---
+
 ## C-14 Every Go file declares its purpose
 
-Every `.go` file the workspace owns carries a leading comment block
-that names the file's purpose and references at least one numbered
-convention (`C-NN`) or ADR (`ADR-NNNN`) that motivates its existence.
+Every governed hand-authored `.go` file the workspace owns carries a leading
+comment block that names the file's purpose and contains all three structured
+traceability roles as exactly three adjacent `//` comment lines in this order:
 
-The reference belongs in the first 30 lines of the file (after the
-`package` declaration), in a comment of the form:
+- `Implements:` or `Validates:` with a registered `REQ-NNN`,
+  `REQ-{OWNER}-NNN`, or `PKBM-{MODULE}-REQ-NNN`;
+- `Per:` with a registered `ADR-NNNN`; and
+- `Discipline:` with registered `C-14`.
+
+The header belongs within the first 100 physical lines measured from the start
+of the file. It may appear before or after `package`, but must precede imports
+or other declarations. For example:
 
 ```go
 package tenant_lifecycle
@@ -634,52 +1095,58 @@ package tenant_lifecycle
 // lifecycle service — extracted so service.go stays focused on
 // the entity lifecycle.
 //
-// Convention: C-11 (complexity discipline), C-12 (audit-by-wrapping).
-// ADR: 0030 (audit-wrapping pattern).
+// Implements: REQ-004 (audit event per mutation).
+// Per: ADR-0007 (transactional outbox for event delivery).
+// Discipline: C-14 (file purpose declaration).
 ```
 
 Two rules follow:
 
-1. **The IDs are mandatory; the prose is optional.** A reader
-   skimming the file should see at least one `C-NN` or `ADR-NNNN`
-   in the leading comments. Free-text purpose lines on top of that
-   are encouraged but not required by the guard.
-2. **The reference must be real.** The guard validates that each
-   referenced ID resolves to an entry in `conventions.md` or
-   `adr/`. A typo or a stale ID fails the build.
+1. **All three roles are mandatory; concise purpose prose is expected.** Tests
+   use `Validates:` for the requirement role. A stray ID mention, an ADR-only
+   comment, a compact one-line triplet, reordered roles, or prose inserted
+   between role lines does not satisfy the guard.
+2. **Every reference must be real.** The guard validates requirement, ADR, and
+   convention IDs against the configured registries. A typo, stale ID, or
+   invented owner prefix fails the gate.
 
 **Why we do it this way.** Cohesion choices made today are invisible
 to tomorrow's reader unless the file says so. The May 2026 complexity
 sweep split nine 1000–2000-line files into 50+ siblings; the cohesion
 behind each split lives in the commit messages, but a reader landing
 in `gorm_authz.go` six months from now has no in-file signal that
-the split was deliberate. Pinning a `C-NN` or `ADR-NNNN` to every
-file pulls the rule from the registry into the file itself — and
-makes the registry load-bearing rather than archival. A convention
-nobody references is a candidate for retirement.
+the split was deliberate. Pinning the complete requirement/ADR/C-14 triplet to
+every file pulls its authority from the registries into the file itself — and
+makes those registries load-bearing rather than archival. Authority nobody
+references is a candidate for retirement.
 
-**When you're authoring a file.** Pick the closest matching `C-NN`
-or `ADR-NNNN` from this document or `adr/`. If nothing matches, you
-are either writing code that doesn't fit the existing house rules
-(write a new convention or ADR first) or writing code that
-genuinely belongs in an excluded category (generated, manifest,
-migration, atom/molecule definition, `cmd/*` generator). Adding to
-the exclusion allowlist is a deliberate one-line diff in
-`.claude/check-file-purpose.yaml` that reviewers can reject; never
-add `// nolint:check-file-purpose` inline.
+**When you're authoring a file.** Cite the requirement the implementation
+satisfies (or the test validates), the ADR that governs the design, and C-14.
+If no real requirement or decision fits, stop and resolve the authority gap
+rather than inventing an ID. Hand-authored tests, migration embed wrappers,
+commands, and generator implementations are governed. Generated-looking
+filenames are not exclusions; only Go's canonical pre-package
+`// Code generated ... DO NOT EDIT.` marker proves generated provenance.
+Adding a non-source directory to `.claude/check-file-purpose.yaml` is a
+deliberate reviewed diff; inline suppression is unsupported.
 
 **How it's enforced.**
 
 - `check-file-purpose`
   (`platformkit-devtools/cmd/check-file-purpose/main.go`,
   invoked via `make check-file-purpose` at the workspace root and
-  per repo). Walks every `.go` file under the workspace, applies
-  the exclusion allowlist from `.claude/check-file-purpose.yaml`,
-  and emits a pass/fail report. Failures name the missing file
-  plus the closest matching convention.
+  per repo where exposed). Walks every `.go` file under configured roots,
+  verifies those roots cover every root `go.work` member and every discovered
+  standalone owned `go.mod` module, applies explicit exclusions, and fails for
+  incomplete roles, unknown IDs, or stale debt acknowledgements. The
+  workspace-root target is canonical.
 - The exclusion allowlist is a deliberate inventory, not a wildcard
   list. New entries require a one-line diff that reviewers can
   reject.
+- Historical debt is an exact path-and-SHA-256 snapshot of unchanged committed
+  violations. New and untracked files are never eligible; editing, deleting,
+  or conforming an acknowledged file invalidates the entry and blocks until
+  source and inventory are reconciled.
 - Gap — a sibling check that inverts the question (every `C-NN`
   and `ADR-NNNN` must have at least one file referencing it) is
   tracked as a follow-up. Conventions with zero references are
@@ -694,7 +1161,7 @@ add `// nolint:check-file-purpose` inline.
 
 - [ADR 0000 — template](./adr/0000-template.md) — the authoring
   shape new ADRs follow.
-- [CLAUDE.md](../../CLAUDE.md) — the agent guide. The invariants
+- [CLAUDE.md](../../../CLAUDE.md) — the agent guide. The invariants
   listed there are the same rules codified in this document.
 - `pk-docs/architecture/overview.md` — cross-references
   each convention to the analyzer that enforces it.

@@ -1,6 +1,6 @@
 ---
 id: REQ-ADMIN-013
-title: "Dashboard renderer fails closed without permission and renders the prompt-first workspace for authorised operators"
+title: "Dashboard renderer fails closed without permission and renders a composition-driven operational landing page"
 status: Proposed
 date: 2026-05-08
 slug: req-admin-013-dashboard-rendering
@@ -40,9 +40,10 @@ The dashboard feature **shall**:
 1. Fail closed (return the typed permission-denied) when a
    request's principal lacks the
    `admin.dashboard:render` (or equivalent) capability;
-2. Render the prompt-first workspace for an authorised
-   principal, including the dashboard widgets contributed by
-   each registered module;
+2. Render the composition-driven operational landing page for an
+   authorised principal, including the routes and dashboard widgets
+   contributed by registered modules, without reintroducing retired
+   Alpine.js interaction attributes;
 3. Build the admin-home route catalog by deduplicating
    routes contributed by multiple modules — the same
    route from two contributors collapses to one entry.
@@ -54,14 +55,18 @@ discipline (`admin.profile:render`).
 
 The admin dashboard is the operator's primary surface; a
 defective render either leaks the dashboard to non-admin
-users or hides it from operators with valid access. Two
+users or hides it from operators with valid access. Three
 properties:
 
 1. **Render-permission gate.** The dashboard is an
    admin-only surface; the gate is the discipline anchor
    that prevents a render from happening for a tenant
    member who shouldn't see it.
-2. **Route deduplication on the home catalog.** Multiple
+2. **Composition-driven landing content.** The dashboard is an
+   operational landing page. Agent chat belongs to the
+   `platformkit-agent-runtime` admin section; the dashboard must not
+   pretend to host the retired, never-shipped prompt-first chat UI.
+3. **Route deduplication on the home catalog.** Multiple
    modules can register the same route prefix (e.g., a
    shared "settings" route). The home catalog must
    deduplicate so the operator sees one tile, not two
@@ -81,9 +86,9 @@ properties:
 - **AC-4 — Profile renders for authorised
   operator.** Profile renders for a holder of the
   capability.
-- **AC-5 — Prompt-first workspace.** The dashboard
-  content variant defaults to the prompt-first
-  layout described in the design system.
+- **AC-5 — Modern interaction contract.** Dashboard content contains
+  no retired Alpine.js directives or inline click handlers; interactive
+  behavior uses the platform HTMX + Stimulus path.
 - **AC-6 — Home route catalog dedupes.** A graph
   with two modules contributing the same route
   produces a single catalog entry.
@@ -96,7 +101,7 @@ properties:
 | AC-2 | Test | `modules/platformkit-business-modules/admin_management/admin_dashboard_test.go::TestRenderDashboardAllowsAuthorizedOperator`. |
 | AC-3 | Test | `modules/platformkit-business-modules/admin_management/admin_dashboard_test.go::TestRenderProfileFailsClosedWithoutPermission`. |
 | AC-4 | Test | `modules/platformkit-business-modules/admin_management/admin_dashboard_test.go::TestRenderProfileAllowsAuthorizedOperator`. |
-| AC-5 | Test | `modules/platformkit-business-modules/admin_management/admin_dashboard_test.go::TestRenderDashboardContentUsesPromptFirstWorkspace`. |
+| AC-5 | Test | `modules/platformkit-business-modules/admin_management/admin_dashboard_test.go::TestRenderDashboardContentRejectsRetiredAlpineMarkers`. |
 | AC-6 | Test | `modules/platformkit-business-modules/admin_management/admin_dashboard_test.go::TestBuildAdminHomeRouteCatalogDedupesRoutes`. |
 
 ## Edge cases & unhappy paths
@@ -119,7 +124,7 @@ properties:
   leaks operator data or breaks operator access.
 - **Mitigations:** Permission-gate on every render
   (AC-1, AC-3), authorised-render coverage (AC-2,
-  AC-4), prompt-first contract (AC-5).
+  AC-4), modern interaction contract (AC-5).
 
 ## Implements (cross-cutting)
 
@@ -143,5 +148,5 @@ properties:
 ## Related requirements
 
 - [REQ-ADMIN-002 — Dashboard](./REQ-ADMIN-002-dashboard.md)
-- [REQ-ADMIN-007 — Profile](./REQ-ADMIN-007-profile.md)
+- [REQ-ADMIN-008 — Profile](./REQ-ADMIN-008-profile.md)
 - [REQ-018 — Renderable entities fail closed](./REQ-018-permission-coverage-fail-closed.md)

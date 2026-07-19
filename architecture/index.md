@@ -23,8 +23,8 @@ Pro/private distributions build on the same public model.
 
 If you came here looking for a specific decision rather than the
 whole architecture, jump to
-[section 09](./09-architecture-decisions.md) — that's the index of
-all 16 ADRs and 6 conventions.
+[section 09](./09-architecture-decisions.md) — that's the index of the
+maintained ADR and convention collections.
 
 ## The 12 sections
 

@@ -13,7 +13,7 @@ authoring: authored
 Every ADR carries an honest "How we enforce it" section that lists
 what's machine-checked today and what's still review-only. This
 page aggregates those gaps into one place so operators and
-auditors don't have to read 16 ADRs to know where the soft spots
+auditors don't have to read the full ADR portfolio to know where the soft spots
 are.
 
 The principle the platform has consistently applied: **every

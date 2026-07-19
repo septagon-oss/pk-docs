@@ -25,10 +25,9 @@ Status: **Proposed** (2026-05-07)
 ## Statement
 
 The user feature **shall** own the persistent record for every
-end-user identity and expose both the entity-shaped `ports.UserService`
-interface (used by existing consumers during migration)
-and the boundary `ports.UserBoundaryService` interface (DTO-shaped,
-import-clean — the target shape for new consumers). Every read,
+end-user identity and expose the DTO-only `ports.UserBoundaryService`
+interface. Persistence entities, ORM metadata, and credential-bearing
+records shall not cross ordinary user read/write boundaries. Every read,
 write, and lifecycle transition **shall** be tenant-scoped, every
 mutation **shall** emit a typed event for downstream consumption,
 and the role-assignment surface **shall** delegate to
@@ -40,12 +39,11 @@ binding.
 The user record is the single point of truth that every other module
 consults — auth verifies credentials against it, audit anchors
 events on its id, billing keys subscriptions to it, notifications
-target it. Two-interface exposure (entity-shaped + boundary) is the
-deliberate migration discipline documented in
-`ports/MIGRATION.md`: producers implement both, consumers move one
-at a time, and the entity-shaped interface is deleted only when the last
-consumer is gone. Without that discipline a single big-bang
-interface swap would block every consumer simultaneously.
+target it. The boundary is split into narrow reader, writer, lifecycle,
+role, and statistics interfaces so consumers depend only on the behavior
+they use. `porttypes.UserDTO`, `RoleDTO`, and `PermissionDTO` are acyclic
+wire models owned by the boundary rather than aliases of persistence
+entities.
 
 Tenant scoping is the single most-load-bearing property for
 multi-tenant safety; user reads or writes that escape the tenant
@@ -58,10 +56,9 @@ without giving every consumer a direct database hook.
 - **AC-1** Reads, writes, and existence checks honour the tenant
   context — calls without a tenant fail closed, calls with the
   wrong tenant return "not found" rather than the resource.
-- **AC-2** The producer implements both `ports.UserService` (entity-shaped)
-  and `ports.UserBoundaryService` (boundary) and the two return
-  consistent results for the same id (a `GetByID` and `GetByIDDTO`
-  for the same user resolve to the same persisted row).
+- **AC-2** The producer implements `ports.UserBoundaryService`; `GetByIDDTO`
+  returns the canonical persisted identity as `porttypes.UserDTO`, and no
+  exported user boundary method accepts or returns a user-management entity.
 - **AC-3** Every successful create / delete emits a typed event
   (`user.created`, `user.deleted`) that downstream consumers (audit,
   notifications) consume by subscription. Updates are propagated

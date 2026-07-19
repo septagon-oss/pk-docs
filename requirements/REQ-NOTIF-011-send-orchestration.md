@@ -223,6 +223,6 @@ as spamming one user with 1000.
 
 ## Related requirements
 
-- [REQ-NOTIF-001 — Notification umbrella](./REQ-NOTIF-001-notification.md)
+- [REQ-NOTIF-001 — Email notifications](./REQ-NOTIF-001-email-notifications.md)
 - [REQ-NOTIF-010 — Channel gate](./REQ-NOTIF-010-channel-gate.md) — the consumer of this orchestration's gate step.
 - [REQ-NOTIF-012 — In-app read-state](./REQ-NOTIF-012-in-app-read-state.md) — the in-app-only follow-up.

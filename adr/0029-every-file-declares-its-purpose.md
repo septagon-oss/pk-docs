@@ -1,5 +1,5 @@
 ---
-title: "ADR 0029: Every Go file declares its purpose with a convention or ADR reference"
+title: "ADR 0029: Every Go file declares its purpose with structured traceability"
 status: Accepted
 date: 2026-05-06
 slug: adr-0029-every-file-declares-its-purpose
@@ -8,13 +8,22 @@ type: doc
 tags: [adr, governance, conventions, file-organisation]
 ---
 
-# ADR 0029 — Every Go file declares its purpose with a convention or ADR reference
+# ADR 0029 — Every Go file declares its purpose with structured traceability
 
 Status: **Accepted** (2026-05-06)
 
+> **Current authority:** [ADR 0064](./0064-file-purpose-traceability-is-a-blocking-workspace-invariant.md)
+> restores this decision's universal,
+> blocking target after ADR 0053's temporary de-scope and defines the
+> exact-content historical-debt ratchet. Where enforcement mechanics here
+> conflict with ADR 0064, ADR 0064 governs. Its repository-scope note
+> distinguishes the full workspace gate from narrower public-repository
+> wrappers.
+
 ## The problem
 
-A workspace with 22 repos and ~3,500 Go files accretes silent intent. A
+At the time of this decision, a workspace with 22 repos and roughly 3,500 Go
+files was already accreting silent intent. A
 file's reason for existing — why it sits in this package, why it owns
 exactly this concern, why the split happened — lives in commit messages
 and tribal memory, not in the file itself. Readers walking in cold
@@ -46,21 +55,25 @@ comment block. The comment carries **bidirectional traceability** —
 implementation files cite the REQs they satisfy and the ADRs/conventions
 that shape them; test files cite the REQs they validate.
 
-Three identifier classes are accepted, each pointing at a different
-governance layer:
+Every complete header carries exactly three adjacent `//` comment lines in the
+following order, one structured role for each governance layer:
 
-- **`REQ-NNN`** — a registered requirement (the *what*).
-- **`ADR-NNNN`** — a registered architectural decision (the *how decided*).
-- **`C-NN`** — a registered convention (the *discipline*).
+- **`Implements:` or `Validates:`** cites a registered `REQ-NNN`,
+  `REQ-{OWNER}-NNN`, or `PKBM-{MODULE}-REQ-NNN` (the *what*).
+- **`Per:`** cites a registered `ADR-NNNN` (the *how decided*).
+- **`Discipline:`** explicitly cites registered `C-14` (the *discipline*).
 
-Files prefer to reference the highest-stability layer that fits — REQ
-for files that embody a system property, ADR for files that embody a
-decision, C for files that embody a rule. Most files reference at
-least one of any of the three.
+Additional requirements, ADRs, and conventions are encouraged when they
+explain real design constraints, but they do not replace any of these three
+roles.
 
-The reference belongs in the first 30 lines of the file (after the
-`package` declaration, before the first `import`), in a comment of
-the form:
+Compact one-line declarations, reordered roles, and prose inserted between
+the role lines remain non-conformant.
+
+The structured header belongs within the first 100 physical lines measured
+from the start of the file. Leading purpose comments may appear before or after
+the `package` declaration, but must precede the first `import` or other
+non-package declaration. For example:
 
 ```go
 // service_audit.go owns audit-event recording for the tenant
@@ -81,6 +94,7 @@ trail closes both directions:
 //
 // Validates: REQ-001#AC-1, REQ-001#AC-2, REQ-007#AC-1.
 // Per: ADR-0029 (file purpose declaration).
+// Discipline: C-14 (file purpose declaration).
 ```
 
 The identifier is the load-bearing part: `REQ-NNN`, `ADR-NNNN`, and
@@ -92,8 +106,10 @@ The check is mechanical, not aspirational. Two tools enforce the
 property:
 
 - **`check-file-purpose`** (`platformkit-devtools/cmd/check-file-purpose`)
-  — scans every Go file in the workspace and fails the build when one
-  lacks any reference. The forward half of traceability.
+  — scans every governed hand-authored Go file and fails the workspace gate
+  when a new or changed file lacks any structured role or cites an unknown
+  identifier. The forward half of traceability. Unchanged inherited failures
+  remain visible through ADR 0064's exact-content baseline.
 - **`check-traceability`** (`platformkit-devtools/cmd/check-traceability`)
   — walks the REQ docs, parses the acceptance-criteria + verification
   tables, then walks Go files and validates that every REQ has at
@@ -101,31 +117,34 @@ property:
   and that test evidence cited in REQ verification tables resolves to
   a real test function. The reverse half.
 
-Exclusions are an explicit allowlist: generated code, manifest
-schemas, migrations, atom/molecule definition files, and `cmd/*/main.go`
-generators. The exclusion list lives in a YAML file the tools read, so
-adding a category is a deliberate one-line diff rather than a quiet
-`//nolint`.
+Exclusions are an explicit allowlist for non-source material such as downloaded
+caches, vendored output, build state, and testdata. Hand-authored tests,
+migration embed wrappers, command implementations, and generator source under
+`cmd/` are governed. Generated-looking names are insufficient: only Go's
+canonical pre-package `// Code generated ... DO NOT EDIT.` marker proves
+generated provenance. The exclusion list lives in reviewed YAML; inline
+suppression is unsupported.
 
 ## What we gave up
 
 - A small per-file overhead: every new file adds 3–5 lines of header
   comment. Roughly 0.1% of file size on a 200-line average.
-- A coupling between file authoring and the conventions registry —
-  authors must know which `C-NN` or `ADR-NNNN` motivates their file.
-  This is the point, not a cost: it forces the question "which rule
-  am I following?" at write time.
-- A blocking CI step. The check runs on every push; a missing header
-  fails the build until fixed.
+- A coupling between file authoring and the authority registries — authors
+  must identify the requirement the file implements or validates, the ADR
+  governing it, and C-14. This is the point, not a cost: it forces the
+  question "which requirement and decision govern this file?" at write time.
+- A blocking workspace gate. A new or changed incomplete header fails until
+  fixed; individual child repositories do not all expose the equivalent local
+  target yet.
 
 ## What we kept
 
-- Cold-readers gain a 30-second orient: the leading comment plus the
-  ID resolves the file's purpose without reading the body.
-- The conventions and ADRs registry becomes load-bearing rather than
-  archival. A convention with zero file references is a candidate for
-  deletion; an ADR with a hundred references is the spine of the
-  codebase.
+- Cold-readers gain a 30-second orient: the leading comment plus its
+  role-labelled IDs resolves the file's purpose without reading the body.
+- The requirement, ADR, and convention registries become load-bearing rather
+  than archival. Authority with zero file references is a candidate for
+  retirement; an ADR with a hundred references is part of the codebase's
+  architectural spine.
 - Refactors stay legible. When `service.go` splits into seven
   siblings, each sibling carries the cohesion claim at the top.
 - Renames are cheap. Moving a file to a different package is still
@@ -137,13 +156,18 @@ adding a category is a deliberate one-line diff rather than a quiet
   (`platformkit-devtools/cmd/check-file-purpose/main.go`,
   invoked via `platformkit verify file-purpose`, wired as
   `make check-file-purpose` at the workspace root and per repo).
-  Walks every `.go` file under the workspace, applies the exclusion
-  allowlist from `.claude/check-file-purpose.yaml`, and emits a
-  pass/fail report. Failures name the missing file plus a hint
-  pointing at the closest matching convention.
-- The exclusion allowlist is a deliberate inventory, not a wildcard
-  list. Adding `**/manifestschema/*.gen.go` is a one-line diff that
-  reviewers see and can reject.
+  Walks every `.go` file under configured roots, verifies that those roots
+  cover every root `go.work` member and every discovered standalone owned
+  `go.mod` module, applies the exclusions from
+  `.claude/check-file-purpose.yaml`, and emits a pass/fail report. Failures name
+  incomplete structured roles, unknown IDs, and stale debt acknowledgements.
+- Historical adoption debt is an exact path-and-SHA-256 inventory of unchanged
+  committed violations. New and untracked files are never eligible; editing,
+  deleting, or conforming an acknowledged file invalidates its entry and fails
+  the gate until the source and inventory are reconciled.
+- The exclusion allowlist is a deliberate inventory, not a filename trick.
+  Canonical generated-file provenance is parsed; a marker after `package` or a
+  `_gen.go` suffix cannot bypass the rule.
 - `pkvet` follow-up — once the workspace is fully covered, the check
   graduates from "standalone tool" to a `pkvet` analyzer so it ships
   alongside the other static checks.
@@ -155,7 +179,7 @@ adding a category is a deliberate one-line diff rather than a quiet
 
 ## References
 
-- [Convention C-14 — every file declares its purpose](../conventions.md#c-14-every-file-declares-its-purpose)
+- [Convention C-14 — every Go file declares its purpose](../conventions.md#c-14-every-go-file-declares-its-purpose)
 - [ADR 0023 — Module documentation stack](./0023-module-documentation-stack.md) — the prior decision about module-level docs that this complements at the file level.
 - [`pk-docs/conventions.md`](../conventions.md) — the rules that file headers reference.
 - May 2026 complexity sweep commits — the refactors that motivated this convention.

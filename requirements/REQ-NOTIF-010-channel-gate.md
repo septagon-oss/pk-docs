@@ -62,9 +62,9 @@ push, and WhatsApp services. The gate **shall**:
 The registered defaults **shall** be: `email = true`,
 `in_app = true`, `push = true`, `sms = false`,
 `whatsapp = false`. The defaults **shall** match the
-`DefaultValue` fields declared in
-`settings_provider.go` so the runtime decision and the
-admin form's "default" badge cannot drift apart.
+structural `SurfaceSetting.Default` values declared by
+`notificationSurfaceContribution()` in `surfaces.go` so the runtime
+decision and the admin form's "default" badge cannot drift apart.
 
 ## Rationale
 
@@ -88,12 +88,12 @@ properties:
    registered default keeps the runtime aligned with the
    admin UI; the structured Warn log surfaces the
    condition.
-3. **Source-of-truth lockstep with `settings_provider`.**
+3. **Source-of-truth lockstep with the structural surface.**
    The constant table at the top of `channelgate.go`
-   *is* the runtime contract; the
-   `check-module-settings-audit` linter catches drift on
-   the registry side, and `channelgate_test` exercises
-   the agreement on the runtime side.
+   *is* the runtime contract; `notificationSurfaceContribution()`
+   is the settings-registration contract consumed by the admin bridge.
+   `TestChannelDefaults_AgreeWithSurfaceContribution` compares the two
+   directly, while `channelgate_test` exercises the runtime fallbacks.
 
 The cancellation-tolerance branch is deliberate: a
 transient settings hiccup must not silently flip a
@@ -128,9 +128,10 @@ turn on a default-off channel either.
   `TestEnabled_NonBoolFallsBackToDefault`.
 - **AC-7 — Defaults match the registered values.** The
   five entries in `channelDefaults` match the
-  `DefaultValue` fields in
-  `modules/platformkit-business-modules/notification_management/settings_provider.go`
-  (verified by `check-module-settings-audit`).
+  `SurfaceSetting.Default` values in
+  `modules/platformkit-business-modules/notification_management/surfaces.go`
+  (verified by
+  `settings_provider_test.go::TestChannelDefaults_AgreeWithSurfaceContribution`).
 
 ## Verification
 
@@ -142,7 +143,7 @@ turn on a default-off channel either.
 | AC-4 | Test | `modules/platformkit-business-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_NilOverrideFallsBackToDefault`. |
 | AC-5 | Test | `modules/platformkit-business-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_UnderlyingErrorFallsBackToDefault`. |
 | AC-6 | Test | `modules/platformkit-business-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_NonBoolFallsBackToDefault`. |
-| AC-7 | Inspection | `modules/platformkit-business-modules/notification_management/settings_provider.go` + `internal/channelgate/channelgate.go::channelDefaults` — same values across both files; `cmd/module-settings-audit-generate` enforces the agreement at build time. |
+| AC-7 | Test | `modules/platformkit-business-modules/notification_management/settings_provider_test.go::TestChannelDefaults_AgreeWithSurfaceContribution` compares the channel defaults in `surfaces.go::notificationSurfaceContribution` with `internal/channelgate/channelgate.go::channelDefaults`. |
 
 ## Edge cases & unhappy paths
 
@@ -152,10 +153,10 @@ turn on a default-off channel either.
 - **Stored value is a `string` representation of bool.**
   Treated as non-bool → registered default + Warn. The
   caller must store actual booleans.
-- **Schema migration changes default.** A change to
-  `DefaultValue` in `settings_provider.go` must update
-  `channelDefaults` in the same commit (the lint catches
-  drift). Operators rolling forward without a settings
+- **Structural setting changes default.** A change to a channel
+  `SurfaceSetting.Default` in `surfaces.go` must update
+  `channelDefaults` in the same commit (the drift-lock test catches
+  disagreement). Operators rolling forward without a settings
   migration see new defaults applied to tenants that
   hadn't overridden the key.
 - **Cross-channel inconsistency.** Each channel
@@ -198,11 +199,14 @@ turn on a default-off channel either.
 
 - `modules/platformkit-business-modules/notification_management/internal/channelgate/channelgate.go::Enabled`.
 - `modules/platformkit-business-modules/notification_management/internal/channelgate/channelgate.go::channelDefaults` — the registered-default table.
-- `modules/platformkit-business-modules/notification_management/settings_provider.go` — the source-of-truth for default values surfaced in admin UI.
+- `modules/platformkit-business-modules/notification_management/surfaces.go::notificationSurfaceContribution`
+  — the structural settings source consumed by the admin bridge.
+- `modules/platformkit-business-modules/notification_management/settings_provider_test.go::TestChannelDefaults_AgreeWithSurfaceContribution`
+  — the executable lock between structural settings and runtime fallbacks.
 
 ## Related requirements
 
-- [REQ-NOTIF-001 — Notification umbrella](./REQ-NOTIF-001-notification.md)
+- [REQ-NOTIF-001 — Email notifications](./REQ-NOTIF-001-email-notifications.md)
 - [REQ-NOTIF-011 — Send-orchestration](./REQ-NOTIF-011-send-orchestration.md) — the consumer that calls this gate.
-- [REQ-005 — Fail-closed](./REQ-005-fail-closed.md)
+- [REQ-005 — Authorisation fails closed](./REQ-005-authorisation-fails-closed.md)
 - [REQ-014 — Graceful degradation](./REQ-014-graceful-degradation.md)

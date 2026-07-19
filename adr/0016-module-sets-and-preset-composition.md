@@ -12,6 +12,19 @@ tags: [adr, modules, presets, composition]
 
 Status: **Accepted** (2024-09-10)
 
+> **Source-of-truth amendment — ADR 0048 (2026-06-11).** This ADR's
+> preset/set composition decision remains accepted. ADR 0048 superseded its
+> serialized authoring mechanism: module preset compatibility is authored in
+> `catalog/modulecontracts/authored_catalog.go`, and named module sets are
+> authored in `catalog/modulecontracts/authored_module_sets.go`.
+> `module_contracts.yaml` and `module_sets.yaml` are on-demand generated
+> exports only; neither is an authored input.
+>
+> The paths below are authorities in the full PlatformKit distribution. The
+> public `github.com/septagon-oss/pk-modules/pkg` reference pack intentionally
+> composes its small exported bundle directly and carries no parallel set
+> catalog; see ADR 0048's repository-scope note.
+
 ## The problem
 
 Downstream products don't compose applications from the full catalog
@@ -31,26 +44,29 @@ opinionated about what belongs together.
 
 ## The decision
 
-The catalog exposes two levels of abstraction above individual
-modules, both declared under `pk-modules/catalog/`:
+The catalog exposes two levels of abstraction above individual modules. Both
+are typed Go values under
+`modules/platformkit-business-modules/catalog/modulecontracts/`:
 
-- **Presets** are labels that modules opt into. A module with
-  `compatibility.presets: [default, coworking]` is included
+- **Presets** are typed labels that modules opt into through
+  `ModuleContract.Compatibility.Presets`. A module declaring
+  `[]Preset{PresetDefault, PresetCoworking}` is included
   whenever an app selects either preset. Presets are simple
   membership sets; they don't carry additional guarantees beyond
   "this module opted in."
-- **Module sets** are curated collections with explicit guarantees.
+- **Module sets** are curated `ModuleSet` values in
+  `AuthoredModuleSets` with explicit guarantees.
   `assurance-core` includes only modules where
-  `tier: core-certified` AND `assuranceEligible: true`.
+  `Tier == TierCoreCertified` AND `AssuranceEligible == true`.
   `client-default` is the supported-tier baseline for non-coworking
-  clients. `flagship-coworking` is the full coworking product
-  surface. Sets can be derived from tier + preset selectors *or*
-  explicitly enumerated.
+  clients. `saas-core` is the generic SaaS kernel. Sets can combine typed
+  selectors with an explicit, compile-time-referenced module list.
 
-Apps MUST compose from presets or sets, not from hand-maintained
-module lists. The platform's two canonical apps
-(`complete-saas-monolith` and `complete-saas-microservices`) both
-use the `flagship-coworking` set.
+Apps MUST compose from presets or sets, not from hand-maintained module lists.
+The canonical business-module entry points are
+`moduleregistry.BundleForPreset` and `moduleregistry.BundleForSet`; an
+app-specific catalog may wrap those bundles with explicitly owned extension
+bundles.
 
 ## What we gave up
 
@@ -71,17 +87,23 @@ use the `flagship-coworking` set.
 - Tier and preset governance reinforce each other. Downgrading a
   module from supported to experimental automatically removes it
   from supported-tier presets — CI catches it.
-- Inspectable composition. `platformkit modules graph --preset X`
-  shows exactly what ships.
+- Inspectable composition. `AuthoredModuleSets`, `BundleForSet`, and the
+  module-set checks show exactly what a named set ships.
 
 ## How we enforce it
 
 - **`check-module-sets`** (`cmd/module-set-check`) — loads
-  `catalog/module_contracts.yaml` and `catalog/module_sets.yaml`,
-  runs `catalog.Validate`, `ValidateConformance`, and
-  `ValidateSupportedSets`. This is the cross-validator: every
+  `modulecontracts.Authored()` and `modulecontracts.AuthoredSets()`, then runs
+  `Validate`, `ValidateConformance`, and `ValidateSupportedSets`. There is no
+  YAML input. This is the cross-validator: every
   module referenced by a set exists, every preset-member claim is
   consistent with the catalog, no duplicate set names.
+- **`catalog/modulecontracts/authored_test.go`** — verifies module IDs and
+  archetypes, checks that every set reference resolves to an authored module,
+  and pins key set properties.
+- **`catalog/moduleregistry/bundle_test.go`** — proves every authored set is
+  runtime-resolvable and that `BundleForSet` selects exactly its declared
+  module IDs.
 - **`check-module-capability-matrix`** — regenerates the capability
   matrix markdown and fails on drift. It's a symptom detector for
   preset/set drift — a module's ports or events moving shows up as
@@ -91,10 +113,12 @@ use the `flagship-coworking` set.
   — match the flow inventory baseline. A flow touching a module
   that's been removed from a preset's composition fails the
   baseline match.
-- **`platformkit modules graph --preset <name>`** produces a visual
-  dep graph per preset; `platformkit modules graph --impact <module>`
-  shows the transitive effect of a module removal. Both live in
-  `platformkit-devtools`.
+- **`platformkit modules graph --impact <module>`** shows transitive dependency
+  impact. Preset and set membership itself is resolved by the authored
+  catalog and the bundle entry points above.
+- **Serialized exports** — `make generate-catalog-exports` renders
+  `module_contracts.yaml` and `module_sets.yaml` for release/docs consumers.
+  The generated headers and ADR 0048 make them one-way projections.
 
 ## Alternatives we rejected
 
@@ -109,14 +133,16 @@ use the `flagship-coworking` set.
 
 ## References
 
-- `pk-modules/catalog/module_contracts.yaml` —
-  module → preset membership.
-- `pk-modules/catalog/module_sets.yaml` — set
-  definitions.
-- `pk-modules/cmd/module-contract-check` /
+- `modules/platformkit-business-modules/catalog/modulecontracts/authored_catalog.go`
+  — full-distribution module tier and preset membership.
+- `modules/platformkit-business-modules/catalog/modulecontracts/authored_module_sets.go`
+  — set definitions.
+- `modules/platformkit-business-modules/cmd/module-contract-check` /
   `cmd/module-set-check` — CLI tools bundled in `make precommit`.
 - `.claude/generated/module-sets.md` — human-readable rendering of
   the current sets.
+- [ADR 0048 — the catalog is Go-authored; serialized formats are generated exports](./0048-go-authored-catalog-and-generated-exports.md)
+  — superseding source-of-truth decision.
 - Related:
   [ADR 0015 — every module declares one of three tiers](./0015-module-tiering.md)
   — the tier is the primary discriminator sets select on.
