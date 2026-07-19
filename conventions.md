@@ -1076,17 +1076,27 @@ top-level action-response fields.
 
 ## C-24 Warm latency claims require segmented exact-candidate evidence
 
-Classify bounded work as `interactive` or `async_acceptance` before measuring
-it. Both classes use p95 ≤ 50 ms and p99 ≤ 100 ms under the declared warm
-normal-load profile. Evaluate each normalized route and status independently;
-never average a release decision across unrelated routes. Streaming handler
-completion has no objective under this convention.
+Explicitly enroll bounded work in the checked-in release manifest and classify
+it as `interactive` or `async_acceptance` before measuring it. Both enrolled
+classes use p95 ≤ 50 ms and p99 ≤ 100 ms under the declared warm profile.
+Evaluate each normalized route and status independently; never average a
+release decision across unrelated routes. HTTP 202 alone is only a wire-level
+diagnostic label, not enrollment or durability evidence. Streaming handler
+completion and bulk-ingress round trips have no objective under this convention.
 
 An asynchronous acceptance is complete only after validation, authorization,
 idempotency handling, and the durable job or outbox commit. HTTP 202 without a
 durable boundary is not acceptance. Provider, model, conversion, notification,
 and other unbounded work completes outside the request and keeps separate queue,
-execution, and provider telemetry.
+execution, and provider telemetry. Multipart ingestion, page counting, source
+upload, scanning, or other size-bound preprocessing before HTTP 202 is bulk
+ingress and stays outside bounded enrollment until redesigned around an early
+durable handoff.
+
+The current checked-in release manifest contains no `async_acceptance` route.
+In particular, the PDF-import 202 path can ingest up to 1 GiB, count pages,
+upload the source, and create a draft before queueing. It is not enrolled and
+does not support a current 50 ms/100 ms acceptance claim.
 
 Keep measurement ownership explicit. Platform-owned persistence and messaging
 needed for the bounded response stay inside the server percentile. External or
@@ -1102,8 +1112,9 @@ device-paint measurement.
 
 **When you're adding or changing a bounded route or client interaction.**
 
-- Declare the request class, expected status, representative payload/data
-  volume, and durable boundary where applicable.
+- Declare the request class, expected status, exact request inputs, and durable
+  boundary where applicable. Do not enroll a full bulk-
+  upload round trip as bounded merely because it returns HTTP 202.
 - Preserve normalized route, method, status, and class labels and the exact
   50 ms/100 ms histogram boundaries.
 - Add the route to the checked-in release manifest when it is release-critical;

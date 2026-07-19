@@ -30,21 +30,30 @@ acknowledges an interaction.
 
 ## The decision
 
-PlatformKit uses a warm, percentile-based latency contract for platform-owned
-bounded work:
+PlatformKit uses a warm, percentile-based latency contract for routes that are
+explicitly declared as platform-owned bounded work:
 
 | Class | Objective | Completion boundary |
 |---|---|---|
-| `interactive` | p95 ≤ 50 ms and p99 ≤ 100 ms | The platform-owned synchronous operation completes and returns its bounded response. |
-| `async_acceptance` | p95 ≤ 50 ms and p99 ≤ 100 ms | The request is validated, authorized, made idempotent, and committed to its durable job or outbox boundary before HTTP 202. Later execution is outside this budget. |
+| Declared `interactive` | p95 ≤ 50 ms and p99 ≤ 100 ms | The platform-owned synchronous operation completes and returns its bounded response. |
+| Declared `async_acceptance` | p95 ≤ 50 ms and p99 ≤ 100 ms | The bounded request is validated, authorized, made idempotent, and committed to its durable job or outbox boundary before HTTP 202. Later execution is outside this budget. |
 | Local pending feedback | target ≤ 50 ms | The client commits an observable pending state without waiting for network discovery, transport, or server completion. |
+
+HTTP 202 is a wire-level signal, not automatic enrollment in this contract and
+not proof of durability. Runtime metrics may classify a 202 response as
+`async_acceptance` for diagnosis, but a latency claim additionally requires an
+explicit bounded-route declaration, an integration contract proving the
+durable boundary, and inclusion in the release manifest. Multipart upload,
+request-body ingestion, page counting, virus scanning, or similar size-bound
+preprocessing is bulk ingress, not a bounded acceptance merely because the
+eventual response is 202.
 
 These are percentile objectives, not a hard maximum for every request. A warm
 measurement starts only after the exact candidate is ready and its declared
-connections have been exercised. It uses the checked-in route set,
-representative payloads and data volumes, a declared normal-load profile, at
-least one warm-up per measured connection, and at least 100 measured requests
-per route. Every route is evaluated independently.
+connections have been exercised. It uses the checked-in bounded-route set,
+the manifest's exact request inputs, concurrency and timeout, at least one
+warm-up per measured connection, and at least 100 measured requests per route.
+Every route is evaluated independently.
 
 Platform-owned work required to produce the bounded response remains inside the
 server objective, including calls to platform-owned persistence or messaging
@@ -52,6 +61,7 @@ needed for completion or durable acceptance. The following segments are not
 silently charged to, or used to relax, that objective:
 
 - external-provider and model execution after durable acceptance;
+- bulk request-body ingress and preprocessing performed before acceptance;
 - cross-region or public-Internet transit outside server processing;
 - client runtime scheduling and physical device paint after pending state is
   committed; and
@@ -65,10 +75,20 @@ dimensions. The server histogram never becomes a proxy for network distance or
 device paint, and same-turn pending-state tests never become a fabricated
 wall-clock paint claim.
 
+The current PDF-import 202 endpoint is deliberately not enrolled. It can read a
+multipart body up to 1 GiB, count PDF pages, upload the source, create a draft,
+and only then enqueue work and respond. Its full ingress round trip cannot
+honestly satisfy the 50 ms/100 ms bounded-acceptance objective. It needs a
+separate bulk-ingress measurement and a redesigned early durable handoff before
+it can be proposed for bounded-route enrollment. The checked-in release
+manifest currently contains zero `async_acceptance` routes, so this decision
+makes no present claim that an existing HTTP 202 meets the bounded objective.
+
 Release promotion requires passing evidence from the exact candidate being
-promoted. The release workflow boots the digest-pinned candidate, records its
-candidate identity and load configuration, warms and measures every declared
-release route, retains the per-route report, and fails if any route exceeds
+promoted. The release workflow boots the digest-pinned candidate, binds its
+candidate identity and checked-in load configuration into the complete evidence
+set, warms and measures every declared release route, retains the per-route
+report, and fails if any route exceeds
 either percentile or violates its response class/status contract. Immediately
 before promotion it verifies that the candidate tag still resolves to the
 evidenced digest. Evidence from another commit, image, architecture, runtime
@@ -86,6 +106,8 @@ metric and evidence rather than borrowing the bounded-response histogram.
   results from a nearby build cannot be reused.
 - Unbounded provider, model, conversion, or delivery work must use a durable
   asynchronous design even when synchronous implementation would be simpler.
+- Large uploads and other bulk ingress cannot borrow the 202 label to claim the
+  bounded-acceptance objective.
 - A deterministic same-turn client test proves ordering and visible pending
   state, not physical device paint time; a paint claim requires device evidence.
 
@@ -109,6 +131,8 @@ metric and evidence rather than borrowing the bounded-response histogram.
 - `core/platformkit-backend-kit/observability/latency` owns the request classes,
   p95/p99 objectives, local-feedback target, and exact histogram boundaries;
   middleware and OpenTelemetry tests preserve route/status/class dimensions.
+  The wire-level 202 class remains diagnostic; release-manifest enrollment is
+  the conformance authority.
 - `tooling/platformkit-tests/cmd/latency-gate` warms every connection, requires
   at least 100 samples per route, measures routes independently, and emits a
   fail-closed machine-readable report.
@@ -127,7 +151,7 @@ metric and evidence rather than borrowing the bounded-response histogram.
 
 - [ADR 0005 — Error handling discipline](./0005-error-handling-discipline.md)
 - [ADR 0008 — Async goroutine context semantics](./0008-async-goroutine-context-semantics.md)
-- [ADR 0055 — Observability contract](./0055-observability-contract.md)
+- [ADR 0055 — Observability correlation spine and durable decisions](./0055-observability-correlation-spine-and-durable-decisions.md)
 - [REQ 009 — Every operation is observable](../requirements/REQ-009-observability-everywhere.md)
 - `core/platformkit-backend-kit/docs/architecture/runtime_latency_slo.md`
 - `tooling/platformkit-tests/docs/latency-gate.md`
