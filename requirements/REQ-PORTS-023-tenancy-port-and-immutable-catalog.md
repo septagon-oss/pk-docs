@@ -51,9 +51,10 @@ semantics explicit.
 - **AC-3 — Unambiguous immutable catalog.** `memtenancy.New` rejects empty or
   duplicate IDs, slugs, and domains as `KindInvalid`, owns its input snapshot,
   and reports unknown current tenants as `KindNotFound`.
-- **AC-4 — Bounded compatibility.** The deprecated one-release `MemResolver`
-  preserves its historical constant-tenant behavior and aliases the canonical
-  adapter contract version while callers migrate to `memtenancy.New`.
+- **AC-4 — One current adapter contract.** `memtenancy` publishes the exact
+  current resolver and reader contract versions. The retired constant-tenant
+  adapter is absent, so callers cannot bypass catalog validation through a
+  compatibility path.
 
 ## Verification
 
@@ -63,11 +64,10 @@ semantics explicit.
 | AC-2 | Test | `core/platformkit-ports/tenancy/tenancytest/tenancytest_test.go::TestMemPassesReaderConformance`. |
 | AC-3 | Test | `core/platformkit-adapters/memtenancy/memtenancy_test.go::TestNewRejectsAmbiguousCatalogs`. |
 | AC-3 | Test | `core/platformkit-adapters/memtenancy/memtenancy_test.go::TestCatalogOwnsTenantSnapshot`. |
-| AC-4 | Test | `core/platformkit-adapters/tenancy/mem_test.go::TestMemResolverPreservesLegacyBehavior`. |
+| AC-4 | Test | `core/platformkit-adapters/contract_versions_test.go::TestPortVersionsMatchAuthoredContracts`. |
 
 ## Satisfied by
 
 - `core/platformkit-ports/tenancy`.
 - `core/platformkit-ports/tenancy/tenancytest`.
 - `core/platformkit-adapters/memtenancy`.
-- `core/platformkit-adapters/tenancy/mem.go` — one-release compatibility only.

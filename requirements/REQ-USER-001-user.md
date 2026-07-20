@@ -30,9 +30,9 @@ interface. Persistence entities, ORM metadata, and credential-bearing
 records shall not cross ordinary user read/write boundaries. Every read,
 write, and lifecycle transition **shall** be tenant-scoped, every
 mutation **shall** emit a typed event for downstream consumption,
-and the role-assignment surface **shall** delegate to
-`modules/platformkit-business-modules/auth_management/permissions` rather than re-implementing the
-binding.
+and identity-role assignment **shall** remain descriptive account metadata.
+Neither a user role row nor a role claim **shall** grant authorization; live
+access decisions belong exclusively to the governed authorization provider.
 
 ## Rationale
 
@@ -41,9 +41,10 @@ consults — auth verifies credentials against it, audit anchors
 events on its id, billing keys subscriptions to it, notifications
 target it. The boundary is split into narrow reader, writer, lifecycle,
 role, and statistics interfaces so consumers depend only on the behavior
-they use. `porttypes.UserDTO`, `RoleDTO`, and `PermissionDTO` are acyclic
-wire models owned by the boundary rather than aliases of persistence
-entities.
+they use. `porttypes.UserDTO` and `RoleDTO` are acyclic wire models owned by
+the boundary rather than aliases of persistence entities. There is no
+permission DTO on this identity boundary because permissions are evaluated as
+live decision tuples rather than expanded into user records.
 
 Tenant scoping is the single most-load-bearing property for
 multi-tenant safety; user reads or writes that escape the tenant
@@ -67,16 +68,11 @@ without giving every consumer a direct database hook.
   `user.avatar.uploaded`) rather than a single bulk
   `user.updated` — the per-aspect granularity is what lets
   consumers subscribe to only the slices they care about.
-- **AC-4** Role assignment / removal calls the user-management
-  service's own `AssignRole` / `RemoveRole` methods, which then
-  delegate to the underlying `userService` and emit
-  `user.assign_role` / `user.remove_role` audit events.
-  **Implementation note:** the canonical role/permission service is
-  REQ-AUTH-004; the user-management facade currently passes the
-  call through its own service rather than invoking the permissions
-  service directly. This indirection is documented as a
-  to-be-collapsed seam (see prior session task #47 — "Decide
-  Role/Permission ownership; migrate permissions feature").
+- **AC-4** Identity-role assignment / removal calls the user-management
+  service's `AssignRole` / `RemoveRole` methods and emits
+  `user.assign_role` / `user.remove_role` audit events. Authorization tests
+  prove that these rows and resulting session claims are not interpreted as
+  grants by the runtime.
 
 ## Verification
 
@@ -85,7 +81,7 @@ without giving every consumer a direct database hook.
 | AC-1 | Test | `modules/platformkit-business-modules/user_management/features/user/service_test.go::TestNewService` exercises tenant-scoped lookup paths against the mock repository; `table_handler_test.go` covers the HTTP surface honouring tenant context. |
 | AC-2 | Test | `modules/platformkit-business-modules/user_management/features/user/service_test.go::TestNewService` covers both entity-shaped and boundary read paths against the same backing store; the boundary suite is the import-clean DTO contract. |
 | AC-3 | Test | `modules/platformkit-business-modules/user_management/features/user/service_test.go::TestNewService` includes coverage of event publication on the user lifecycle. The full event catalogue (`user.created`, `user.updated`, `user.deleted`) is registered in `feature.go` `Emits(...)` declarations and verified at module-contract check time (`make check-module-contracts`). |
-| AC-4 | Inspection | `service_roles.go::AssignRole` / `RemoveRole` (lines 40-78) — calls into `s.userService.AssignRole/RemoveRole` and emits `user.assign_role` / `user.remove_role` audit events. Reviewers note the seam to REQ-AUTH-004 is the to-be-collapsed indirection. |
+| AC-4 | Mixed | `service_roles.go::AssignRole` / `RemoveRole` owns identity metadata and audit; `core/platformkit-backend-kit/security/authz/runtime/runtime_test.go::TestRuntimeDoesNotTreatIdentityRoleClaimsAsAuthorizationGrants` proves the authorization boundary. |
 
 ## Implements (cross-cutting)
 
@@ -110,4 +106,4 @@ without giving every consumer a direct database hook.
 - [REQ-USER-002 — Profile](./REQ-USER-002-profile.md)
 - [REQ-USER-003 — Preferences](./REQ-USER-003-preferences.md)
 - [REQ-USER-004 — Registration onboarding](./REQ-USER-004-registration.md)
-- [REQ-AUTH-004 — Permissions](./REQ-AUTH-004-permissions.md) — the role/permission service this feature delegates role assignment to.
+- [REQ-AUTH-004 — Authorization catalog](./REQ-AUTH-004-permissions.md) — the boundary that keeps identity roles descriptive and provider decisions authoritative.

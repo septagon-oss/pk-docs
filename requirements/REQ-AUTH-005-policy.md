@@ -1,87 +1,102 @@
 ---
 id: REQ-AUTH-005
-title: "Policy feature evaluates ABAC rules within tenant scope and labels every cross-tenant decision"
+title: "Policy changes activate only after an immutable provider release is observed and verified"
 status: Proposed
-date: 2026-05-06
+date: 2026-07-20
 slug: req-auth-005-policy
 category: auth
-ears_pattern: ubiquitous
+ears_pattern: event-driven
+priority: must
+risk: critical
 verification_methods: [test, inspection]
 compliance: [SOC2_CC6.1, ISO27001_A.9.4]
 satisfied_by:
-  adr: [ADR-0009]
-  conventions: [C-04, C-14]
+  adr: [ADR-0009, ADR-0061]
+  conventions: [C-04, C-14, C-21]
 implements_cross_cutting: [REQ-001, REQ-004, REQ-005, REQ-007]
 type: doc
-tags: [requirement, feature, auth_management]
+tags: [requirement, feature, auth_management, policy, topaz, release]
 module: auth_management
 feature: policy
 ---
 
-# REQ AUTH-005 — Policy
+# REQ AUTH-005 — Governed policy control plane
 
-Status: **Proposed** (2026-05-06)
+Status: **Proposed** (2026-07-20)
 
 ## Statement
 
-The policy feature **shall** evaluate attribute-based access rules
-against a (subject, action, resource, environment) tuple. Evaluation
-**shall** default-deny when any input is missing or any attribute
-fails to resolve. Policies that span tenants **shall** be labelled
-explicitly (REQ-007) and audited as cross-tenant decisions.
+The policy feature **shall** own a tenant- and environment-scoped change
+workflow and immutable version history. A promotion or rollback **shall**
+compile the exact approved snapshot for the configured provider target,
+persist a durable desired release, publish an immutable artifact, activate it,
+inspect the live runtime, verify exact projection and bundle identities, and
+only then commit the policy version active. Any missing component, ambiguous
+scope, stale transition, publication failure, activation mismatch, or
+incomplete runtime attestation **shall** keep authorization fail closed.
 
 ## Rationale
 
-Policy engines that "best-effort" their way through missing context
-silently expand authorisation surface. The default-deny posture keeps
-unknown-state decisions safe. Cross-tenant policy is rare and
-high-risk: every such decision is a potential isolation breach if not
-labelled, so the audit trail must show the platform knew it was
-crossing the boundary.
+“Saved,” “published,” and “serving decisions” are different states. Treating
+them as synonyms lets mutable tags, partial rollouts, or stale provider data
+masquerade as active policy. A durable desired-versus-observed controller makes
+the transition resumable and proves which immutable bundle every decision
+replica loaded.
 
 ## Acceptance criteria
 
-- **AC-1** Policy evaluation with any unresolved attribute returns
-  `denied` and emits `policy.evaluation.denied{reason: missing_attr}`.
-- **AC-2** Policy mutations (create, update, delete) are
-  tenant-scoped, audited, and reject any policy whose scope crosses
-  tenants without an explicit `WithExpectedCrossTenantAccess` reason
-  (REQ-007).
-- **AC-3** A policy evaluation with the same inputs at the same
-  point in time returns the same outcome (deterministic).
-- **AC-4** Cross-tenant policy decisions emit
-  `policy.evaluation.cross_tenant{reason}` audit rows that include
-  the source tenant, the target tenant, and the recorded reason
-  string.
+- **AC-1 — Governed writes only.** Generic CRUD writes and default seeders
+  cannot mutate policy rows; changes pass through draft, submit, approve,
+  rollout, and promotion/rollback transitions.
+- **AC-2 — Exact scope.** Policy snapshots, transition bindings, and releases
+  carry one canonical tenant and environment. Mixed, missing, or foreign scope
+  is rejected before external side effects.
+- **AC-3 — Deterministic projection.** The provider compiler produces the same
+  canonical projection identity for the same immutable snapshot and rejects
+  duplicate IDs, wildcard usersets, unresolved usersets, and cross-tenant
+  policies.
+- **AC-4 — Published is not active.** Release state records publication,
+  activation inspection, verification, and commit separately; active status
+  requires exact observed projection digest, bundle digest, policy path,
+  directory model identity, and replica attestation.
+- **AC-5 — Resumable reconciliation.** Startup and periodic reconciliation
+  resume durable pending work, repair active drift, and cannot let a stale
+  worker overwrite a newer generation.
+- **AC-6 — One runtime gate.** Topaz allows are returned only while the loaded
+  release matches fresh durable activation evidence. Evidence loss or change
+  closes the gate before and after the provider decision.
+- **AC-7 — Auditable transitions.** Approved lifecycle transitions and final
+  activation publish typed outbox events bound to their exact request,
+  rollout, version, tenant, and environment.
 
 ## Verification
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/policy/service_test.go::TestValidateChangeItem` + `TestValidateChangeItemDeleteRequiresIdentity` cover the input-validation branch (delete without an identity is rejected, create requires effect + id). The change-management state machine itself (draft → submitted → approved → canary → promoted) returns typed errors at every transition; full state-machine coverage is tracked as a follow-up gap. |
-| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/policy/policy_scope_test.go::TestNormalizeChangeItemPolicies_RejectsCrossTenantPolicy` — a policy whose `TenantID` does not match the change-request's tenant is rejected before persistence. |
-| AC-3 | Inspection | `service_policy_codec.go::normalizePolicyForTenant` is a pure function over its inputs; `TestNormalizePolicyForTenant_BindsNamespaceAndTenant` shows that for a given `(policy, tenantID)` it produces a stable result. The state-machine transitions are guarded by typed pre-conditions on the request status (see `service.go` Submit/Approve/StartCanary/Promote/Rollback signatures); reviewers verify no clock-time-dependent outcomes outside the documented expiring-grants path. |
-| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/policy/service_test.go::TestPublishPolicyEvent` proves the event-bus publish path emits a typed event with the request id, tenant, and actor. The cross-tenant-specific audit (`policy.evaluation.cross_tenant{reason}`) is currently emitted indirectly via the same publish path with the rejection reason in payload; a dedicated cross-tenant audit test is tracked as a follow-up. |
+| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/policy/repository_guard_test.go::TestGovernedPolicyStoreBlocksEveryDirectWrite` and `feature_exposure_test.go::TestGovernedPolicyEntitiesExposeNoGenericWriteSurface`. |
+| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/policy/policy_scope_test.go::TestValidatePolicyForTenantRequiresExplicitNamespaceAndTenant`, `projection_source_test.go`, and `service_release_commit_test.go::TestPolicyReleaseTransitionValidatorLocksAndChecksExactPendingRows`. |
+| AC-3 | Test | `core/platformkit-integrations/topaz/policy_compiler_test.go::TestPolicyCompilerIsDeterministic` plus its cross-tenant, duplicate, userset, and canonical-envelope rejection cases. |
+| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/policy/release_store_test.go::TestPolicyReleaseStoreSeparatesPublishedFromInspectedActive` and `core/platformkit-ports/authz/policy_release_test.go::TestPolicyActivationMatchesDesiredRelease`. |
+| AC-5 | Test | `core/platformkit-integrations/platformkit/authz/register_test.go::TestStartupReconcileResumesPublishedReleaseWithoutRepublishing`, `TestPeriodicReconcileRepairsDriftFromActiveRelease`, and release-store CAS tests. |
+| AC-6 | Test | `core/platformkit-integrations/topaz/policy_decision_gate_test.go::TestEngineRejectsPreexistingAllowUntilExactFreshActivation` and `TestEngineRejectsAllowWhenAttestedReleaseChangesDuringDecision`. |
+| AC-7 | Test | `modules/platformkit-business-modules/auth_management/features/policy/release_store_test.go::TestPolicyReleaseStoreRollsBackActiveTransitionWhenOutboxEnqueueFails` and reconciler activation-event tests. |
 
 ## Implements (cross-cutting)
 
-- REQ-001 — multi-tenant isolation.
-- REQ-004 — audit per mutation.
-- REQ-005 — fail-closed default.
-- REQ-007 — explicit cross-tenant access.
+- REQ-001 — exact tenant/environment fencing.
+- REQ-004 — durable, typed lifecycle evidence.
+- REQ-005 — every unknown or stale state denies.
+- REQ-007 — foreign-target events are ignored before snapshot reads or writes.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/auth_management/features/policy/feature.go`
-- `modules/platformkit-business-modules/auth_management/features/policy/service.go`,
-  `service_events.go`, `service_test.go`
-- `modules/platformkit-business-modules/auth_management/features/policy/policy_scope_test.go`
-- `modules/platformkit-business-modules/auth_management/features/policy/repository.go`,
-  `entities.go`
-- `modules/platformkit-business-modules/auth_management/features/policy/handler.go`, `routes.go`,
-  `permissions.go`
+- `modules/platformkit-business-modules/auth_management/features/policy`
+- `core/platformkit-ports/authz`
+- `core/platformkit-integrations/topaz`
+- `core/platformkit-integrations/platformkit/authz`
 
 ## Related requirements
 
-- [REQ-AUTH-004 — Permissions](./REQ-AUTH-004-permissions.md) — the lower-level capability check this feature composes.
-- [REQ-007 — Explicit cross-tenant access](./REQ-007-explicit-cross-tenant-access.md)
+- [REQ-AUTH-004 — Authorization catalog](./REQ-AUTH-004-permissions.md)
+- [REQ-AUTH-040 — Governed permission decision](./REQ-AUTH-040-permission-check.md)
+- [REQ-PORTS-014 — Authorization contract](./REQ-PORTS-014-authorization-contract.md)

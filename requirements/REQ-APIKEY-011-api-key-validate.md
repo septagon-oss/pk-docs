@@ -196,4 +196,4 @@ the key being usable.
 - [REQ-APIKEY-010 — API key create](./REQ-APIKEY-010-api-key-create.md) — the issuance pair.
 - [REQ-APIKEY-012 — API key rotate + revoke](./REQ-APIKEY-012-api-key-rotate-revoke.md) — the lifecycle this validate consults.
 - [REQ-APIKEY-013 — API key rate limit](./REQ-APIKEY-013-api-key-rate-limit.md) — the second gate the same key passes through.
-- [REQ-AUTH-040 — Permission check](./REQ-AUTH-040-permission-check.md) — the consumer of the returned permission set.
+- [REQ-AUTH-040 — Permission check](./REQ-AUTH-040-permission-check.md) — the live governed decision used after credential validation.

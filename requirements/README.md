@@ -265,7 +265,6 @@ Capability-level (NNN ≥ 010):
 - [REQ-AUTH-031 — TOTP verification](./REQ-AUTH-031-totp-verification.md)
 - [REQ-AUTH-032 — Backup-code recovery](./REQ-AUTH-032-backup-code-recovery.md)
 - [REQ-AUTH-040 — Permission check](./REQ-AUTH-040-permission-check.md)
-- [REQ-AUTH-041 — Role assignment](./REQ-AUTH-041-role-assignment.md)
 - [REQ-AUTH-050 — Policy state machine](./REQ-AUTH-050-policy-state-machine.md)
 - [REQ-AUTH-051 — Policy cross-tenant guard](./REQ-AUTH-051-policy-cross-tenant.md)
 - [REQ-AUTH-060 — Auth-provider catalogue](./REQ-AUTH-060-auth-provider-catalogue.md)

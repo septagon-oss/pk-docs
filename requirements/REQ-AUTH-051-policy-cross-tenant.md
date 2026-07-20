@@ -88,9 +88,9 @@ surface.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/policy/policy_scope_test.go::TestNormalizePolicyForTenant_BindsNamespaceAndTenant`. |
-| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/policy/policy_scope_test.go::TestNormalizeChangeItemPolicies_RejectsCrossTenantPolicy`. |
-| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/policy/policy_scope_test.go::TestNormalizePolicyForTenant_BindsNamespaceAndTenant` asserts the namespaces. |
+| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/policy/policy_scope_test.go::TestValidatePolicyForTenantRequiresExplicitNamespaceAndTenant`. |
+| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/policy/policy_scope_test.go::TestValidateChangeItemPoliciesRejectsCrossTenantPolicy`. |
+| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/policy/policy_scope_test.go::TestValidatePolicyForTenantRequiresExplicitNamespaceAndTenant` asserts the namespaces. |
 | AC-4 | Inspection | The operator code path lives outside this REQ; reviewers verify `service.go` does not mix the two surfaces. |
 
 ## Edge cases & unhappy paths

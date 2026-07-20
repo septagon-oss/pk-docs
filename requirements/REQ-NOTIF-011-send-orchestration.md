@@ -151,7 +151,7 @@ as spamming one user with 1000.
 | AC-4 | Test | `modules/platformkit-business-modules/notification_management/features/email_notifications/service_test.go::TestSendEmail_RateLimitExceeded`. |
 | AC-5 | Test | `modules/platformkit-business-modules/notification_management/features/email_notifications/service_test.go::TestSendEmail_WithTemplate` and `TestSendEmail_TemplateNotFound`. |
 | AC-6 | Test | `modules/platformkit-business-modules/notification_management/features/email_notifications/service_test.go::TestSendEmail_NotificationRepoCreateFails` (persist failure before dispatch) and `TestSendEmail_ProviderFailureMarksNotificationFailed` (transport failure leaves the row with `Status=failed`). |
-| AC-7 | Test | `modules/platformkit-business-modules/notification_management/features/email_notifications/service_test.go::TestSendEmail_EventPublishFailureDoesNotBlockDelivery` covers the resilience-on-event-publish branch. The catalogued `notification.email.{sent,failed}` events are emitted by inspection of `service.go::SendEmail`; dedicated event-shape assertion test pending. |
+| AC-7 | Test | `modules/platformkit-business-modules/notification_management/features/email_notifications/service_test.go::TestSendEmail_PublishesGenericLifecycleEvents` verifies the channel and generic success events; adjacent failure and transactional-outbox tests cover failed dispatch and publication rollback. |
 | AC-8 | Inspection | `service.go::SendEmail`, `service.go::SendInAppNotification`, `service.go::SendSMS`, etc. — each opens with `s.tracer.StartSpan`. |
 
 ## Edge cases & unhappy paths

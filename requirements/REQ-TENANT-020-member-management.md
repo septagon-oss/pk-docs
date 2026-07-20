@@ -188,5 +188,4 @@ would silently filter to zero results).
 
 - [REQ-TENANT-002 — Member management feature](./REQ-TENANT-002-member-management.md)
 - [REQ-TENANT-010 — Tenant create](./REQ-TENANT-010-tenant-create.md) — the first member is seeded by the create flow.
-- [REQ-AUTH-040 — Permission check](./REQ-AUTH-040-permission-check.md) — the consumer of the (tenant, user) → role join.
-- [REQ-AUTH-041 — Role assignment](./REQ-AUTH-041-role-assignment.md) — the platform-wide role record this feature stores per tenant.
+- [REQ-AUTH-040 — Permission check](./REQ-AUTH-040-permission-check.md) — the governed decision that uses this exact tenant scope without treating membership metadata as a grant.

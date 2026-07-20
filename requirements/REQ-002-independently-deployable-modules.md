@@ -70,7 +70,7 @@ tier or module-set catalog.
 | AC | Method | Evidence |
 |---|---|---|
 | AC-1 | Analysis | `platformkit-backend-kit/analysis/importboundary` — rejects cross-module implementation imports at `make precommit`. |
-| AC-2 | Test | `apps/platformkit-apps/modulecatalog/full/catalog_test.go::TestPlanModuleOnlyDoesNotReEnableDisabledModule` and `apps/platformkit-apps/modulecatalog/full/catalog_test.go::TestPlanIgnoresDisabledUnknownModuleKeys` exercise selective composition and explicit module removal. **Verification gap: a dedicated sweep that removes each module in turn and verifies the plan still composes is pending.** |
+| AC-2 | Test | `apps/platformkit-apps/modulecatalog/catalog_test.go::TestPlanModuleOnlyDoesNotReEnableDisabledModule` and `apps/platformkit-apps/modulecatalog/catalog_test.go::TestPlanIgnoresDisabledUnknownModuleKeys` exercise selective composition and explicit module removal. **Verification gap: a dedicated sweep that removes each module in turn and verifies the plan still composes is pending.** |
 | AC-3 | Analysis | `make check-module-contracts` (`modules/platformkit-business-modules/cmd/module-contract-check`). |
 
 ## Satisfied by

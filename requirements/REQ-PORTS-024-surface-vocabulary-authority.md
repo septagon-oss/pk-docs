@@ -88,7 +88,7 @@ caller mutation, would corrupt every registry built from it.
 | AC | Method | Evidence |
 |---|---|---|
 | AC-1 | Inspection | `core/platformkit-ports/surface/surface.go` (vocabulary + validators) and `core/platformkit-ports/surface/provider.go` (`Provider` + `ProviderContract`). |
-| AC-2 | Test | `core/platformkit-shared/presentation/surface_alias_retirement_test.go` and `modules/platformkit-business-modules/ports/surface_vocabulary_retirement_test.go` scan declarations and import-qualified selectors so compatibility paths cannot return. |
+| AC-2 | Test | `core/platformkit-shared/presentation/surface_alias_retirement_test.go::TestPresentationSurfaceAliasesStayRetired` and `modules/platformkit-business-modules/ports/surface_vocabulary_retirement_test.go` scan declarations and import-qualified selectors so compatibility paths cannot return. |
 | AC-3 | Test | `core/platformkit-ports/surface/surfacetest/surfacetest_test.go::TestStaticPassesProviderConformance` — runs `surfacetest.ProviderConformance` (validity, call stability, mutation isolation) against the reference `Static` provider. |
 | AC-4 | Test | `core/platformkit-ports/surface/surfacetest/surfacetest_test.go::TestValidateContributionCatchesWidgetAndSettingShape` — validator rejection coverage for malformed shapes. |
 

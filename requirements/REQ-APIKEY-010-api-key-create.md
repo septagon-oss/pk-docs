@@ -88,8 +88,8 @@ properties:
 3. **Permissions normalised at write-time.** Tokens are
    normalised through `authz.NormalizePermissionTokens` so a
    key written with `users.read` is equivalent to one written
-   with `Users.Read` — the validator (REQ-AUTH-040) only sees
-   one canonical form.
+   with a canonical `users:read` token — the governed decision seam
+   (REQ-AUTH-040) receives one unambiguous resource/action pair.
 
 The full token is returned exactly once; subsequent reads
 expose only the prefix. Operators who lose the token must

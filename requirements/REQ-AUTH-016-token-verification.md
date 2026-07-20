@@ -90,14 +90,13 @@ result of a long line of CVE-class mistakes:
 - **AC-3 — Required claim presence.** Tokens missing or
   malforming `type`, `user_id`, `tenant_id`, `session_id`, or
   `exp` are rejected with a typed claim-validation error.
-- **AC-4 — Type discrimination.** A refresh token presented to
-  `VerifyToken` (which expects `type=access`) returns the
-  typed token-type error; the inverse holds for
-  `RefreshAccessToken`.
-- **AC-5 — Default token-type fallback.** When the request
-  omits the `TokenType` field, the verifier defaults to
-  `access` rather than failing — the documented compatibility
-  behaviour for existing clients.
+- **AC-4 — Closed token-type vocabulary.** `VerifyToken` accepts only the exact
+  `access` and `refresh` selectors and routes each selector to its dedicated
+  cryptographic and durable-authority validator. Unknown, padded, or
+  case-shifted selectors fail before token parsing.
+- **AC-5 — Explicit token-type authority.** A request that omits `TokenType`
+  fails with the typed invalid-verification-request error. The verifier never
+  guesses an access-token path for an incomplete request.
 - **AC-6 — Expired token.** A token whose `exp` is in the past
   is rejected with the typed expiry error; the user-status
   cache is not consulted because the verdict is cryptographic.
@@ -109,8 +108,8 @@ result of a long line of CVE-class mistakes:
 | AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestVerifyToken_BlacklistedToken`. |
 | AC-2 | Inspection | `refresh_token.go::validateRefreshToken` (lines 285-289) pins `*jwt.SigningMethodHMAC` and rejects everything else; the access-token validator uses the same primitive. |
 | AC-3 | Inspection | The claim-presence checks in `validateRefreshToken` apply to the access-token validator too; reviewers verify both paths. |
-| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestRefreshAccessToken_BlacklistedToken` covers the refresh side; the access side is exercised through the bearer middleware tests in `platformkit-backend-kit/security/authn`. |
-| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestVerifyToken_DefaultsToAccessType`. |
+| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestVerifyToken_RejectsUnknownTokenType`. |
+| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestVerifyToken_RequiresExplicitTokenType`. |
 | AC-6 | Inspection | The JWT library's `Valid` flag captures expiry; reviewers confirm the typed error path. |
 
 ## Edge cases & unhappy paths
