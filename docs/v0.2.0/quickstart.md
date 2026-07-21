@@ -147,5 +147,6 @@ APIs to move); pin a tag if you need stability today.
 
 ---
 
-Next → [add-a-module.md](add-a-module.md) — build your own module the same way
+Next → the [API Reference](api-reference.md) (OpenAPI spec included) or
+[add-a-module.md](add-a-module.md) — build your own module the same way
 the nine built-ins are built.
