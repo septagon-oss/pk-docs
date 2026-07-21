@@ -110,9 +110,13 @@ Isolation is enforced: every by-id operation is tenant-scoped, so you only ever
 see or mutate your own tenant's data, and a cross-tenant id returns `404`.
 
 The seeded **development** values are `tenant_acme` / `admin@local.test` /
-`changeme`. That default password is development-only — it is never re-asserted
-on later boots, and production boots require `seed.admin_password` in config
-(see [Configuration](./configuration.md)).
+`changeme`. In development mode the seed is self-repairing: the demo password is
+re-asserted on every boot (change it and it reverts — the startup banner warns
+you about exactly this), which is why development mode must never be exposed to
+a network. Production boots require an explicit `seed.admin_password` in config,
+never re-assert it afterwards, and refuse to start without one — only
+`environment: development` may use the built-in demo password (see
+[Configuration](./configuration.md)).
 
 ## `/admin` is behind a login wall
 
@@ -138,7 +142,8 @@ is reachable anonymously.
 
 This path is verified on Linux/x86_64, Go 1.26, `modernc.org/sqlite v1.50.1`,
 the default `/admin` base path, and a fresh database. This is an early release
-(v0.2.0; expect APIs to move); pin a commit if you need stability today.
+(current: v0.2.2 — see the [release notes](./release-notes-v0.2.0.md); expect
+APIs to move); pin a tag if you need stability today.
 
 ---
 

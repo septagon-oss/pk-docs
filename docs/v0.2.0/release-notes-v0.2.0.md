@@ -7,6 +7,47 @@ status: published
 
 # v0.2.0 Release Notes
 
+## v0.2.2 — root-cause security hardening (patch, breaking)
+
+`v0.2.2` completes the v0.2.x hardening by fixing the root causes behind the
+remaining review findings instead of patching symptoms one handler at a time.
+As with v0.2.1, no cross-tenant leak or auth bypass existed; these close
+same-tenant and abuse-resistance gaps:
+
+- **The server owns identity.** A single choke point
+  (`portslib.RequestActor`) derives the tenant and subject from the
+  authenticated principal; every write handler binds attribution from it and
+  ignores body-supplied `user_id` / `tenant_id` / `author_id`. This closes
+  API-key issuance impersonation (a caller could mint a key for another
+  user) and content author spoofing.
+- **Within-tenant ownership.** Notification `MarkRead` / `Unsubscribe` now
+  require the owning `user_id` in the store predicate — a tenant-mate can no
+  longer mark your notifications read or delete your subscriptions by id.
+  **Breaking:** the `NotificationService` port and store signatures gained a
+  `userID` parameter.
+- **The audit log is read-only over HTTP.** Every write verb returns `405`;
+  entries come only from trusted in-process emitters, so a client can no
+  longer forge or backdate audit history.
+- **Uniform authentication timing.** Login always performs a hash
+  verification (against a decoy for unknown users), removing a
+  user-enumeration timing oracle.
+- **Baseline request limits.** A 1 MiB request-body cap wraps every route
+  (unbounded-body memory exhaustion becomes a rejection) and list endpoints
+  cap their page size.
+- **Atomic login throttle.** The lockout policy reserves in-flight attempts,
+  closing a check-then-record race where a concurrent burst could slip past
+  the failure limit.
+- **Fail-closed configuration.** A *missing* config file now also defaults to
+  `production` (v0.2.1 covered only a file that omitted `environment`);
+  session cookies force `Secure` outside development.
+- **Error taxonomy.** Validation failures map to `400` (not `500`), and only
+  genuine UNIQUE violations map to `409`.
+
+Upgrade with `go get github.com/septagon-oss/pk-modules@v0.2.2` /
+`pk-apps@v0.2.2` (front door: `platformkit@v0.2.2`).
+
+---
+
 ## v0.2.1 — security-review hardening (patch)
 
 `v0.2.1` closes the findings of an adversarial review of v0.2.0. No cross-tenant

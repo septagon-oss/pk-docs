@@ -112,11 +112,18 @@ type Note struct {
 
 // Store is the persistence contract. Implementations must be safe for
 // concurrent use.
+//
+// Every by-id operation takes the tenantID alongside the id — this is the
+// platform's core isolation invariant, and your module must follow it too.
+// A row belonging to another tenant reads as ErrNotFound; a leaked or
+// guessed id can never read or delete across tenants. List takes the tenant
+// plus limit/offset so a caller can never request an unbounded read of
+// someone else's data (or of the whole table).
 type Store interface {
 	Create(ctx context.Context, n *Note) error
-	Get(ctx context.Context, id string) (*Note, error)
-	List(ctx context.Context) ([]*Note, error)
-	Delete(ctx context.Context, id string) error
+	Get(ctx context.Context, tenantID, id string) (*Note, error)
+	List(ctx context.Context, tenantID string, limit, offset int) ([]*Note, error)
+	Delete(ctx context.Context, tenantID, id string) error
 }
 
 var ErrNotFound = errors.New("note: not found")
@@ -195,9 +202,13 @@ func (s *Store) Create(ctx context.Context, n *store.Note) error {
 	return nil
 }
 
-func (s *Store) Get(ctx context.Context, id string) (*store.Note, error) {
+// Get returns the note identified by (tenantID, id). The tenant predicate is
+// mandatory: a note belonging to another tenant reads as ErrNotFound rather
+// than leaking across tenants.
+func (s *Store) Get(ctx context.Context, tenantID, id string) (*store.Note, error) {
 	row := s.db.QueryRowContext(ctx,
-		`SELECT id, tenant_id, title, body, created_at FROM notes WHERE id = ?`, id)
+		`SELECT id, tenant_id, title, body, created_at FROM notes WHERE id = ? AND tenant_id = ?`,
+		id, tenantID)
 	n := &store.Note{}
 	err := row.Scan(&n.ID, &n.TenantID, &n.Title, &n.Body, &n.CreatedAt)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -209,9 +220,23 @@ func (s *Store) Get(ctx context.Context, id string) (*store.Note, error) {
 	return n, nil
 }
 
-func (s *Store) List(ctx context.Context) ([]*store.Note, error) {
+// List returns the tenant's notes, paged. The limit is capped so a caller can
+// never request an unbounded read.
+func (s *Store) List(ctx context.Context, tenantID string, limit, offset int) ([]*store.Note, error) {
+	const maxLimit = 1000
+	if limit <= 0 {
+		limit = 50
+	}
+	if limit > maxLimit {
+		limit = maxLimit
+	}
+	if offset < 0 {
+		offset = 0
+	}
 	rows, err := s.db.QueryContext(ctx,
-		`SELECT id, tenant_id, title, body, created_at FROM notes ORDER BY created_at`)
+		`SELECT id, tenant_id, title, body, created_at FROM notes
+		 WHERE tenant_id = ? ORDER BY created_at LIMIT ? OFFSET ?`,
+		tenantID, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("note/sqlite: list: %w", err)
 	}
@@ -227,8 +252,11 @@ func (s *Store) List(ctx context.Context) ([]*store.Note, error) {
 	return out, rows.Err()
 }
 
-func (s *Store) Delete(ctx context.Context, id string) error {
-	res, err := s.db.ExecContext(ctx, `DELETE FROM notes WHERE id = ?`, id)
+// Delete removes the note identified by (tenantID, id). The tenant predicate
+// is mandatory so a caller cannot delete another tenant's note by id.
+func (s *Store) Delete(ctx context.Context, tenantID, id string) error {
+	res, err := s.db.ExecContext(ctx,
+		`DELETE FROM notes WHERE id = ? AND tenant_id = ?`, id, tenantID)
 	if err != nil {
 		return fmt.Errorf("note/sqlite: delete: %w", err)
 	}
@@ -283,12 +311,15 @@ package note
 
 import "context"
 
-// NoteService is the public contract other modules consume.
+// NoteService is the public contract other modules consume. It carries the
+// same tenant-scoped shape as the store: the caller supplies the tenant it is
+// acting for (an HTTP handler derives it from the authenticated principal —
+// never from the request body), and cross-tenant ids read as not found.
 type NoteService interface {
 	Create(ctx context.Context, n *Note) error
-	Get(ctx context.Context, id string) (*Note, error)
-	List(ctx context.Context) ([]*Note, error)
-	Delete(ctx context.Context, id string) error
+	Get(ctx context.Context, tenantID, id string) (*Note, error)
+	List(ctx context.Context, tenantID string, limit, offset int) ([]*Note, error)
+	Delete(ctx context.Context, tenantID, id string) error
 }
 ```
 
@@ -413,7 +444,10 @@ func registerHealth(r portslib.HealthRegistrar, st store.Store) error {
 		return nil
 	}
 	check := health.CheckerFunc(func(ctx context.Context) error {
-		_, err := st.List(ctx)
+		// Probe with a sentinel tenant and a limit of 1 — proves the table is
+		// reachable without reading any real tenant's data. Same pattern as
+		// the built-in modules.
+		_, err := st.List(ctx, "_health_probe_", 1, 0)
 		return err
 	})
 	return r.Register("note_management.store", check)
