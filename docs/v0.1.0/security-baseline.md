@@ -76,6 +76,26 @@ untrusted network without putting your own authentication in front (reverse
 proxy auth, network isolation, or your own middleware). See the
 [release notes](./release-notes-v0.1.0.md) for the roadmap on this.
 
+## Tenant isolation is NOT complete in v0.1.0 — read this
+
+**Do not put multiple tenants' real data in the v0.1.0 starter and rely on it
+to keep them apart.** Tenant scoping is applied only on lookups where the
+tenant is part of the natural key (list, get-by-slug, get-by-email, uniqueness
+checks). **Operations by primary key — get/update/delete by `id`, password
+reset, publish, key revoke — are not tenant-scoped**: they resolve a row by
+`id` alone. Combined with the unauthenticated mux above, the starter derives no
+tenant from an authenticated principal, and the one list endpoint that filters
+by tenant reads `tenant_id` from the request's query string. In practice a
+caller who can reach the port and knows or guesses a row `id` can read or
+mutate another tenant's row.
+
+This is a starter/reference limitation, not a design most deployments should
+ship. Before running multi-tenant data through it you must: put an
+authentication + authorization gate in front of every route, derive the tenant
+from the authenticated principal (never from a query param or request body),
+and add a mandatory `AND tenant_id = ?` predicate to every by-`id` store query.
+Until you do, treat the starter as single-tenant.
+
 ## What the OSS does **not** ship
 
 - **Secret storage.** DB DSNs and signing keys come from `config.yaml` or your
@@ -101,8 +121,9 @@ proxy auth, network isolation, or your own middleware). See the
    data as regulatory evidence.
 5. **Patch cadence.** Each repo runs CodeQL and dependency review in CI;
    merging fixes is your job.
-6. **Storage-layer tenant isolation.** Tenancy is enforced at the application
-   layer; choosing stronger DB-level isolation primitives is up to you.
+6. **Tenant isolation.** v0.1.0 does **not** fully isolate tenants on its own
+   (see the section above); scoping by-`id` operations to the authenticated
+   tenant is work you must do before trusting it with multi-tenant data.
 
 ## How to harden a starter deployment
 
