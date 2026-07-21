@@ -7,6 +7,31 @@ status: published
 
 # v0.2.0 Release Notes
 
+## v0.2.1 — security-review hardening (patch)
+
+`v0.2.1` closes the findings of an adversarial review of v0.2.0. No cross-tenant
+leak or auth bypass was found; these harden the surrounding controls:
+
+- **Session ownership.** `GET`/`DELETE /api/v1/auth/sessions/{id}` now require
+  the caller to own the session — closing an unauthenticated session-info
+  oracle and cross-user forced logout.
+- **Self-only notification reads.** A read returns only the caller's own
+  notifications (bound to the authenticated user, not a client-supplied
+  `user_id`) — closing a same-tenant cross-user IDOR.
+- **Fail-closed seed default.** A config file that omits `environment` now
+  defaults to `production` (requires `seed.admin_password`); the zero-config
+  demo stays `development` and prints a loud DEVELOPMENT-MODE warning.
+- **Tighter gate + admin.** The anonymous-mutation exemption is narrowed to the
+  login endpoint only (anonymous logout is blocked); `/admin` admits only
+  interactive session principals (API keys use the API, not the console);
+  `/metrics` requires authentication; the public index page redacts admin
+  credentials outside development.
+
+Upgrade with `go get github.com/septagon-oss/pk-apps@v0.2.1` (front door:
+`platformkit@v0.2.1`).
+
+---
+
 PlatformKit OSS `v0.2.0` is the **security release** of the modular Go SaaS
 backbone. The starter now **requires authentication**, enforces
 **multi-tenant isolation end to end**, puts `/admin` behind a **login wall**,

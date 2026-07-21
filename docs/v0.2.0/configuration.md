@@ -33,7 +33,7 @@ instead of being silently ignored.
 |-----|------|---------|-------|
 | `app_name` | string | `starter-saas` | Used in the admin shell title (`<app_name> Admin`) and the runtime host identity. |
 | `app_version` | string | `0.2.0` | Reported through the runtime host identity. |
-| `environment` | string | `development` | Free-form label passed to the runtime host. When it is `development`, `seed.admin_password` may be omitted (a dev default is used); any other value **requires** `seed.admin_password`. |
+| `environment` | string | `development` (demo) / `production` (config file omits it) | When it is `development`, `seed.admin_password` may be omitted (a dev default is used and a loud DEVELOPMENT-MODE warning prints at boot); any other value **requires** `seed.admin_password`. Two defaults: the zero-config `go run .` demo defaults to `development`, but **if you provide a config file and omit `environment` it defaults to `production`** — writing a config signals a real deployment, so it fails closed instead of silently running the demo credential. |
 | `seed.admin_email` | string | `admin@local.test` | Email for the first-boot seeded admin user. |
 | `seed.admin_password` | string | `changeme` (development only) | Password for the first-boot seeded admin. The `changeme` default applies **only** when `environment` is `development`; outside development this key is **required** and boot fails without it. The seed sets the admin password once and **never re-asserts** it on a later boot, so a rotated or deactivated admin sticks. |
 | `http.addr` | string | `:8080` | Listen address for `http.Server`. |
