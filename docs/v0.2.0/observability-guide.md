@@ -1,11 +1,11 @@
 ---
-title: v0.1.0 Observability Guide
-slug: v0-1-0-observability-guide
+title: v0.2.0 Observability Guide
+slug: v0-2-0-observability-guide
 collection: docs
 status: published
 ---
 
-# v0.1.0 Observability Guide
+# v0.2.0 Observability Guide
 
 `pk-core/pkg/observability` defines PlatformKit's provider-neutral
 observability contracts in **five** sub-packages — `logger`, `metrics`,
@@ -35,7 +35,7 @@ Constructors: `logger.NewSlog(handler slog.Handler, extractors ...ContextExtract
 `logger.NewSlogFromLogger(l *slog.Logger, extractors ...ContextExtractor)`, and
 `logger.Noop()`.
 
-There is no `logger.FromContext` and no context-carried logger in v0.1.0 —
+There is no `logger.FromContext` and no context-carried logger in v0.2.0 —
 you construct a `Logger` and inject it where you need it.
 
 ### The `ContextExtractor` pattern
@@ -80,7 +80,7 @@ logins := m.Counter("auth_login_attempts")
 logins.Add(1)
 ```
 
-**Honest note:** in v0.1.0 no shipped module registers custom metrics. The
+**Honest note:** in v0.2.0 no shipped module registers custom metrics. The
 starter app's `/metrics` endpoint is the standard library's `expvar.Handler()`
 — a JSON document containing `cmdline`, `memstats`, and anything your own code
 publishes via `expvar`. There is no Prometheus text endpoint in the starter

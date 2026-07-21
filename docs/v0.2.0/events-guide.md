@@ -1,11 +1,11 @@
 ---
-title: v0.1.0 Events Guide
-slug: v0-1-0-events-guide
+title: v0.2.0 Events Guide
+slug: v0-2-0-events-guide
 collection: docs
 status: published
 ---
 
-# v0.1.0 Events Guide
+# v0.2.0 Events Guide
 
 `pk-core/pkg/event` is PlatformKit's provider-neutral event-bus contract: a
 CloudEvents-flavored `Envelope`, a `Handler` callable, a `Subscription`
@@ -101,7 +101,7 @@ func main() {
 ```
 
 Run it with `go mod init example.com/events-demo && go get
-github.com/septagon-oss/pk-core@v0.1.0 && go run .` (Go 1.26+).
+github.com/septagon-oss/pk-core@v0.2.0 && go run .` (Go 1.26+).
 
 ## The durable outbox (`pk-core/pkg/event/outbox`)
 
@@ -121,11 +121,11 @@ failure and marking envelopes dead after too many attempts.
 
 ## How the shipped modules use events — honestly
 
-**Thinly, in v0.1.0.** The state of play:
+**Thinly, in v0.2.0.** The state of play:
 
 - `notification_management` accepts an `notification.WithEventBus(b event.Bus)`
   option and declares the intent to emit `notification.dispatched` events in
-  its port spec — but the v0.1.0 module code stores the bus without publishing
+  its port spec — but the v0.2.0 module code stores the bus without publishing
   to it. Notification fan-out happens through the synchronous
   `portslib.NotificationChannel` list instead (the built-in `in_app` channel
   first, then anything added via `WithChannel`).
@@ -134,11 +134,11 @@ failure and marking envelopes dead after too many attempts.
   Cross-module side-effects in the starter go through the audit log
   (`audit.AuditEmitter`), not events.
 
-So in v0.1.0 the event layer is a stable, tested contract you can build on in
+So in v0.2.0 the event layer is a stable, tested contract you can build on in
 your own modules today — with a durable outbox ready for transactional
 producers — but the built-in modules do not yet exercise it. A durable async
 notification path is on the v0.2.0 roadmap (see the
-[release notes](./release-notes-v0.1.0.md)).
+[release notes](./release-notes-v0.2.0.md)).
 
 ## Using events in your own module
 

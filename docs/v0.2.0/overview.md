@@ -1,13 +1,15 @@
 ---
-title: PlatformKit OSS v0.1.0 Overview
-slug: v0-1-0-overview
+title: PlatformKit OSS v0.2.0 Overview
+slug: v0-2-0-overview
 collection: docs
 status: published
 ---
 
-# PlatformKit OSS v0.1.0 Overview
+# PlatformKit OSS v0.2.0 Overview
 
-`v0.1.0` is the first public release of PlatformKit OSS. It is a
+`v0.2.0` is the security release of PlatformKit OSS: the starter now
+**requires authentication** across the API and admin, and enforces
+**multi-tenant isolation** end to end. It is a
 **Go-native modular SaaS backbone** released under an open-core model:
 the OSS layer is permissively licensed (Apache-2.0) and ships everything
 required to stand up a real multi-tenant application; the Pro layer
@@ -16,11 +18,11 @@ opinionated implementations of policy, identity, billing, deployment,
 and assurance.
 
 This page is the canonical landing point for someone who has just heard
-of PlatformKit and wants to know what is actually in the box at v0.1.0.
+of PlatformKit and wants to know what is actually in the box at v0.2.0.
 
-## What ships in v0.1.0
+## What ships in v0.2.0
 
-PlatformKit OSS v0.1.0 is **twelve repositories** that compose into one
+PlatformKit OSS v0.2.0 is **twelve repositories** that compose into one
 runnable application:
 
 | Repo | Role |
@@ -83,10 +85,10 @@ public interface stays in OSS. This is described in detail in
   [Security Baseline](./security-baseline.md).
 - To change ports, timeouts, or the database, see
   [Configuration](./configuration.md).
-- For the full v0.1.0 change list, see
-  [Release Notes v0.1.0](./release-notes-v0.1.0.md).
+- For the full v0.2.0 change list, see
+  [Release Notes v0.2.0](./release-notes-v0.2.0.md).
 
-## What v0.1.0 is **not**
+## What v0.2.0 is **not**
 
 - Not production-ready out of the box. Some OSS providers are
   intentionally simple references (e.g. SQLite storage, in-process
@@ -94,5 +96,5 @@ public interface stays in OSS. This is described in detail in
   to replace them behind the same contracts.
 - Not API-stable. Anything not in a published contract package is
   subject to change before v1.0.
-- Not feature-complete. v0.2.0 will tighten the public surface and
-  promote modules from `experimental` to `core-certified`.
+- Not feature-complete. Future releases will tighten the public surface
+  and promote modules from `experimental` to `core-certified`.

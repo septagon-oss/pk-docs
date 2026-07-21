@@ -9,12 +9,12 @@ Public documentation source for PlatformKit OSS.
 
 Reading, not building? Jump straight in:
 
-- [Quickstart](docs/v0.1.0/quickstart.md) — clone, `go run .`, and poke a
+- [Quickstart](docs/v0.2.0/quickstart.md) — clone, `go run .`, and poke a
   running multi-tenant SaaS in a few minutes.
-- [Overview](docs/v0.1.0/overview.md) — what is in the box at v0.1.0.
-- [Architecture](docs/v0.1.0/architecture.md) — how modules compose.
-- [Add a Module](docs/v0.1.0/add-a-module.md) — build your own module.
-- [FAQ](docs/v0.1.0/faq.md) — the questions people ask first.
+- [Overview](docs/v0.2.0/overview.md) — what is in the box at v0.2.0.
+- [Architecture](docs/v0.2.0/architecture.md) — how modules compose.
+- [Add a Module](docs/v0.2.0/add-a-module.md) — build your own module.
+- [FAQ](docs/v0.2.0/faq.md) — the questions people ask first.
 
 PlatformKit exists to make serious SaaS systems composable without making the
 hard parts informal. The OSS contract should make module boundaries,

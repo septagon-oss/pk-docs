@@ -1,20 +1,20 @@
 ---
-title: v0.1.0 Deployment Guide
-slug: v0-1-0-deployment-guide
+title: v0.2.0 Deployment Guide
+slug: v0-2-0-deployment-guide
 collection: docs
 status: published
 ---
 
-# v0.1.0 Deployment Guide
+# v0.2.0 Deployment Guide
 
 The starter app is a single, pure-Go binary: no CGO (SQLite via
 `modernc.org/sqlite`), no npm build, no external database, no Docker
 requirement. Deployment is correspondingly boring — build a static binary, run
 it behind a TLS-terminating reverse proxy, keep `pk.db` on persistent disk.
 
-**v0.1.0 ships no official container image and no Helm chart for the starter
+**v0.2.0 ships no official container image and no Helm chart for the starter
 app** (both are on the roadmap — see the
-[release notes](./release-notes-v0.1.0.md)). Everything below is
+[release notes](./release-notes-v0.2.0.md)). Everything below is
 operator-assembled from standard tools.
 
 Prerequisites: Go 1.26+ on the build machine. Nothing on the target host but
@@ -22,8 +22,10 @@ the binary and a writable data directory.
 
 ## Read this first
 
-- **`/admin` and the CRUD APIs ship without a login wall.** Do not expose the
-  port to an untrusted network without gating it — see the
+- **`/admin` and the CRUD APIs require authentication.** `/api/v1/*` rejects
+  anonymous requests with `401` and `/admin` redirects to `/admin/login`; every
+  by-id operation is tenant-scoped. You still terminate TLS in front and set
+  `seed.admin_password` for production — see the
   [Security Baseline](./security-baseline.md).
 - **The app reads no environment variables.** Address, timeouts, and DSN come
   from `config.yaml` (via a wrapper) or compiled-in defaults — see
@@ -146,7 +148,7 @@ the wrapper (if you use one) loads `./config.yaml` from there. Back up
 
 ## Docker
 
-No official image ships in v0.1.0; a minimal multi-stage Dockerfile you own
+No official image ships in v0.2.0; a minimal multi-stage Dockerfile you own
 works because the binary is CGO-free:
 
 ```dockerfile
@@ -166,11 +168,11 @@ ENTRYPOINT ["/usr/local/bin/platformkit"]
 ```
 
 ```bash
-docker build -t platformkit:0.1.0 .
+docker build -t platformkit:0.2.0 .
 docker run -d --name platformkit \
   -p 127.0.0.1:8080:8080 \
   -v platformkit-data:/data \
-  platformkit:0.1.0
+  platformkit:0.2.0
 curl -fsS http://localhost:8080/healthz
 ```
 
@@ -218,7 +220,7 @@ auditable, signed deployments from self-hosted infrastructure. Skip it while
 `scp` + `systemctl restart` covers you.
 
 ```bash
-go get github.com/septagon-oss/pk-deploy@v0.1.0
+go get github.com/septagon-oss/pk-deploy@v0.2.0
 # or explore locally:
 git clone https://github.com/septagon-oss/pk-deploy
 cd pk-deploy && make verify && make example

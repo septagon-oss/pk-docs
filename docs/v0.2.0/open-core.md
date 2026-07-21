@@ -1,6 +1,6 @@
 ---
 title: Open Core
-slug: v0-1-0-open-core
+slug: v0-2-0-open-core
 collection: docs
 status: published
 ---
@@ -67,7 +67,7 @@ the ports you already use," not "a different shape you have to migrate to."
   pass — on a fresh clone, with no paid component. See [quickstart.md](quickstart.md).
 - It is not a relicensing trap on the contracts. The interfaces are the
   published, stable surface and they are Apache-2.0.
-- It is early (v0.1.0 — our first public release; expect APIs to move). Things will move while the project finds its feet. That
+- It is early (v0.2.0; expect APIs to move). Things will move while the project finds its feet. That
   is a maturity caveat, not a licensing one — pin a commit if you need stability
   today.
 

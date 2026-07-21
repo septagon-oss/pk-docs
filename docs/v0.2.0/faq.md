@@ -1,6 +1,6 @@
 ---
 title: FAQ
-slug: v0-1-0-faq
+slug: v0-2-0-faq
 collection: docs
 status: published
 ---
@@ -39,9 +39,9 @@ Hosted and cloud-scale providers: NATS/JetStream/Kafka event buses, Postgres-clu
 
 Apache-2.0 for everything you clone and run: the contracts and ports, the default providers (SQLite, in-memory, stdlib, file-based), the security baseline, the reference admin UI, the starter app, the `pk` CLI, and the nine-module essentials pack. That's enough to build and run a multi-tenant SaaS backend on your own infrastructure with no further purchase. The license file is in the repository.
 
-## How mature is this? It says v0.1.0.
+## How mature is this? It says v0.2.0.
 
-It's early, and we say so: v0.1.0 — our first public release; expect APIs to move. Verified on Linux/x86_64, Go 1.26, and `modernc.org/sqlite v1.50.1`, on a fresh database. Things will move; pin a commit if you need stability today. The hero path — clone, `go run .`, a seeded admin and a healthy data layer — is verified green on a cold clone, but we won't pretend the surrounding surface is battle-tested. Tell us where it breaks.
+It's early, and we say so: v0.2.0 — still expect APIs to move. Verified on Linux/x86_64, Go 1.26, and `modernc.org/sqlite v1.50.1`, on a fresh database. Things will move; pin a commit if you need stability today. The hero path — clone, `go run .`, a seeded admin and a healthy data layer — is verified green on a cold clone, but we won't pretend the surrounding surface is battle-tested. Tell us where it breaks.
 
 ## Who's behind it, and do you actually use it?
 
@@ -53,7 +53,7 @@ Agreed — nine CRUD modules wouldn't be. The claim isn't the count, it's the co
 
 ## Is the admin UI a real login?
 
-No, and we want to be precise about it. `/admin` is an open dashboard today, not a gated login wall. The seeded `admin@local.test` / `changeme` credentials authenticate against the auth API (`POST /api/v1/auth/sessions`), which is multi-tenant — so the request body must include `tenant_id` (`tenant_acme`) or you'll get a `400`. We call this out in the docs rather than implying a login screen that doesn't exist yet.
+Yes. `/admin` is behind a login wall: an unauthenticated visit returns a `303` redirect to `/admin/login`, a real login page that sets a session cookie. Sign in with the admin credentials (`admin@local.test` / `changeme` in development) and you land on the dashboard. The same credentials also authenticate against the multi-tenant auth API (`POST /api/v1/auth/sessions`), where the request body must include `tenant_id` (`tenant_acme`) or you'll get a `400`; that returns a session `id` you send back as `Authorization: Bearer <session-id>`. Nothing on `/admin` or `/api/v1/*` is reachable anonymously.
 
 ---
 
@@ -69,4 +69,4 @@ SQLite is the default store provider, wired behind each store-backed module's st
 
 ### Is it production-ready?
 
-It's early — v0.1.0, our first public release; expect APIs to move. The hero path is verified on a cold clone (Linux/x86_64, Go 1.26, fresh database), and the substrate is designed to run on your own infrastructure. But the default SQLite store is for development and small deployments, not scale; `/admin` is an open dashboard rather than a gated login today; and the broader surface is not battle-tested yet. For production, swap your store in behind the relevant module store interfaces and pin a commit. Read the "What this is NOT" section before you depend on it.
+It's early — v0.2.0; expect APIs to move. The hero path is verified on a cold clone (Linux/x86_64, Go 1.26, fresh database), and the substrate is designed to run on your own infrastructure. Authentication is required and multi-tenant isolation is enforced, but the default SQLite store is for development and small deployments, not scale, and the broader surface is not battle-tested yet. For production, set `seed.admin_password`, swap your store in behind the relevant module store interfaces, and pin a commit. Read the "What this is NOT" section before you depend on it.

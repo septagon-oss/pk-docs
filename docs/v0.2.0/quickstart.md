@@ -1,6 +1,6 @@
 ---
 title: Quickstart
-slug: v0-1-0-quickstart
+slug: v0-2-0-quickstart
 collection: docs
 status: published
 ---
@@ -62,13 +62,31 @@ admin dashboard with a sidebar and entity links.
 ### Check it from another shell
 
 ```bash
-# Health — returns 200. /healthz reports seven data/session checks; admin and
-# health are composed modules without SQLite stores.
+# Health — no auth required. Returns 200. /healthz reports seven data/session
+# checks; admin and health are composed modules without SQLite stores.
 curl -s http://localhost:8080/healthz
 # → {"status":"healthy"}
+```
 
-# List tenants — returns the seeded Acme Inc tenant.
-curl -s http://localhost:8080/api/v1/tenants
+The `/api/v1/*` API **requires authentication**. An anonymous request is
+rejected:
+
+```bash
+curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8080/api/v1/tenants
+# → 401
+```
+
+So log in first to get a session id, then send it as a bearer token:
+
+```bash
+# Log in — returns a session whose "id" is your bearer token.
+SID=$(curl -s -X POST http://localhost:8080/api/v1/auth/sessions \
+  -H 'Content-Type: application/json' \
+  -d '{"tenant_id":"tenant_acme","email":"admin@local.test","password":"changeme"}' \
+  | jq -r .id)
+
+# List tenants — authenticated. Returns only the caller's own tenant.
+curl -s http://localhost:8080/api/v1/tenants -H "Authorization: Bearer $SID"
 # → [{"id":"tenant_acme","slug":"acme","name":"Acme Inc",...}]
 ```
 
@@ -84,17 +102,25 @@ curl -s -X POST http://localhost:8080/api/v1/auth/sessions \
 # → 201 Created, returns a session for the seeded admin user
 ```
 
-The seeded values are `tenant_acme` / `admin@local.test` / `changeme`. They are
-created (and repaired) on every boot, so a half-finished first run can't strand
-the login.
+The response carries a session `id`; send it back as
+`Authorization: Bearer <session-id>` on every `/api/v1/*` call (a session cookie
+also works in the browser). An **API key** authenticates the same way —
+`Authorization: Bearer <api-key>`, and the key selects its own tenant.
+Isolation is enforced: every by-id operation is tenant-scoped, so you only ever
+see or mutate your own tenant's data, and a cross-tenant id returns `404`.
 
-## Honest caveat: `/admin` is an open dashboard
+The seeded **development** values are `tenant_acme` / `admin@local.test` /
+`changeme`. That default password is development-only — it is never re-asserted
+on later boots, and production boots require `seed.admin_password` in config
+(see [Configuration](./configuration.md)).
 
-The admin UI at `/admin` is **not** behind a login wall today. The seeded
-`admin@local.test` / `changeme` credentials authenticate against the **auth API**
-(`POST /api/v1/auth/sessions`), not an admin login screen. Anyone who can reach
-the port can open `/admin`. That is fine for local development; put it behind
-your own auth before exposing it.
+## `/admin` is behind a login wall
+
+The admin UI at `/admin` is **gated**. Visiting it while unauthenticated returns
+a `303` redirect to `/admin/login`, a real login page that sets a session
+cookie. Sign in with the admin credentials (`admin@local.test` / `changeme` in
+development) and you land on the dashboard. Nothing on `/admin` or `/api/v1/*`
+is reachable anonymously.
 
 ## Gotchas
 
@@ -112,8 +138,7 @@ your own auth before exposing it.
 
 This path is verified on Linux/x86_64, Go 1.26, `modernc.org/sqlite v1.50.1`,
 the default `/admin` base path, and a fresh database. This is an early release
-(v0.1.0 — our first public release; expect APIs to move); pin a commit if you
-need stability today.
+(v0.2.0; expect APIs to move); pin a commit if you need stability today.
 
 ---
 

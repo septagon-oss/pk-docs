@@ -18,16 +18,16 @@ consumable by someone who never cloned the workspace.
   workspace `go.work` (`use ./pk-core`, …), **not** by `replace` directives. A
   published module that replaces a `github.com/septagon-oss/*` module — or uses
   any local-path replace (`./`, `../`, or absolute) — is broken for outsiders.
-- **Ship `v0.1.0`, retract `v0.0.0`.** The old `v0.0.0` tags were cut with local
+- **Ship `v0.2.0`, retract `v0.0.0`.** The old `v0.0.0` tags were cut with local
   `replace` directives baked in and can never resolve from the proxy. Each Go
   module's `go.mod` declares `retract v0.0.0 // broken: contained local replace
   directives`, so `go get` and `go list -m -versions` steer consumers to
-  `v0.1.0+`. Never reuse or move `v0.0.0`.
-- **Version namespaces.** The release is the git tag **`v0.1.0`**. The per-module
+  `v0.2.0+`. Never reuse or move `v0.0.0`.
+- **Version namespaces.** The release is the git tag **`v0.2.0`**. The per-module
   `ModuleVersion` (port-contract value) stays **`0.0.0`** and is **not** bumped —
   bumping it breaks module-dependency compose, which pins `Version: "0.0.0"`.
-- **Repo set.** 9 Go-module repos get a `v0.1.0` tag (below). The front-door
-  repo `platformkit` is a new repo, also tagged `v0.1.0`. `pk-docs` is a docs
+- **Repo set.** 9 Go-module repos get a `v0.2.0` tag (below). The front-door
+  repo `platformkit` is also tagged `v0.2.0`. `pk-docs` is a docs
   repo (this repo) — published, but **not** a Go module and **not** on the build
   train. `pk-deploy` releases independently; internal-only repos are excluded.
 
@@ -78,20 +78,20 @@ version when it is tagged:
 
 ## Tagging
 
-Create annotated `v0.1.0` tags on the merged `main` commit, only after CI is
+Create annotated `v0.2.0` tags on the merged `main` commit, only after CI is
 green, in the dependency order above:
 
 ```bash
-git tag -a v0.1.0 -m "PlatformKit OSS v0.1.0"
+git tag -a v0.2.0 -m "PlatformKit OSS v0.2.0"
 git push origin main
-git push origin v0.1.0
+git push origin v0.2.0
 ```
 
-The `v0.1.0` tag points at the `main` commit. `main` may advance afterward only
+The `v0.2.0` tag points at the `main` commit. `main` may advance afterward only
 for post-tag docs/CI changes — that does not move the tag, and there is no
-`HEAD == v0.1.0` requirement. **Published versions on the Go proxy are
+`HEAD == v0.2.0` requirement. **Published versions on the Go proxy are
 immutable.** If a bad version reaches the proxy, cut `v0.1.1` — never move or
-re-cut `v0.1.0`.
+re-cut `v0.2.0`.
 
 ## Fresh-Clone Check
 
@@ -113,11 +113,16 @@ module):
 git clone https://github.com/septagon-oss/platformkit
 cd platformkit
 GOWORK=off go run . &  PID=$!; sleep 3
+# Health is open; the API requires authentication and /admin is behind a login wall.
 test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/healthz)"        = 200
-test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/v1/tenants)" = 200
-test "$(curl -s -o /dev/null -w '%{http_code}' -X POST http://localhost:8080/api/v1/auth/sessions \
+test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/v1/tenants)" = 401
+test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/admin)"          = 303
+SID="$(curl -s -X POST http://localhost:8080/api/v1/auth/sessions \
           -H 'Content-Type: application/json' \
-          -d '{"tenant_id":"tenant_acme","email":"admin@local.test","password":"changeme"}')" = 201
+          -d '{"tenant_id":"tenant_acme","email":"admin@local.test","password":"changeme"}' \
+        | jq -r .id)"
+test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/v1/tenants \
+          -H "Authorization: Bearer $SID")" = 200
 kill $PID
 ```
 

@@ -16,7 +16,7 @@ and glossary.
 - Mechanical house rules belong in [`../conventions.md`](../conventions.md).
 - Reference-module behavior belongs beside the code in the public
   `github.com/septagon-oss/pk-modules/pkg/<name>` package. The release-oriented
-  module index lives in [`../docs/v0.1.0/module-reference.md`](../docs/v0.1.0/module-reference.md).
+  module index lives in [`../docs/v0.2.0/module-reference.md`](../docs/v0.2.0/module-reference.md).
 
 The abandoned CUE/module-charter projection plan is preserved only as history
 in superseded [ADR 0023](../adr/0023-module-documentation-stack.md). Do not add

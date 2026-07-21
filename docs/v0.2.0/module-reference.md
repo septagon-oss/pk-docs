@@ -1,13 +1,13 @@
 ---
-title: v0.1.0 Module Reference
-slug: v0-1-0-module-reference
+title: v0.2.0 Module Reference
+slug: v0-2-0-module-reference
 collection: docs
 status: published
 ---
 
-# v0.1.0 Module Reference
+# v0.2.0 Module Reference
 
-PlatformKit OSS v0.1.0 ships **nine modules** under `pk-modules/pkg/`. Each
+PlatformKit OSS v0.2.0 ships **nine modules** under `pk-modules/pkg/`. Each
 module is a self-contained Go package: an entity, a persistence store with a
 default SQLite implementation, a `NewModule(opts ...Option)` constructor, an
 HTTP handler mountable via `RegisterRoutes(mux *http.ServeMux)`, and optional
@@ -29,7 +29,7 @@ The shape is uniform across all modules:
 
 A note on version strings: every module declares `ModuleVersion = "0.0.0"` —
 this is the *port contract version* used by `pkmodule.Provide[T](ModuleVersion)`
-and is distinct from the v0.1.0 release tag.
+and is distinct from the v0.2.0 release tag.
 
 ## `tenant_management` (`pk-modules/pkg/tenant`)
 
@@ -65,7 +65,7 @@ Tenant-scoped users with password credentials. The default password hasher is
 first-boot seed) and lookups by email/username. `user.UserBoundaryReader` is
 the read-only port consumed by auth and notification.
 `user.UserBoundaryRoleManager` exists as a placeholder port — roles are minimal
-in v0.1.0.
+in v0.2.0.
 
 ## `auth_management` (`pk-modules/pkg/auth`)
 
@@ -132,7 +132,7 @@ additional channels register via `WithChannel`. `Severity` is restricted to
 | Admin | page `/admin/notifications` ("Notifications"), entity CRUD for `Notification` |
 
 See the [Events Guide](./events-guide.md) for what `WithEventBus` does — and
-does not yet do — in v0.1.0.
+does not yet do — in v0.2.0.
 
 ## `audit_management` (`pk-modules/pkg/audit`)
 
@@ -178,7 +178,8 @@ embedded `Shell` and renders server-side HTML.
 | Options | `WithTitle` (default "PlatformKit Admin"), `WithBasePath` (default `/admin`) |
 | HTTP surface | mounted at `BasePath()`: home page, registered custom pages matched by full path (e.g. `/admin/tenants`), and generated entity routes `<basePath>/<moduleID>/<entity>`, `.../new`, `.../<id>` (list, create form, edit form — the pages call each module's API path via fetch) |
 
-In the starter app the shell ships **without a login wall** — see the
+In the starter app the shell is **behind a login wall** — an unauthenticated
+visit to `/admin` redirects to `/admin/login`. See the
 [Security Baseline](./security-baseline.md) before exposing it.
 
 ## How modules are wired together

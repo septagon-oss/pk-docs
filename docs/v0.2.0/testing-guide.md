@@ -1,16 +1,16 @@
 ---
-title: v0.1.0 Testing Guide
-slug: v0-1-0-testing-guide
+title: v0.2.0 Testing Guide
+slug: v0-2-0-testing-guide
 collection: docs
 status: published
 ---
 
-# v0.1.0 Testing Guide
+# v0.2.0 Testing Guide
 
 `pk-testkit` is the adapter-neutral test layer for PlatformKit modules and
 apps. It depends only on `pk-shared` — no browser, no database, no container
 runtime — so the same definitions run in unit tests, local apps, and
-downstream E2E harnesses. Three packages ship in v0.1.0:
+downstream E2E harnesses. Three packages ship in v0.2.0:
 
 | Package | Purpose |
 |---------|---------|
@@ -21,8 +21,8 @@ downstream E2E harnesses. Three packages ship in v0.1.0:
 Prerequisites: Go 1.26+ and
 
 ```bash
-go get github.com/septagon-oss/pk-testkit@v0.1.0
-go get github.com/septagon-oss/pk-shared@v0.1.0   # flow definitions
+go get github.com/septagon-oss/pk-testkit@v0.2.0
+go get github.com/septagon-oss/pk-shared@v0.2.0   # flow definitions
 ```
 
 ## Conformance suites (`pkg/conformance`)
@@ -134,7 +134,7 @@ func TestTenantListFlow(t *testing.T) {
 }
 ```
 
-(Add `go get github.com/septagon-oss/pk-apps@v0.1.0` and
+(Add `go get github.com/septagon-oss/pk-apps@v0.2.0` and
 `go get modernc.org/sqlite` for this one.)
 
 The default request builder sends no body and copies each step's static

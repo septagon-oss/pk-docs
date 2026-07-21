@@ -1,11 +1,11 @@
 ---
-title: v0.1.0 Configuration Reference
-slug: v0-1-0-configuration
+title: v0.2.0 Configuration Reference
+slug: v0-2-0-configuration
 collection: docs
 status: published
 ---
 
-# v0.1.0 Configuration Reference
+# v0.2.0 Configuration Reference
 
 The starter app's configuration surface is deliberately small: one optional
 `config.yaml`, parsed by `pk-apps/pkg/starterapp/config.go` into a typed
@@ -32,15 +32,17 @@ instead of being silently ignored.
 | Key | Type | Default | Notes |
 |-----|------|---------|-------|
 | `app_name` | string | `starter-saas` | Used in the admin shell title (`<app_name> Admin`) and the runtime host identity. |
-| `app_version` | string | `0.1.0` | Reported through the runtime host identity. |
-| `environment` | string | `development` | Free-form label passed to the runtime host. |
+| `app_version` | string | `0.2.0` | Reported through the runtime host identity. |
+| `environment` | string | `development` | Free-form label passed to the runtime host. When it is `development`, `seed.admin_password` may be omitted (a dev default is used); any other value **requires** `seed.admin_password`. |
+| `seed.admin_email` | string | `admin@local.test` | Email for the first-boot seeded admin user. |
+| `seed.admin_password` | string | `changeme` (development only) | Password for the first-boot seeded admin. The `changeme` default applies **only** when `environment` is `development`; outside development this key is **required** and boot fails without it. The seed sets the admin password once and **never re-asserts** it on a later boot, so a rotated or deactivated admin sticks. |
 | `http.addr` | string | `:8080` | Listen address for `http.Server`. |
 | `http.read_timeout` | Go duration | `30s` | `http.Server.ReadTimeout`. Parsed with `time.ParseDuration` — `30s`, `1m`, `1h30m`, … |
 | `http.write_timeout` | Go duration | `30s` | `http.Server.WriteTimeout`. |
 | `http.shutdown_timeout` | Go duration | `30s` | Grace period for `server.Shutdown` on SIGINT/SIGTERM. |
 | `database.driver` | string | `sqlite` | `database/sql` driver name. The wrappers register `modernc.org/sqlite` under the name `sqlite`. |
 | `database.dsn` | string | `file:./pk.db?_pragma=busy_timeout(5000)&cache=shared&mode=rwc` | The shared SQLite DSN every module store runs on. `busy_timeout(5000)` makes a locked database wait up to 5s instead of failing with `SQLITE_BUSY`. |
-| `cache.provider` | string | `memory` | **Parsed but not consumed** by the v0.1.0 starter graph — reserved for future/downstream use. |
+| `cache.provider` | string | `memory` | **Parsed but not consumed** by the v0.2.0 starter graph — reserved for future/downstream use. |
 
 There are no other keys. A malformed duration is an error
 (`config config.yaml:5: http.read_timeout: time: invalid duration ...`).
@@ -51,7 +53,7 @@ There are no other keys. A malformed duration is an error
 # Starter app configuration. Every key is optional; missing keys
 # fall back to the defaults documented above.
 app_name: my-saas
-app_version: 0.1.0
+app_version: 0.2.0
 environment: production
 
 http:
@@ -66,6 +68,10 @@ database:
 
 cache:
   provider: memory
+
+seed:
+  admin_email: admin@my-saas.example
+  admin_password: "a-strong-secret"   # REQUIRED outside development
 ```
 
 Parser behavior worth knowing:

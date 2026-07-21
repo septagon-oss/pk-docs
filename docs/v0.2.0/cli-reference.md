@@ -1,15 +1,15 @@
 ---
-title: v0.1.0 CLI Reference
-slug: v0-1-0-cli-reference
+title: v0.2.0 CLI Reference
+slug: v0-2-0-cli-reference
 collection: docs
 status: published
 ---
 
-# v0.1.0 CLI Reference
+# v0.2.0 CLI Reference
 
 `pk` is the PlatformKit OSS developer CLI, shipped in
 [`pk-tools`](https://github.com/septagon-oss/pk-tools) at `cmd/pk`. It has
-exactly **three verbs** in v0.1.0:
+exactly **three verbs** in v0.2.0:
 
 | Command | What it does |
 |---------|--------------|
@@ -17,7 +17,7 @@ exactly **three verbs** in v0.1.0:
 | `pk verify` | Runs `go vet ./...` then `go test ./...` in the current module. |
 | `pk explain modules` | Prints the nine-module OSS catalog (with `--json`). |
 
-> **There is no `pk scaffold` verb in v0.1.0.** Code generation exists as a Go
+> **There is no `pk scaffold` verb in v0.2.0.** Code generation exists as a Go
 > *library* (`pk-tools/pkg/scaffold`), not a CLI command. The manual path for
 > creating a module is documented in [Add a module](./add-a-module.md).
 
@@ -26,7 +26,7 @@ exactly **three verbs** in v0.1.0:
 Requires Go 1.26+.
 
 ```bash
-go install github.com/septagon-oss/pk-tools/cmd/pk@v0.1.0
+go install github.com/septagon-oss/pk-tools/cmd/pk@v0.2.0
 ```
 
 or run it straight from a clone:
@@ -92,7 +92,7 @@ package's public constants (`ModuleID`, `ModuleName`, `ModuleDescription`,
 
 ```
 $ pk explain modules
-PlatformKit OSS module catalog (v0.1.0):
+PlatformKit OSS module catalog (v0.2.0):
   tenant_management         Tenant Management — Tenant CRUD, tenant context propagation, and isolation contracts.
   user_management           User Management — Tenant-scoped user CRUD with pluggable password hashing.
   auth_management           Auth Management — Session-cookie login flow on top of user_management.
@@ -114,11 +114,11 @@ pk explain modules --json
 
 emits an array of objects with `id`, `name`, `description`, and `version`
 fields. Note that `version` is each module's declared port-contract version —
-`"0.0.0"` in this release — not the v0.1.0 release tag (see the note in the
+`"0.0.0"` in this release — not the v0.2.0 release tag (see the note in the
 [Module Reference](./module-reference.md)).
 
 `pk explain` with no subcommand prints help; `modules` is its only subcommand
-in v0.1.0.
+in v0.2.0.
 
 ## What else is in pk-tools
 

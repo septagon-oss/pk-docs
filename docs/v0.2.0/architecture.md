@@ -1,6 +1,6 @@
 ---
-title: Architecture (v0.1.0)
-slug: v0-1-0-architecture
+title: Architecture (v0.2.0)
+slug: v0-2-0-architecture
 collection: docs
 status: published
 ---

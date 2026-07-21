@@ -1,6 +1,6 @@
 ---
 title: Add a Module
-slug: v0-1-0-add-a-module
+slug: v0-2-0-add-a-module
 collection: docs
 status: published
 ---
