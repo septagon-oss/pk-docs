@@ -4,3 +4,4 @@ node_modules/
 apps/web/dist/
 apps/antora/dist/
 .tmp-npm-cache/
+.tmp-*/
