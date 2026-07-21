@@ -187,7 +187,7 @@ and the wrapped error makes the discrepancy visible.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/api_key_management/features/key_management/service.go::RotateAPIKey, RevokeAPIKey, DeleteAPIKey`.
+- `pk-modules/api_key_management/features/key_management/service.go::RotateAPIKey, RevokeAPIKey, DeleteAPIKey`.
 
 ## Related requirements
 

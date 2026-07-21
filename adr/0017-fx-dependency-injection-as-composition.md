@@ -97,10 +97,10 @@ that. Modules only declare what they contribute.
   merge for every app × preset combination.
 - **Not a guard here.** `runtime-boundary-check`,
   `runtime-capability-check`, and `runtime-release-policy-check`
-  (all in `platformkit-backend-kit/cmd/`) enforce backend-kit's
+  (all in `pk-core/cmd/`) enforce backend-kit's
   internal tier/capability/release-policy model over its own source
   tree. They do *not* inspect app-level fx graphs in
-  `platformkit-apps` or business-module composition. An earlier
+  `pk-apps` or business-module composition. An earlier
   revision of this ADR cited them incorrectly.
 
 ## Alternatives we rejected
@@ -122,7 +122,7 @@ that. Modules only declare what they contribute.
 ## References
 
 - Uber fx: <https://uber-go.github.io/fx/>.
-- `platformkit-backend-kit/app/appcontext/` — the context-propagation
+- `pk-core/app/appcontext/` — the context-propagation
   layer fx apps use.
 - Related:
   [Convention C-02 — one module, one instance](../conventions.md#c-02-one-module-one-instance)

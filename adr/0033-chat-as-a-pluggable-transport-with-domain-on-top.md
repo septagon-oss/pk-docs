@@ -15,8 +15,8 @@ Status: **Accepted** (2026-05-11)
 ## The problem
 
 Three different consumers wanted real-time chat at roughly the same
-time. `operator_management` already had an LLM-driven chat surface
-for admin operators. `chat_management` had a rooms + messages domain
+time. `operator` already had an LLM-driven chat surface
+for admin operators. `chat` had a rooms + messages domain
 that fan-out events via the internal `event.EventBus` but couldn't
 deliver them to connected browsers in real time. A customer-support
 widget on the public marketing site needed anonymous visitors to talk
@@ -24,16 +24,16 @@ to merchant support agents over a live channel. The runtime-agent
 needed to subscribe to mentions, post bot replies, and stream LLM
 output token-by-token into rooms.
 
-The naive answer would have been "let chat_management own everything":
+The naive answer would have been "let chat own everything":
 the domain, the WebSocket transport, the presence tracking, the
 token-mint, the history replay. We tried sketching it. It collapsed
 under three forces. First, the domain entities (rooms, messages,
 participants, reactions) are real CRUD records — they belong in
-chat_management's Postgres tables and feature graph, no question.
+chat's Postgres tables and feature graph, no question.
 Second, the transport (WebSocket connections, channel namespaces,
 presence sets, history rings) is infrastructure — it belongs next to
 `communication/realtime` (the LiveKit-backed Service), implemented by
-providers under `platformkit-integrations/<vendor>/`. Third, the
+providers under the integrations layer's `<vendor>/`. Third, the
 multi-tenant invariants we have everywhere else — tenant-scoped
 channels, audited cross-module access, port-only consumption — apply
 to chat too and shouldn't be redesigned per integration.
@@ -50,16 +50,16 @@ hard problems from a provider we could swap.
 ## The decision
 
 Chat is split into two layers that talk through a single transport-
-agnostic port: a domain layer in `chat_management` that owns rooms,
+agnostic port: a domain layer in `chat` that owns rooms,
 messages, participants, reactions, and the canonical message log; and
-a transport layer in `platformkit-backend-kit/communication/chat`
-defining a provider contract that `platformkit-integrations/chat/*`
+a transport layer in `pk-core/communication/chat`
+defining a provider contract that the integrations layer's `chat/*`
 implements. The contract sits next to `realtime` (LiveKit), sharing neutral
 identity and transport primitives without inventing a dormant third seam.
 
 ```text
 ┌────────────────────────────────────────────────────────────────────┐
-│  Domain — chat_management/                                          │
+│  Domain — chat/                                          │
 │   Rooms, Messages, Participants, Reactions, Commands               │
 │   Postgres canonical store (chat_messages table)                   │
 │   ChatRoomService / ChatMessageService / ChatParticipantService    │
@@ -75,7 +75,7 @@ identity and transport primitives without inventing a dormant third seam.
 └──────────────────────┬─────────────────────────────────────────────┘
                        │ implemented by
 ┌──────────────────────▼─────────────────────────────────────────────┐
-│  Providers — platformkit-integrations/chat/<vendor>/                │
+│  Providers — the integrations layer/chat/<vendor>/                │
 │   memory     (in-process — tests + dev + showroom)                  │
 │   centrifugo (HTTP API + JWT — production)                          │
 │   nats       (planned — JetStream)                                  │
@@ -98,9 +98,9 @@ publish establishes the message ID; successive events update in
 place). `Event.ReplyToID` carries thread anchoring.
 
 The domain layer talks to the transport through the narrowest
-sub-interface that does the job. `chat_management.MessageService`
+sub-interface that does the job. `chat.MessageService`
 holds an optional `chat.Publisher` (write-only is all it needs).
-`platformkit-agent-runtime` registers tools that hold `chat.Publisher`
+the agent runtime registers tools that hold `chat.Publisher`
 + `chat.History`. `notification_management` (future Stage) will
 hold `chat.Subscriber` for offline-push fan-out. Nobody depends on
 the composite `chat.Service` unless they genuinely need every
@@ -128,7 +128,7 @@ clients catch up from the canonical store when they reconnect.
   tenant, and the cross-tenant bridge that federation implies would
   break the isolation invariant. Customers who later need
   federation will run Matrix alongside, not instead of, the chat
-  module — at which point chat_management becomes one of two
+  module — at which point chat becomes one of two
   systems-of-record and the audit story gets harder. We accept that.
 
 - **End-to-end encryption.** The `Event.Payload` is plaintext JSON
@@ -173,14 +173,14 @@ clients catch up from the canonical store when they reconnect.
   on it. We may eventually move the event-bus publish behind an
   outbox; doing so now would have widened the scope.
 
-- **The convenience of "just call chat_management".** Producer
+- **The convenience of "just call chat".** Producer
   modules that publish chat events (notification_management for
   "you were mentioned"; audit_management for "this audit decision
   needs visibility in chat") now take a `chat.Publisher` dep rather
-  than importing `chat_management`. That's the right
+  than importing `chat`. That's the right
   ports-first posture but it costs an extra `optional:"true"` fx
   parameter on every producer. We accept it because the alternative
-  — every chat consumer transitively importing chat_management's
+  — every chat consumer transitively importing chat's
   entities + GORM tags — is what ADR 0009 explicitly forbids.
 
 - **Frontend coupling to the streaming-update convention.** The
@@ -229,7 +229,7 @@ clients catch up from the canonical store when they reconnect.
   runtime-agent publishes an initial event with body="thinking..."
   then successive updates with `SupersedesID=initial.ID` as tokens
   arrive — the user sees one message that grows. The same
-  primitive carries a message edit: chat_management emits the
+  primitive carries a message edit: chat emits the
   edited content as a new event whose `SupersedesID` points at the
   original posted event, and clients update in place rather than
   show "(edited)" as a new line. One concept, two use cases, one
@@ -248,7 +248,7 @@ clients catch up from the canonical store when they reconnect.
 - **Interface Segregation, all the way down.** Modules that only
   publish hold `chat.Publisher` (one method).
   notification_management's future offline-push subscriber will
-  hold `chat.Subscriber`. Only chat_management itself depends on
+  hold `chat.Subscriber`. Only chat itself depends on
   the composite `chat.Service`. The runtime-agent's tools hold
   `chat.Publisher` + `chat.History` because they need both. The
   consumers' dependency graphs stay narrow, the test stubs stay
@@ -259,15 +259,15 @@ clients catch up from the canonical store when they reconnect.
   `ActorKind` (user / guest / bot / system) is the same enum the
   support widget reads to render bot avatars distinctly, the
   audit_management subscriber reads to filter on guest-originated
-  events, and chat_management's domain layer reads to map from
+  events, and chat's domain layer reads to map from
   the stored senderType field. The streaming-update + threading
   conventions are documented in `INTEGRATION.md` once, not
   reinvented per consumer.
 
 - **The slash-command extension point.** `ChatCommandRegistry`
-  (defined in chat_management's `contracts/provides/` —
+  (defined in chat's `contracts/provides/` —
   scheduled for Stage 11C) lets any module contribute commands.
-  `operator_management` will register `/ask` and `/summarize`;
+  `operator` will register `/ask` and `/summarize`;
   audit_management could register `/audit-search`;
   api_key_management could register `/keys` for in-chat
   administration. Each command's handler is governed through the
@@ -328,14 +328,14 @@ clients catch up from the canonical store when they reconnect.
   one fail at boot with `ErrPresenceUnsupported` /
   `ErrHistoryUnsupported`.
 
-- **Canonical-store-first rule** in `chat_management.MessageService.SendMessage`
-  (`chat_management/features/messaging/message_service.go`). The
+- **Canonical-store-first rule** in `chat.MessageService.SendMessage`
+  (`chat/features/messaging/message_service.go`). The
   Postgres write is the success contract; event bus + transport
   failures are logged and swallowed. Tested by
   `TestSendMessage_PublisherErrorDoesNotFailCall`.
 
 - **senderType → ActorKind mapping seam**
-  (`chat_management/features/messaging/message_service.go:senderTypeToActorKind`).
+  (`chat/features/messaging/message_service.go:senderTypeToActorKind`).
   Single function with table-driven coverage. A future contributor
   who adds a new senderType (e.g., "scheduled-bot") MUST extend
   the function or fall through to the safe `ActorKindUser` default.
@@ -373,7 +373,7 @@ clients catch up from the canonical store when they reconnect.
 
 - **Gap — reaction producer.** `ChatReactionAddedEvent` /
   `ChatReactionRemovedEvent` schemas exist; no `ReactionService`
-  is wired in chat_management yet. Tracked under REQ-CHAT-043.
+  is wired in chat yet. Tracked under REQ-CHAT-043.
 
 - **Gap — `RoomService.AddParticipant` is a noop stub.** Pre-existed
   before chat integration; `chat.participant.joined` / `left`
@@ -394,10 +394,10 @@ clients catch up from the canonical store when they reconnect.
 
 - **Gap — no end-to-end integration test.** Each layer has unit
   tests (38+ across the four repos); no test boots Centrifugo +
-  publishes through chat_management.MessageService + asserts a
+  publishes through chat.MessageService + asserts a
   subscriber receives the event. Tracked under REQ-CHAT-046.
 
-- **Gap — operator_management still uses A2UI, not chat.** The
+- **Gap — operator still uses A2UI, not chat.** The
   existing operator chat surface streams typed SurfaceUpdate via
   A2UI rather than chat. Migration would unify the operator
   surface with the support-widget / runtime-agent stack but is a
@@ -428,7 +428,7 @@ in production. Both were closed before this ADR moved to Accepted.
   wired it into the fx graph. In production the optional dep would
   have resolved to nil and the transport-publish path would be
   dead code. Fixed in commit `0f39a964f` on
-  `platformkit-backend-kit`: new `communication/chat/providers/fx.go`
+  `pk-core`: new `communication/chat/providers/fx.go`
   with `Module(cfg)` + `ModuleFromConfigFn(fn)` packages the
   factory call + sub-interface provider boilerplate into a single
   `fx.Option` apps mount with one line. Three new tests pin the
@@ -445,15 +445,15 @@ load-bearing; the secondary gaps are extensions.
 ## References
 
 - Motivating stages:
-  - Stage 8 (`platformkit-backend-kit` `87b6155d1`) — contract package.
-  - Stage 9 (`platformkit-integrations` `3b083e2`) — memory + Centrifugo providers.
-  - Stage 10 (`platformkit-backend-kit` `102dba60b`,
-    `platformkit-integrations` `c4cc8ff`) — ActorKind / guest tokens /
+  - Stage 8 (`pk-core` `87b6155d1`) — contract package.
+  - Stage 9 (the integrations layer `3b083e2`) — memory + Centrifugo providers.
+  - Stage 10 (`pk-core` `102dba60b`,
+    the integrations layer `c4cc8ff`) — ActorKind / guest tokens /
     streaming + threading fields / INTEGRATION.md.
-  - Stage 11A (`platformkit-backend-kit` `86ef2d51d`,
+  - Stage 11A (`pk-core` `86ef2d51d`,
     `pk-modules` `4528a015c`) — event schemas +
     MessageService publish wiring.
-  - Stage 11B (`platformkit-agent-runtime` `80af27c`) — chat tools
+  - Stage 11B (the agent runtime `80af27c`) — chat tools
     (`chat.post_message`, `chat.fetch_history`,
     `chat.summarize_thread`).
 
@@ -462,11 +462,11 @@ load-bearing; the secondary gaps are extensions.
     canonical-store-first pattern we mirror here.
   - [ADR 0009 — Ports-only cross-module communication](./0009-ports-only-cross-module-communication.md) — why
     `chat.Service` lives in `backend-kit/communication/chat/` rather
-    than in `chat_management/contracts/provides/`.
+    than in `chat/contracts/provides/`.
   - [ADR 0017 — fx dependency injection as composition](./0017-fx-dependency-injection-as-composition.md) — the
     `optional:"true"` posture the chat consumer takes.
   - [ADR 0018 — Event contracts are declared](./0018-event-contracts-are-declared.md) — the
-    `chat_management.chat.message_sent` semantic event remains the
+    `chat.chat.message_sent` semantic event remains the
     contract for existing event subscribers; the new transport schemas in
     `events.go` are the wire envelope, not a replacement.
 
@@ -480,6 +480,6 @@ load-bearing; the secondary gaps are extensions.
     federation cost > benefit for SaaS multi-tenant.
 
 - Integration recipes:
-  - `platformkit-backend-kit/communication/chat/INTEGRATION.md` —
+  - `pk-core/communication/chat/INTEGRATION.md` —
     end-to-end patterns for the customer-support widget and the
     runtime-agent bot.

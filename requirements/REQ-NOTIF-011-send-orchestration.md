@@ -145,13 +145,13 @@ as spamming one user with 1000.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/notification_management/features/email_notifications/service_test.go::TestSendEmail_ValidationErrors`. |
-| AC-2 | Test | `modules/platformkit-business-modules/notification_management/features/email_notifications/service_test.go::TestSendEmail_RequiresTenantContext` and `TestSendEmail_UsesTenantFromContextWhenRequestTenantMissing`. |
-| AC-3 | Inspection | `service.go::SendEmail` lines 172–181 — when `channelgate.Enabled` returns false, the function returns `NotificationResponse{Status: "skipped"}` with a Debug log. The gate itself is exercised by `modules/platformkit-business-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_*`. Dedicated end-to-end skipped-response test pending. |
-| AC-4 | Test | `modules/platformkit-business-modules/notification_management/features/email_notifications/service_test.go::TestSendEmail_RateLimitExceeded`. |
-| AC-5 | Test | `modules/platformkit-business-modules/notification_management/features/email_notifications/service_test.go::TestSendEmail_WithTemplate` and `TestSendEmail_TemplateNotFound`. |
-| AC-6 | Test | `modules/platformkit-business-modules/notification_management/features/email_notifications/service_test.go::TestSendEmail_NotificationRepoCreateFails` (persist failure before dispatch) and `TestSendEmail_ProviderFailureMarksNotificationFailed` (transport failure leaves the row with `Status=failed`). |
-| AC-7 | Test | `modules/platformkit-business-modules/notification_management/features/email_notifications/service_test.go::TestSendEmail_PublishesGenericLifecycleEvents` verifies the channel and generic success events; adjacent failure and transactional-outbox tests cover failed dispatch and publication rollback. |
+| AC-1 | Test | `pk-modules/notification_management/features/email_notifications/service_test.go::TestSendEmail_ValidationErrors`. |
+| AC-2 | Test | `pk-modules/notification_management/features/email_notifications/service_test.go::TestSendEmail_RequiresTenantContext` and `TestSendEmail_UsesTenantFromContextWhenRequestTenantMissing`. |
+| AC-3 | Inspection | `service.go::SendEmail` lines 172–181 — when `channelgate.Enabled` returns false, the function returns `NotificationResponse{Status: "skipped"}` with a Debug log. The gate itself is exercised by `pk-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_*`. Dedicated end-to-end skipped-response test pending. |
+| AC-4 | Test | `pk-modules/notification_management/features/email_notifications/service_test.go::TestSendEmail_RateLimitExceeded`. |
+| AC-5 | Test | `pk-modules/notification_management/features/email_notifications/service_test.go::TestSendEmail_WithTemplate` and `TestSendEmail_TemplateNotFound`. |
+| AC-6 | Test | `pk-modules/notification_management/features/email_notifications/service_test.go::TestSendEmail_NotificationRepoCreateFails` (persist failure before dispatch) and `TestSendEmail_ProviderFailureMarksNotificationFailed` (transport failure leaves the row with `Status=failed`). |
+| AC-7 | Test | `pk-modules/notification_management/features/email_notifications/service_test.go::TestSendEmail_PublishesGenericLifecycleEvents` verifies the channel and generic success events; adjacent failure and transactional-outbox tests cover failed dispatch and publication rollback. |
 | AC-8 | Inspection | `service.go::SendEmail`, `service.go::SendInAppNotification`, `service.go::SendSMS`, etc. — each opens with `s.tracer.StartSpan`. |
 
 ## Edge cases & unhappy paths
@@ -215,11 +215,11 @@ as spamming one user with 1000.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/notification_management/features/email_notifications/service.go::SendEmail`.
-- `modules/platformkit-business-modules/notification_management/features/in_app_notifications/service.go::SendInAppNotification`.
-- `modules/platformkit-business-modules/notification_management/features/sms_notifications/service.go::SendSMS`.
-- `modules/platformkit-business-modules/notification_management/features/push_notifications/service.go::SendPushNotification`.
-- `modules/platformkit-business-modules/notification_management/features/whatsapp_notifications/service.go::SendWhatsAppMessage`.
+- `pk-modules/notification_management/features/email_notifications/service.go::SendEmail`.
+- `pk-modules/notification_management/features/in_app_notifications/service.go::SendInAppNotification`.
+- `pk-modules/notification_management/features/sms_notifications/service.go::SendSMS`.
+- `pk-modules/notification_management/features/push_notifications/service.go::SendPushNotification`.
+- `pk-modules/notification_management/features/whatsapp_notifications/service.go::SendWhatsAppMessage`.
 
 ## Related requirements
 

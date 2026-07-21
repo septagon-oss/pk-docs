@@ -1,6 +1,6 @@
 ---
 id: REQ-CHANGE-001
-title: "Every governed mutation flows through change_management with an approval workflow lookup"
+title: "Every governed mutation flows through change with an approval workflow lookup"
 status: Active
 date: 2026-05-10
 slug: req-change-001-change-management-gate
@@ -16,7 +16,7 @@ type: doc
 tags: [requirement, governance, change-management]
 ---
 
-# REQ CHANGE-001 — Every governed mutation flows through change_management with an approval workflow lookup
+# REQ CHANGE-001 — Every governed mutation flows through change with an approval workflow lookup
 
 Status: **Active** (2026-05-10)
 
@@ -24,9 +24,9 @@ Status: **Active** (2026-05-10)
 
 Every producer-side mutation that the platform classifies as governed
 **shall** be submitted via the owner-exported
-`modules/platformkit-business-modules/change_management/contracts/provides/change_service.go::ChangeService.SubmitChange`
+`pk-modules/change/contracts/provides/change_service.go::ChangeService.SubmitChange`
 contract
-before the underlying side effect is applied. The change_management module
+before the underlying side effect is applied. The change module
 **shall** look up the per-`ChangeType` workflow and either:
 
 1. apply the mutation inline (Tier 2 — `AutoApprove=true`, audit-only), or
@@ -83,25 +83,25 @@ the discipline.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Analysis | `modules/platformkit-business-modules/tenant_management/dependencies.go` declares the owner-exported `ChangeService` and `ChangeRegistrar` contracts; `tenant_management/invocations.go` registers the canonical first consumer's provider during composition startup. |
-| AC-2 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_change_routing_test.go::TestDeleteTenantTier1ReturnsPendingApprovalError`. |
-| AC-2 | Inspection | `frontend/platformkit-frontend-kit/renderer/ui/entity_html_handler.go::serveDelete` detects `PendingChangeID()` and returns `202 Accepted`. |
-| AC-3 | Test | `modules/platformkit-business-modules/change_management/features/change_tracking/service_test.go::TestSubmitChangeAutoApproveAppliesInline`. |
-| AC-4 | Test | `modules/platformkit-business-modules/change_management/features/change_tracking/service_test.go::TestDispatcherOnApprovedAppliesViaProvider` covers the approval callback and applied transition. |
-| AC-4 | Inspection | `modules/platformkit-business-modules/change_management/features/change_tracking/dispatcher.go::Dispatcher.OnApproved` calls `MarkApplyFailed` when the producer's `ApplyChange` returns an error. |
-| AC-5 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_change_routing_test.go::TestGovernedTenantMutationsFailClosedWithoutChangeService` covers every public governed tenant mutation; `TestTenantMutationSourceRejectsDirectApplyFallbacks` prevents reintroduction of optional wiring and direct-apply branches. |
+| AC-1 | Analysis | `pk-modules/tenant_management/dependencies.go` declares the owner-exported `ChangeService` and `ChangeRegistrar` contracts; `tenant_management/invocations.go` registers the canonical first consumer's provider during composition startup. |
+| AC-2 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/service_change_routing_test.go::TestDeleteTenantTier1ReturnsPendingApprovalError`. |
+| AC-2 | Inspection | the frontend kit's `renderer/ui/entity_html_handler.go::serveDelete` detects `PendingChangeID()` and returns `202 Accepted`. |
+| AC-3 | Test | `pk-modules/change/features/change_tracking/service_test.go::TestSubmitChangeAutoApproveAppliesInline`. |
+| AC-4 | Test | `pk-modules/change/features/change_tracking/service_test.go::TestDispatcherOnApprovedAppliesViaProvider` covers the approval callback and applied transition. |
+| AC-4 | Inspection | `pk-modules/change/features/change_tracking/dispatcher.go::Dispatcher.OnApproved` calls `MarkApplyFailed` when the producer's `ApplyChange` returns an error. |
+| AC-5 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/service_change_routing_test.go::TestGovernedTenantMutationsFailClosedWithoutChangeService` covers every public governed tenant mutation; `TestTenantMutationSourceRejectsDirectApplyFallbacks` prevents reintroduction of optional wiring and direct-apply branches. |
 
 ## Satisfied by
 
-- (Pending) ADR documenting the change_management gate.
-- `modules/platformkit-business-modules/change_management/contracts/provides/change.go`
+- (Pending) ADR documenting the change gate.
+- `pk-modules/change/contracts/provides/change.go`
   and
-  `modules/platformkit-business-modules/change_management/contracts/provides/change_service.go`
+  `pk-modules/change/contracts/provides/change_service.go`
   — the owner-exported registrar, provider, request, record, and
   submission contracts.
-- `modules/platformkit-business-modules/change_management/` — the gate
+- `pk-modules/change/` — the gate
   implementation.
-- `modules/platformkit-business-modules/audit_management/features/change_approval/` —
+- `pk-modules/audit_management/features/change_approval/` —
   the human-decision surface the gate consumes.
 
 ## Related requirements
@@ -114,8 +114,8 @@ the discipline.
 
 ## References
 
-- `modules/platformkit-business-modules/change_management/contracts/provides/change.go`
+- `pk-modules/change/contracts/provides/change.go`
   and
-  `modules/platformkit-business-modules/change_management/contracts/provides/change_service.go`
+  `pk-modules/change/contracts/provides/change_service.go`
   — owner-exported interface definitions.
-- May 2026 change_management module landing.
+- May 2026 change module landing.

@@ -107,12 +107,12 @@ this same record set.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/auth_provider/handlers_test.go::TestListConnections_FiltersByPurpose`. |
-| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/auth_provider/handlers_test.go::TestDefaultConnection_UsesTenantPort` and `TestDefaultConnection_UsesTenantContextFallback`. |
-| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/auth_provider/handlers_test.go::TestCreateConnection_UsesTenantContextAndCatalog`. |
-| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/auth_provider/handlers_test.go::TestListConnections_RequiresTenantContextWhenNoOverride`. |
-| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/auth_provider/handlers_test.go::TestDisableConnection_PreservesProvisioningStatus`. |
-| AC-6 | Test | `modules/platformkit-business-modules/auth_management/features/auth_provider/handlers_test.go::TestConnection_UsesRuntimeWithConnectionMetadata`. |
+| AC-1 | Test | `pk-modules/auth_management/features/auth_provider/handlers_test.go::TestListConnections_FiltersByPurpose`. |
+| AC-2 | Test | `pk-modules/auth_management/features/auth_provider/handlers_test.go::TestDefaultConnection_UsesTenantPort` and `TestDefaultConnection_UsesTenantContextFallback`. |
+| AC-3 | Test | `pk-modules/auth_management/features/auth_provider/handlers_test.go::TestCreateConnection_UsesTenantContextAndCatalog`. |
+| AC-4 | Test | `pk-modules/auth_management/features/auth_provider/handlers_test.go::TestListConnections_RequiresTenantContextWhenNoOverride`. |
+| AC-5 | Test | `pk-modules/auth_management/features/auth_provider/handlers_test.go::TestDisableConnection_PreservesProvisioningStatus`. |
+| AC-6 | Test | `pk-modules/auth_management/features/auth_provider/handlers_test.go::TestConnection_UsesRuntimeWithConnectionMetadata`. |
 
 ## Edge cases & unhappy paths
 
@@ -162,11 +162,11 @@ this same record set.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/auth_management/features/auth_provider/handlers.go` —
+- `pk-modules/auth_management/features/auth_provider/handlers.go` —
   the admin-CRUD endpoints.
-- `modules/platformkit-business-modules/auth_management/features/auth_provider/auth_provider.go` —
+- `pk-modules/auth_management/features/auth_provider/auth_provider.go` —
   the connection-record types.
-- `modules/platformkit-business-modules/tenant_management/features/identity_connections/service.go` —
+- `pk-modules/tenant_management/features/identity_connections/service.go` —
   the underlying repository.
 
 ## Related requirements

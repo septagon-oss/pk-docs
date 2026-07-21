@@ -129,18 +129,18 @@ and deterministic.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/registration/verification_security_test.go::TestEmailVerificationDigestIsNotProjected` and `resend_verification_test.go::TestResendVerification_ReplacesTokenBeforeDispatch`. |
-| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/registration/resend_verification_test.go::TestResendVerificationUsesDistinctSensitiveDeliveryIntentPerCredential`. |
-| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/registration/register_user_browser_test.go::TestEmailVerificationBrowserFlowRequiresExplicitCSRFProtectedPost`. |
-| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/registration/register_user_browser_test.go::TestEmailVerificationBrowserFlowRequiresExplicitCSRFProtectedPost`; inspection of `register_user_pages.go::newEmailVerificationPageOutput` and `setEmailVerificationPageHeaders` covers both response paths. |
-| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/registration/verification_security_test.go::TestVerifyEmailConcurrentRedemptionHasOneActivationAndOneDurableEvent`. |
-| AC-6 | Test | `modules/platformkit-business-modules/auth_management/features/registration/req_auth_002_test.go::TestVerifyEmail_SingleUse_AndExpiry`, `verify_email_public_semantics_test.go::TestVerifyEmailPublicAPIUsesOneCredentialRejection`, `TestVerifyEmailPublicAPISanitizesOperationalFailure`, and `register_user_browser_test.go::TestEmailVerificationBrowserExpectedRejectionsAreUniformAndTerminal`. |
-| AC-7 | Test | `modules/platformkit-business-modules/user_management/features/user/email_verification_activation_store_test.go::TestEmailVerificationActivationStoreRequiresExactAmbientAuthority` and `TestEmailVerificationActivationStoreJoinsCallerRollback`. |
-| AC-8 | Test | `modules/platformkit-business-modules/user_management/features/user/email_verification_activation_store_test.go::TestEmailVerificationActivationStoreRejectsEveryStaleOrIneligibleState`. |
-| AC-9 | Test | `modules/platformkit-business-modules/auth_management/features/registration/verification_security_test.go::TestVerifyEmailRollsBackCredentialAndActivationWhenDurableEventFails`. |
-| AC-10 | Test | `modules/platformkit-business-modules/auth_management/features/registration/event_contract_test.go::TestEmailVerifiedEventContractIsCanonical` and `TestRegistrationFeatureProjectsEmailVerifiedContractWithoutDrift`. |
-| AC-11 | Test | `modules/platformkit-business-modules/auth_management/features/registration/verification_security_test.go::TestEmailVerificationDigestMigrationIsSecurityIrreversible`. |
-| AC-12 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/legacy_email_verification_schema_test.go::TestAuthenticationFeatureCannotOwnEmailVerificationSchema`. |
+| AC-1 | Test | `pk-modules/auth_management/features/registration/verification_security_test.go::TestEmailVerificationDigestIsNotProjected` and `resend_verification_test.go::TestResendVerification_ReplacesTokenBeforeDispatch`. |
+| AC-2 | Test | `pk-modules/auth_management/features/registration/resend_verification_test.go::TestResendVerificationUsesDistinctSensitiveDeliveryIntentPerCredential`. |
+| AC-3 | Test | `pk-modules/auth_management/features/registration/register_user_browser_test.go::TestEmailVerificationBrowserFlowRequiresExplicitCSRFProtectedPost`. |
+| AC-4 | Test | `pk-modules/auth_management/features/registration/register_user_browser_test.go::TestEmailVerificationBrowserFlowRequiresExplicitCSRFProtectedPost`; inspection of `register_user_pages.go::newEmailVerificationPageOutput` and `setEmailVerificationPageHeaders` covers both response paths. |
+| AC-5 | Test | `pk-modules/auth_management/features/registration/verification_security_test.go::TestVerifyEmailConcurrentRedemptionHasOneActivationAndOneDurableEvent`. |
+| AC-6 | Test | `pk-modules/auth_management/features/registration/req_auth_002_test.go::TestVerifyEmail_SingleUse_AndExpiry`, `verify_email_public_semantics_test.go::TestVerifyEmailPublicAPIUsesOneCredentialRejection`, `TestVerifyEmailPublicAPISanitizesOperationalFailure`, and `register_user_browser_test.go::TestEmailVerificationBrowserExpectedRejectionsAreUniformAndTerminal`. |
+| AC-7 | Test | `pk-modules/user_management/features/user/email_verification_activation_store_test.go::TestEmailVerificationActivationStoreRequiresExactAmbientAuthority` and `TestEmailVerificationActivationStoreJoinsCallerRollback`. |
+| AC-8 | Test | `pk-modules/user_management/features/user/email_verification_activation_store_test.go::TestEmailVerificationActivationStoreRejectsEveryStaleOrIneligibleState`. |
+| AC-9 | Test | `pk-modules/auth_management/features/registration/verification_security_test.go::TestVerifyEmailRollsBackCredentialAndActivationWhenDurableEventFails`. |
+| AC-10 | Test | `pk-modules/auth_management/features/registration/event_contract_test.go::TestEmailVerifiedEventContractIsCanonical` and `TestRegistrationFeatureProjectsEmailVerifiedContractWithoutDrift`. |
+| AC-11 | Test | `pk-modules/auth_management/features/registration/verification_security_test.go::TestEmailVerificationDigestMigrationIsSecurityIrreversible`. |
+| AC-12 | Test | `pk-modules/auth_management/features/authentication/legacy_email_verification_schema_test.go::TestAuthenticationFeatureCannotOwnEmailVerificationSchema`. |
 
 ## Edge cases and explicit limits
 
@@ -188,12 +188,12 @@ and deterministic.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/auth_management/features/registration/register_user_service.go` — hash-only issuance and sensitive delivery.
-- `modules/platformkit-business-modules/auth_management/features/registration/register_user_pages.go` — scanner-safe CSRF browser confirmation.
-- `modules/platformkit-business-modules/auth_management/features/registration/verification_repository.go` — tenant-scoped conditional digest consume.
-- `modules/platformkit-business-modules/user_management/features/user/email_verification_activation_store.go` — exact owner-guarded activation compare-and-swap.
-- `modules/platformkit-business-modules/auth_management/migrations/022_hash_and_atomically_consume_email_verifications.up.sql` — security-irreversible cutover.
-- `modules/platformkit-business-modules/auth_management/contracts/events.go` — canonical typed event contract.
+- `pk-modules/auth_management/features/registration/register_user_service.go` — hash-only issuance and sensitive delivery.
+- `pk-modules/auth_management/features/registration/register_user_pages.go` — scanner-safe CSRF browser confirmation.
+- `pk-modules/auth_management/features/registration/verification_repository.go` — tenant-scoped conditional digest consume.
+- `pk-modules/user_management/features/user/email_verification_activation_store.go` — exact owner-guarded activation compare-and-swap.
+- `pk-modules/auth_management/migrations/022_hash_and_atomically_consume_email_verifications.up.sql` — security-irreversible cutover.
+- `pk-modules/auth_management/contracts/events.go` — canonical typed event contract.
 
 ## Related requirements
 

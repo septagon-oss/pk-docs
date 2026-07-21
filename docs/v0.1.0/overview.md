@@ -1,31 +1,33 @@
 ---
-title: PlatformKit OSS v0.0.0 Overview
-slug: v0-0-0-overview
+title: PlatformKit OSS v0.1.0 Overview
+slug: v0-1-0-overview
 collection: docs
 status: published
 ---
 
-# PlatformKit OSS v0.0.0 Overview
+# PlatformKit OSS v0.1.0 Overview
 
-`v0.0.0` is the first public seed release of PlatformKit OSS. It is a
+`v0.1.0` is the first public release of PlatformKit OSS. It is a
 **Go-native modular SaaS backbone** released under an open-core model:
-the OSS layer is permissively licensed and ships everything required to
-stand up a real multi-tenant application; the Pro layer (released
-separately) embeds the OSS modules and adds harder, more opinionated
-implementations of policy, identity, billing, deployment, and assurance.
+the OSS layer is permissively licensed (Apache-2.0) and ships everything
+required to stand up a real multi-tenant application; the Pro layer
+(released separately) embeds the OSS modules and adds harder, more
+opinionated implementations of policy, identity, billing, deployment,
+and assurance.
 
 This page is the canonical landing point for someone who has just heard
-of PlatformKit and wants to know what is actually in the box at v0.0.0.
+of PlatformKit and wants to know what is actually in the box at v0.1.0.
 
-## What ships in v0.0.0
+## What ships in v0.1.0
 
-PlatformKit OSS v0.0.0 is **ten repositories** that compose into one
+PlatformKit OSS v0.1.0 is **twelve repositories** that compose into one
 runnable application:
 
 | Repo | Role |
 |------|------|
+| [`platformkit`](https://github.com/septagon-oss/platformkit) | The front door: `git clone` + `go run .` boots the full starter SaaS. |
 | `pk-shared` | Small shared primitives: composition, flows, state machines, IDs. |
-| `pk-core` | The framework rules: module composition, registries, authz/entity/mutation/observability contracts. |
+| `pk-core` | The framework rules: module composition, registries, authz/entity/mutation/observability contracts, security primitives. |
 | `pk-design` | Design tokens, themes, component descriptors, and design contribution catalogs. |
 | `pk-runtime` | Host/readiness, guarded HTTP routing, request context, health projection. |
 | `pk-testkit` | Conformance and API flow-test helpers. |
@@ -33,6 +35,7 @@ runnable application:
 | `pk-client` | Typed client primitives. |
 | `pk-tools` | The `pk` CLI: doctor, verify, explain modules. |
 | `pk-apps` | Runnable compositions, including the `starter-saas` monolith. |
+| `pk-deploy` | Vendor-neutral deployment control-plane kernel (releases independently). |
 | `pk-docs` | This documentation portal plus module-doc composition. |
 
 ## The nine-module pack
@@ -60,32 +63,36 @@ The OSS layer defines **contracts** (Go interfaces) and **reference
 implementations** for them. The Pro layer is expected to:
 
 - embed `*Module` constructors from `pk-modules` (no fork),
-- supply harder providers behind the OSS interfaces (e.g. an Argon2id
-  hasher, a per-tenant rate limiter, a real notification fan-out),
+- supply harder providers behind the OSS interfaces (e.g. a
+  Postgres-backed store, enterprise SSO, a real notification fan-out),
 - and add wholly new modules that depend only on declared contracts.
 
-This is described in detail in the
-[Extension Guide](./extension-guide.md).
+The boundary is drawn at the *provider*, never at the *contract*: every
+public interface stays in OSS. This is described in detail in
+[Open Core](./open-core.md).
 
 ## Where to start
 
-- If you want to run something **right now**, jump to
-  the [Starter SaaS tutorial](./starter-saas-tutorial.md).
+- If you want to run something **right now**, jump to the
+  [Quickstart](./quickstart.md).
 - If you want to understand the **shape** of PlatformKit before touching
   code, read [Architecture](./architecture.md).
-- If you are building a Pro extension, start with the
-  [Extension Guide](./extension-guide.md).
+- If you want to build your own module or swap a provider, start with
+  [Add a Module](./add-a-module.md) and [Open Core](./open-core.md).
 - If you are auditing security, read
   [Security Baseline](./security-baseline.md).
-- For the full v0.0.0 change list and what's coming in v0.0.1, see
-  [Release Notes v0.0.0](./release-notes-v0.0.0.md).
+- To change ports, timeouts, or the database, see
+  [Configuration](./configuration.md).
+- For the full v0.1.0 change list, see
+  [Release Notes v0.1.0](./release-notes-v0.1.0.md).
 
-## What v0.0.0 is **not**
+## What v0.1.0 is **not**
 
-- Not production-ready out of the box. The OSS providers are
-  intentionally simple references (e.g. SHA-256 password hashing, in-process
-  notification delivery). Pro and downstream distributions are expected to
-  replace them.
-- Not API-stable. Anything not in `contracts/` is subject to change.
-- Not feature-complete. v0.0.1 will tighten the public surface and
+- Not production-ready out of the box. Some OSS providers are
+  intentionally simple references (e.g. SQLite storage, in-process
+  notification delivery). Pro and downstream distributions are expected
+  to replace them behind the same contracts.
+- Not API-stable. Anything not in a published contract package is
+  subject to change before v1.0.
+- Not feature-complete. v0.2.0 will tighten the public surface and
   promote modules from `experimental` to `core-certified`.

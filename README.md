@@ -1,6 +1,20 @@
 # pk-docs
 
+> Part of [PlatformKit](https://github.com/septagon-oss/platformkit) — the
+> open-source Go backend for multi-tenant SaaS.
+
 Public documentation source for PlatformKit OSS.
+
+## Start here
+
+Reading, not building? Jump straight in:
+
+- [Quickstart](docs/v0.1.0/quickstart.md) — clone, `go run .`, and poke a
+  running multi-tenant SaaS in a few minutes.
+- [Overview](docs/v0.1.0/overview.md) — what is in the box at v0.1.0.
+- [Architecture](docs/v0.1.0/architecture.md) — how modules compose.
+- [Add a Module](docs/v0.1.0/add-a-module.md) — build your own module.
+- [FAQ](docs/v0.1.0/faq.md) — the questions people ask first.
 
 PlatformKit exists to make serious SaaS systems composable without making the
 hard parts informal. The OSS contract should make module boundaries,

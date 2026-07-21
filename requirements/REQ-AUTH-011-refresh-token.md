@@ -101,15 +101,15 @@ token does not preserve stale authority.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestDurableRefreshValidatesConfiguredIssuerAndAudience` plus the malformed and purpose-claim cases in the authentication service suite. |
-| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_migration_test.go::TestDurableRefreshTokenMigrationContainsNoRawBearerColumn` and `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestInitialRememberedIssuanceRegistersDigestBeforeReturn`. |
-| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestDurableRefreshConcurrentRedemptionHasExactlyOneWinner` and `modules/platformkit-business-modules/auth_management/features/authentication/req_auth_001_test.go::TestRefresh_SingleUse_FailsOnReplay`. |
-| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestDurableRefreshSequentialReplayRevokesFamilyAndSession` and `TestDurableRefreshRejectsInactiveRevokedAndMismatchedState`. |
-| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestDurableRefreshRejectsInactiveRevokedAndMismatchedState` and `modules/platformkit-business-modules/auth_management/features/authentication/login_link_membership_test.go::TestRefreshAccessTokenGuestCeilingReplacesOrphanAdminClaim`. |
-| AC-6 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestDurableRefreshDoesNotReturnTokenWhenSessionTouchFails`. |
-| AC-7 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestDurableRefreshIgnoresCacheOutageAndFailsClosedOnLedgerOutage` and `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestRefreshAccessToken_DoesNotTreatCacheAsAuthority`. |
-| AC-8 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestInitialRememberedIssuanceRegistersDigestBeforeReturn`. |
-| AC-9 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestRefreshAccessToken_EmptyToken` and the durable inactive/revoked/mismatch table test. |
+| AC-1 | Test | `pk-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestDurableRefreshValidatesConfiguredIssuerAndAudience` plus the malformed and purpose-claim cases in the authentication service suite. |
+| AC-2 | Test | `pk-modules/auth_management/features/authentication/refresh_token_migration_test.go::TestDurableRefreshTokenMigrationContainsNoRawBearerColumn` and `pk-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestInitialRememberedIssuanceRegistersDigestBeforeReturn`. |
+| AC-3 | Test | `pk-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestDurableRefreshConcurrentRedemptionHasExactlyOneWinner` and `pk-modules/auth_management/features/authentication/req_auth_001_test.go::TestRefresh_SingleUse_FailsOnReplay`. |
+| AC-4 | Test | `pk-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestDurableRefreshSequentialReplayRevokesFamilyAndSession` and `TestDurableRefreshRejectsInactiveRevokedAndMismatchedState`. |
+| AC-5 | Test | `pk-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestDurableRefreshRejectsInactiveRevokedAndMismatchedState` and `pk-modules/auth_management/features/authentication/login_link_membership_test.go::TestRefreshAccessTokenGuestCeilingReplacesOrphanAdminClaim`. |
+| AC-6 | Test | `pk-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestDurableRefreshDoesNotReturnTokenWhenSessionTouchFails`. |
+| AC-7 | Test | `pk-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestDurableRefreshIgnoresCacheOutageAndFailsClosedOnLedgerOutage` and `pk-modules/auth_management/features/authentication/service_test.go::TestRefreshAccessToken_DoesNotTreatCacheAsAuthority`. |
+| AC-8 | Test | `pk-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestInitialRememberedIssuanceRegistersDigestBeforeReturn`. |
+| AC-9 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestRefreshAccessToken_EmptyToken` and the durable inactive/revoked/mismatch table test. |
 | AC-10 | Inspection | Family and JWT tenant IDs must match exactly; tenant change remains owned by REQ-AUTH-017. |
 
 ## Edge cases and unhappy paths

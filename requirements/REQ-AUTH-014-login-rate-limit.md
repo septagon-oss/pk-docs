@@ -104,12 +104,12 @@ from a verification path that did execute.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_RateLimited`. |
-| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_CacheBasedRateLimit` covers the cache-backed counter; the success-resets-counter behaviour is part of the same harness's flow. |
-| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_CacheBasedRateLimit` — cache-backed coverage. |
+| AC-1 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_RateLimited`. |
+| AC-2 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_CacheBasedRateLimit` covers the cache-backed counter; the success-resets-counter behaviour is part of the same harness's flow. |
+| AC-3 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_CacheBasedRateLimit` — cache-backed coverage. |
 | AC-4 | Inspection | `login_rate_limit.go` falls back to a process-local map when `Service.cache` is nil; reviewers verify the fallback path logs the warning. |
-| AC-5 | Inspection | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_MetricsRecorded` covers the metric emission discipline; the rate-limited path uses the same pattern. |
-| AC-6 | Inspection | The HTTP handler mapper at `platformkit-backend-kit/api/errors/mapper.go` keeps 429 distinct (`MapDomainWithMessage(ErrRateLimitExceeded, TooManyRequests, ...)`). |
+| AC-5 | Inspection | `pk-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_MetricsRecorded` covers the metric emission discipline; the rate-limited path uses the same pattern. |
+| AC-6 | Inspection | The HTTP handler mapper at `pk-core/api/errors/mapper.go` keeps 429 distinct (`MapDomainWithMessage(ErrRateLimitExceeded, TooManyRequests, ...)`). |
 
 ## Edge cases & unhappy paths
 
@@ -160,9 +160,9 @@ from a verification path that did execute.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/auth_management/features/authentication/login_rate_limit.go` —
+- `pk-modules/auth_management/features/authentication/login_rate_limit.go` —
   the cache-backed counter + bucket key derivation.
-- `modules/platformkit-business-modules/auth_management/features/authentication/login.go` — the
+- `pk-modules/auth_management/features/authentication/login.go` — the
   verification short-circuit ordering.
 - `infrastructure/cache/` — the shared cache the counter sits
   on top of.

@@ -74,9 +74,11 @@ write-only-in-practice and adds load without adding insight.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Mixed | `audit_management/features/audit_trail/repository.go` (lines 42-58) — exposes `Create`, `Update` (metadata-only with the documented immutability comment), and an explicit "Delete is not permitted" stance. The DB-level immutability trigger is the load-bearing enforcement; reviewers verify the migration that installs it. `repository_test.go` covers Create + retention paths. |
-| AC-2 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/repository_test.go::TestGormAuditRepository_Delete_ReturnsImmutableError` covers tenant-scoped reads and the wrong-tenant deny path. |
-| AC-3 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/handler_filter_test.go::TestBuildAuditFilter_ExtendedFields` covers the combined-filter query path; `service_test.go` covers the service-level composition. |
+| AC-1 | Inspection | `pk-modules/audit_management/features/audit_trail/repository.go` exposes `Create`, metadata-only `Update`, and no application delete operation. |
+| AC-1 | Inspection | `pk-modules/audit_management/migrations/000007_fix_audit_immutability_trigger_column.up.sql` installs the current database-level immutability trigger. |
+| AC-1 | Test | `pk-modules/audit_management/features/audit_trail/repository_test.go::TestGormAuditRepository_Delete_ReturnsImmutableError` proves direct deletion fails closed. |
+| AC-2 | Test | `pk-modules/audit_management/features/audit_trail/repository_test.go::TestGormAuditRepository_Delete_ReturnsImmutableError` covers tenant-scoped reads and the wrong-tenant deny path. |
+| AC-3 | Test | `pk-modules/audit_management/features/audit_trail/handler_filter_test.go::TestBuildAuditFilter_ExtendedFields` covers the combined-filter query path; `service_test.go` covers the service-level composition. |
 | AC-4 | Inspection | Code review of `repository.go`: cross-tenant queries route through the platform-operator code path and the standard tenant scope is preserved for non-operators. |
 
 ## Implements (cross-cutting)
@@ -97,7 +99,7 @@ write-only-in-practice and adds load without adding insight.
   `handler_filter_test.go` — query surface.
 - `audit_management/features/audit_trail/section_renderer.go`,
   `section_renderer_test.go` — admin section.
-- `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go`,
+- `pk-modules/audit_management/features/audit_trail/service_test.go`,
   `table_handler_test.go` — service + table coverage.
 
 ## Related requirements

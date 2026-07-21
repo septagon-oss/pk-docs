@@ -99,7 +99,7 @@ producer code.
   cross-checks against `scripts/module_event_allowlist.txt`, and
   rejects modules with no explicit event surface.
 - **`eventcontract` pkvet analyzer**
-  (`platformkit-backend-kit/analysis/eventcontract`) — the inverse
+  (`pk-core/analysis/eventcontract`) — the inverse
   check: scans every `eventBus.Publish` call and verifies its
   topic appears in some module's declaration list.
 - **`check-module-port-event-audit`** — holistic audit that the
@@ -127,7 +127,7 @@ producer code.
 
 ## References
 
-- `platformkit-backend-kit/app/module/providers/standard/` —
+- `pk-core/app/module/providers/standard/` —
   `WithEvent` helper.
 - `pk-modules/scripts/module_event_allowlist.txt`
   — exemptions.

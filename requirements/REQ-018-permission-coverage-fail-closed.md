@@ -89,10 +89,10 @@ implicit publishing of entity data, ever.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Inspection | `modules/platformkit-business-modules/admin_management/surface_renderer_provider.go::permissionResolverParams, newPlatformPermissionResolver` aggregates per-module `entity_permissions` declarations. Producers populate the group via their own `module.go` / `feature.go` wiring; the contract is exercised every time the platform boots. |
-| AC-2 | Inspection | `modules/platformkit-business-modules/admin_management/surface_renderer_provider.go::validatePlatformPermissionCoverage` calls `ports.ValidatePermissionCoverage` and returns a wrapped error that crashes the fx graph. |
-| AC-3 | Inspection | `modules/platformkit-business-modules/admin_management/surface_renderer_provider.go::newCompilerTierSurfaceRenderer` requires a `ports.PermissionResolver` parameter; a nil resolver causes the fx graph to refuse construction. |
-| AC-4 | Test | The renderer's per-permission gate is exercised through the surface-renderer adaptive layer; per-module permission declarations are unit-tested at the producer module (e.g. `modules/platformkit-business-modules/content_management/surface_row_source_test.go::TestArticleSurfaceRowSourceIncludesTypeColumn` exercises the column projection consumed by the gate). **Verification gap: a dedicated permission-denied-on-deny test against the renderer is pending.** |
+| AC-1 | Inspection | `pk-modules/admin_management/surface_renderer_provider.go::permissionResolverParams, newPlatformPermissionResolver` aggregates per-module `entity_permissions` declarations. Producers populate the group via their own `module.go` / `feature.go` wiring; the contract is exercised every time the platform boots. |
+| AC-2 | Inspection | `pk-modules/admin_management/surface_renderer_provider.go::validatePlatformPermissionCoverage` calls `ports.ValidatePermissionCoverage` and returns a wrapped error that crashes the fx graph. |
+| AC-3 | Inspection | `pk-modules/admin_management/surface_renderer_provider.go::newCompilerTierSurfaceRenderer` requires a `ports.PermissionResolver` parameter; a nil resolver causes the fx graph to refuse construction. |
+| AC-4 | Test | The renderer's per-permission gate is exercised through the surface-renderer adaptive layer; per-module permission declarations are unit-tested at the producer module (e.g. `pk-modules/content_management/surface_row_source_test.go::TestArticleSurfaceRowSourceIncludesTypeColumn` exercises the column projection consumed by the gate). **Verification gap: a dedicated permission-denied-on-deny test against the renderer is pending.** |
 | AC-5 | Inspection | The renderer's fail-closed default is the negative branch in `surfacerender.CompilerTierRenderer`. Boot-time coverage validation (AC-2) ensures this path is unreachable in a correctly-configured deployment, but the runtime guard remains. **Verification gap: a dedicated test that bypasses boot validation and asserts runtime fail-closed is pending.** |
 
 ## Implements (cross-cutting)
@@ -112,9 +112,9 @@ implicit publishing of entity data, ever.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/admin_management/surface_renderer_provider.go` —
+- `pk-modules/admin_management/surface_renderer_provider.go` —
   resolver composition + boot-time coverage validation.
-- `modules/platformkit-business-modules/ports/permissions.go` —
+- `pk-modules/ports/permissions.go` —
   `EntityReadPermissions`, `AggregatePermissionResolver`, and
   `ValidatePermissionCoverage` primitives.
 - Per-module `entity_permissions` group contributions in each

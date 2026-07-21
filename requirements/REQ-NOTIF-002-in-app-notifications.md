@@ -61,9 +61,9 @@ record persistence is what makes mark-as-read meaningful per user.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/notification_management/features/in_app_notifications/service_test.go::TestNewService` covers tenant + user scoping on writes and reads. |
+| AC-1 | Test | `pk-modules/notification_management/features/in_app_notifications/service_test.go::TestNewService` covers tenant + user scoping on writes and reads. |
 | AC-2 | Inspection | `service.go:160-163` — channelgate check before persistence. |
-| AC-3 | Test | `modules/platformkit-business-modules/notification_management/features/in_app_notifications/service_test.go::TestNewService` + `api_test.go` cover event emission paths. |
+| AC-3 | Test | `pk-modules/notification_management/features/in_app_notifications/service_test.go::TestNewService` + `api_test.go` cover event emission paths. |
 
 ## Implements (cross-cutting)
 
@@ -72,12 +72,12 @@ record persistence is what makes mark-as-read meaningful per user.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/notification_management/features/in_app_notifications/feature.go`
-- `modules/platformkit-business-modules/notification_management/features/in_app_notifications/api.go`,
+- `pk-modules/notification_management/features/in_app_notifications/feature.go`
+- `pk-modules/notification_management/features/in_app_notifications/api.go`,
   `api_test.go`
-- `modules/platformkit-business-modules/notification_management/features/in_app_notifications/service.go`,
+- `pk-modules/notification_management/features/in_app_notifications/service.go`,
   `service_test.go`
-- `modules/platformkit-business-modules/notification_management/features/in_app_notifications/handler.go`
+- `pk-modules/notification_management/features/in_app_notifications/handler.go`
 
 ## Related requirements
 

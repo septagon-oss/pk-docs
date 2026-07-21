@@ -75,8 +75,8 @@ downstream subscriber a uniform hook.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/notification_management/features/email_notifications/service_test.go::TestIsValidEmail` covers the happy-path send + persistence + event emission. |
-| AC-2 | Test | `modules/platformkit-business-modules/notification_management/features/email_notifications/service_test.go::TestIsValidEmail` covers `validateEmailRequest` rejection paths. |
+| AC-1 | Test | `pk-modules/notification_management/features/email_notifications/service_test.go::TestIsValidEmail` covers the happy-path send + persistence + event emission. |
+| AC-2 | Test | `pk-modules/notification_management/features/email_notifications/service_test.go::TestIsValidEmail` covers `validateEmailRequest` rejection paths. |
 | AC-3 | Inspection | `service.go:172-181` — channelgate check returns the `"skipped"` response shape. |
 | AC-4 | Inspection | `service.go:184-186` — `checkRateLimit` is called before persistence. |
 
@@ -90,16 +90,16 @@ downstream subscriber a uniform hook.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/notification_management/features/email_notifications/feature.go`
-- `modules/platformkit-business-modules/notification_management/features/email_notifications/api.go`,
+- `pk-modules/notification_management/features/email_notifications/feature.go`
+- `pk-modules/notification_management/features/email_notifications/api.go`,
   `api_test.go`
-- `modules/platformkit-business-modules/notification_management/features/email_notifications/service.go`,
+- `pk-modules/notification_management/features/email_notifications/service.go`,
   `service_test.go`
-- `modules/platformkit-business-modules/notification_management/features/email_notifications/email_provider.go`,
+- `pk-modules/notification_management/features/email_notifications/email_provider.go`,
   `email_provider_test.go`
-- `modules/platformkit-business-modules/notification_management/features/email_notifications/handler.go`,
+- `pk-modules/notification_management/features/email_notifications/handler.go`,
   `routes.go`, `permissions.go`
-- `modules/platformkit-business-modules/notification_management/internal/channelgate/` — channel-toggle helper.
+- `pk-modules/notification_management/internal/channelgate/` — channel-toggle helper.
 
 ## Related requirements
 

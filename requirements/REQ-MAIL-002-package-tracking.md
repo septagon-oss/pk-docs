@@ -13,8 +13,8 @@ satisfied_by:
   conventions: [C-04, C-14]
 implements_cross_cutting: [REQ-001, REQ-004]
 type: doc
-tags: [requirement, feature, mail_management]
-module: mail_management
+tags: [requirement, feature, mail]
+module: mail
 feature: package_tracking
 ---
 
@@ -63,9 +63,9 @@ notifications real-time as state changes.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/mail_management/features/package_tracking/service_test.go::TestLogPackage_EmitsEvent` covers the LogPackage tenant-assignment path. |
-| AC-2 | Test | `modules/platformkit-business-modules/mail_management/features/package_tracking/service_test.go::TestLogPackage_EmitsEvent` covers default-status / received-at assignment. |
-| AC-3 | Test | `modules/platformkit-business-modules/mail_management/features/package_tracking/service_test.go::TestLogPackage_EmitsEvent` covers the CollectPackage transition + event emission via the recording event bus. |
+| AC-1 | Test | `pk-modules/mail/features/package_tracking/service_test.go::TestLogPackage_EmitsEvent` covers the LogPackage tenant-assignment path. |
+| AC-2 | Test | `pk-modules/mail/features/package_tracking/service_test.go::TestLogPackage_EmitsEvent` covers default-status / received-at assignment. |
+| AC-3 | Test | `pk-modules/mail/features/package_tracking/service_test.go::TestLogPackage_EmitsEvent` covers the CollectPackage transition + event emission via the recording event bus. |
 
 ## Implements (cross-cutting)
 
@@ -74,10 +74,10 @@ notifications real-time as state changes.
 
 ## Satisfied by
 
-- `mail_management/features/package_tracking/feature.go`
-- `mail_management/features/package_tracking/service.go`,
+- `mail/features/package_tracking/feature.go`
+- `mail/features/package_tracking/service.go`,
   `service_test.go`
-- `mail_management/features/package_tracking/handler.go`,
+- `mail/features/package_tracking/handler.go`,
   `routes.go`, `permissions.go`
 
 ## Related requirements

@@ -74,9 +74,9 @@ access; the trail proves it was intentional.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `core/platformkit-backend-kit/app/appcontext/cross_tenant_test.go::TestWithExpectedCrossTenantAccess_RejectsEmptyReason` |
+| AC-1 | Test | `pk-core/app/appcontext/cross_tenant_test.go::TestWithExpectedCrossTenantAccess_RejectsEmptyReason` |
 | AC-2 | Inspection | Code-review checklist + planned `pkvet` analyzer that flags empty-string reason calls. |
-| AC-3 | Test | `core/platformkit-backend-kit/core/entity/repository/gorm_tenant_test.go::TestScopedDB_HonoursCrossTenantMarker` |
+| AC-3 | Test | `pk-core/core/entity/repository/gorm_tenant_test.go::TestScopedDB_HonoursCrossTenantMarker` |
 | AC-4 | Inspection | The cross-tenant reason propagates from the request context to the audit row through the standard enrichment path documented in REQ-AUDIT-010 AC-1. **Verification gap: a dedicated `TestAuditEvent_CarriesCrossTenantReason` covering the field-propagation path is pending.** |
 
 ## Satisfied by
@@ -84,11 +84,11 @@ access; the trail proves it was intentional.
 - [ADR 0009 — Ports-only cross-module communication](../adr/0009-ports-only-cross-module-communication.md) —
   the architectural decision that frames the persistence boundary
   this REQ fortifies.
-- `platformkit-backend-kit/app/appcontext/cross_tenant.go` — the
+- `pk-core/app/appcontext/cross_tenant.go` — the
   labelled marker API.
-- `platformkit-backend-kit/core/entity/repository/gorm_authz.go` —
+- `pk-core/core/entity/repository/gorm_authz.go` —
   the persistence-layer honour of the marker.
-- `modules/platformkit-business-modules/auth_management/features/authentication/login_service.go`,
+- `pk-modules/auth_management/features/authentication/login_service.go`,
   `login_resolution.go`, `login_2fa.go` — representative callers.
 
 ## Compliance traceability

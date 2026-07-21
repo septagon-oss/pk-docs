@@ -11,7 +11,7 @@ authoring: authored
 # 07 — Deployment View
 
 PlatformKit ships two canonical deployment topologies. Both live in
-`platformkit-apps`, both compose from the same
+`pk-apps`, both compose from the same
 `flagship-coworking` module set, and both produce the same
 runtime contract. The difference is how the modules talk to each
 other.
@@ -121,7 +121,7 @@ race.
 ## Observability stack
 
 **Logs.** Structured JSON through the
-`platformkit-backend-kit/observability/logger` contract. Every
+`pk-core/observability/logger` contract. Every
 log line carries `trace_id`, `tenant_id`, `module`, `level`.
 Log level follows the semantics in
 [ADR 0005](../adr/0005-error-handling-discipline.md).
@@ -149,7 +149,7 @@ interface.
 
 | Artifact | Location | Purpose |
 |---|---|---|
-| Monolith binary | built by `platformkit-apps/complete-saas-monolith` | one-binary deploy |
+| Monolith binary | built by `pk-apps/complete-saas-monolith` | one-binary deploy |
 | Per-module microservice binaries | built per module in the microservices app | isolated deploys |
 | Container images | built via GitHub Actions workflows per repo | container runtimes |
 | Pulumi stacks | `platformkit-infra-pulumi/` | infra catalog + blueprints |

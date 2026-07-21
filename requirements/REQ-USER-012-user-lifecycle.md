@@ -117,12 +117,12 @@ the audit ledger is uniform.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/user_management/features/user/service_test.go::TestService_Activate` (success + failure + metric assertions). |
-| AC-2 | Test | `modules/platformkit-business-modules/user_management/features/user/service_test.go::TestService_Deactivate` and `TestService_DeactivateUser` (both emit `user.deactivate`; only the variant carries `reason`). |
-| AC-3 | Test | `modules/platformkit-business-modules/user_management/features/user/service_test.go::TestService_Suspend` (success: reason in metadata; failure: error + reason in metadata). |
-| AC-4 | Test | `modules/platformkit-business-modules/user_management/features/user/service_test.go::TestService_Unsuspend` and `TestService_ReactivateUser` (success + failure paths). |
+| AC-1 | Test | `pk-modules/user_management/features/user/service_test.go::TestService_Activate` (success + failure + metric assertions). |
+| AC-2 | Test | `pk-modules/user_management/features/user/service_test.go::TestService_Deactivate` and `TestService_DeactivateUser` (both emit `user.deactivate`; only the variant carries `reason`). |
+| AC-3 | Test | `pk-modules/user_management/features/user/service_test.go::TestService_Suspend` (success: reason in metadata; failure: error + reason in metadata). |
+| AC-4 | Test | `pk-modules/user_management/features/user/service_test.go::TestService_Unsuspend` and `TestService_ReactivateUser` (success + failure paths). |
 | AC-5 | Inspection | `service_lifecycle.go` — every method opens with `s.tracer.StartSpan(ctx, "user_service.<Name>")`. |
-| AC-6 | Test | `modules/platformkit-business-modules/user_management/features/user/service_test.go::TestNewService` — the test setup omits the metrics dependency in nil-metric sub-cases. |
+| AC-6 | Test | `pk-modules/user_management/features/user/service_test.go::TestNewService` — the test setup omits the metrics dependency in nil-metric sub-cases. |
 | AC-7 | Inspection | `service_lifecycle.go::Activate`, `Unsuspend`, `ReactivateUser` — no `reason` parameter. |
 
 ## Edge cases & unhappy paths
@@ -185,8 +185,8 @@ the audit ledger is uniform.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/user_management/features/user/service_lifecycle.go::Activate, Deactivate, Suspend, Unsuspend, ReactivateUser, DeactivateUser` — the per-transition orchestration.
-- `modules/platformkit-business-modules/user_management/features/user/service_audit.go::createAuditEvent` — audit emission helper.
+- `pk-modules/user_management/features/user/service_lifecycle.go::Activate, Deactivate, Suspend, Unsuspend, ReactivateUser, DeactivateUser` — the per-transition orchestration.
+- `pk-modules/user_management/features/user/service_audit.go::createAuditEvent` — audit emission helper.
 
 ## Related requirements
 

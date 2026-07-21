@@ -99,16 +99,16 @@ markers improve immediacy but cannot undo or substitute for this boundary.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/logout_security_test.go::TestLogoutDerivesRealUserFromVerifiedToken` and `TestLogoutRejectsForgedToken`. |
-| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestBrowserLogoutWithoutRefreshTokenRevokesDurableFamilyDuringCacheOutage` and `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestLogout_DoesNotTrustSubmittedRefreshToken`. |
-| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/logout_security_test.go::TestLogoutEverywhereIsolatesUsers`. |
-| AC-4 | Test | `core/platformkit-backend-kit/security/authn/jwt_middleware_access_session_test.go::TestJWTMiddlewareAccessVerifierFailuresFailClosed` plus auth-management access-session verifier tests exercise inactive, mismatched, unavailable, and parser-cache paths. |
-| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestBrowserLogoutWithoutRefreshTokenRevokesDurableFamilyDuringCacheOutage`. |
-| AC-6 | Inspection | `modules/platformkit-business-modules/auth_management/features/authentication/logout.go` commits the local mutation before calling `AuthProvider.Logout` and logs provider failure at warning severity. |
-| AC-7 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/logout_browser_test.go::TestHandleLogoutBrowser_LogoutEverywhereUsesExistingLogoutFlow` plus browser logout cases cover invalid-session cleanup and cookie deletion. |
-| AC-8 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestLogout_WithLogoutEverywhere_ReturnsErrorWhenSessionRevocationFails` plus refresh/session mutation cases inject write failure; production requires the atomic mutation runner at startup. |
-| AC-9 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/logout_security_test.go::TestSingleLogoutRevokesOnlyPresentedSession` and `TestLogoutEverywhereIsolatesUsers`. |
-| AC-10 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_migration_test.go::TestDurableRefreshTokenMigrationContainsNoRawBearerColumn`. |
+| AC-1 | Test | `pk-modules/auth_management/features/authentication/logout_security_test.go::TestLogoutDerivesRealUserFromVerifiedToken` and `TestLogoutRejectsForgedToken`. |
+| AC-2 | Test | `pk-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestBrowserLogoutWithoutRefreshTokenRevokesDurableFamilyDuringCacheOutage` and `pk-modules/auth_management/features/authentication/service_test.go::TestLogout_DoesNotTrustSubmittedRefreshToken`. |
+| AC-3 | Test | `pk-modules/auth_management/features/authentication/logout_security_test.go::TestLogoutEverywhereIsolatesUsers`. |
+| AC-4 | Test | `pk-core/security/authn/jwt_middleware_access_session_test.go::TestJWTMiddlewareAccessVerifierFailuresFailClosed` plus auth-management access-session verifier tests exercise inactive, mismatched, unavailable, and parser-cache paths. |
+| AC-5 | Test | `pk-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestBrowserLogoutWithoutRefreshTokenRevokesDurableFamilyDuringCacheOutage`. |
+| AC-6 | Inspection | `pk-modules/auth_management/features/authentication/logout.go` commits the local mutation before calling `AuthProvider.Logout` and logs provider failure at warning severity. |
+| AC-7 | Test | `pk-modules/auth_management/features/authentication/logout_browser_test.go::TestHandleLogoutBrowser_LogoutEverywhereUsesExistingLogoutFlow` plus browser logout cases cover invalid-session cleanup and cookie deletion. |
+| AC-8 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestLogout_WithLogoutEverywhere_ReturnsErrorWhenSessionRevocationFails` plus refresh/session mutation cases inject write failure; production requires the atomic mutation runner at startup. |
+| AC-9 | Test | `pk-modules/auth_management/features/authentication/logout_security_test.go::TestSingleLogoutRevokesOnlyPresentedSession` and `TestLogoutEverywhereIsolatesUsers`. |
+| AC-10 | Test | `pk-modules/auth_management/features/authentication/refresh_token_migration_test.go::TestDurableRefreshTokenMigrationContainsNoRawBearerColumn`. |
 
 ## Edge cases and unhappy paths
 
@@ -157,7 +157,7 @@ markers improve immediacy but cannot undo or substitute for this boundary.
 - `auth_management/features/authentication/logout.go`
 - `auth_management/features/authentication/refresh_token_store.go`
 - `auth_management/features/authentication/access_session_verifier.go`
-- `platformkit-backend-kit/security/authn/jwt_middleware.go`
+- `pk-core/security/authn/jwt_middleware.go`
 - `auth_management/migrations/019_create_durable_refresh_token_families.up.sql`
 
 ## Related requirements

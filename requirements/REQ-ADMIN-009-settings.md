@@ -54,9 +54,9 @@ them uniformly.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/admin_management/features/settings/resolver_test.go::TestReset_IsIdempotent`. |
-| AC-2 | Inspection | `modules/platformkit-business-modules/admin_management/features/settings/handler.go::HandleUpdateGeneralSettings` exposes the tenant-scoped write path; exhaustive declared-schema validation coverage remains a documented gap. |
-| AC-3 | Test | `modules/platformkit-business-modules/admin_management/features/settings/section_renderer_test.go::TestRenderModuleSettingsCard_PerFieldSourceBadges`. |
+| AC-1 | Test | `pk-modules/admin_management/features/settings/resolver_test.go::TestReset_IsIdempotent`. |
+| AC-2 | Inspection | `pk-modules/admin_management/features/settings/handler.go::HandleUpdateGeneralSettings` exposes the tenant-scoped write path; exhaustive declared-schema validation coverage remains a documented gap. |
+| AC-3 | Test | `pk-modules/admin_management/features/settings/section_renderer_test.go::TestRenderModuleSettingsCard_PerFieldSourceBadges`. |
 
 ## Implements (cross-cutting)
 

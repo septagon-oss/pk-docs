@@ -79,10 +79,10 @@ recovery-window during which stale data is visible.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestIsTenantActive` covers create / archive / delete and asserts the corresponding events are published. |
-| AC-2 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/tenant_domain_alias_repository_test.go::TestReconcile_InsertsNewHosts` exercises the alias-lookup paths against the in-memory repository. |
-| AC-3 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestIsTenantActive` covers the `ArchiveTenant` → `RestoreTenant` round-trip; the hard-delete-after-retention guard is the documented gap. |
-| AC-4 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/tenant_domain_alias_repository_test.go::TestReconcile_InsertsNewHosts` covers alias-collision rejection. |
+| AC-1 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestIsTenantActive` covers create / archive / delete and asserts the corresponding events are published. |
+| AC-2 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/tenant_domain_alias_repository_test.go::TestReconcile_InsertsNewHosts` exercises the alias-lookup paths against the in-memory repository. |
+| AC-3 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestIsTenantActive` covers the `ArchiveTenant` → `RestoreTenant` round-trip; the hard-delete-after-retention guard is the documented gap. |
+| AC-4 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/tenant_domain_alias_repository_test.go::TestReconcile_InsertsNewHosts` covers alias-collision rejection. |
 
 ## Implements (cross-cutting)
 
@@ -95,14 +95,14 @@ recovery-window during which stale data is visible.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/feature.go` — wiring.
-- `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service.go`,
+- `pk-modules/tenant_management/features/tenant_lifecycle/feature.go` — wiring.
+- `pk-modules/tenant_management/features/tenant_lifecycle/service.go`,
   `service_test.go`, `service_child_entities.go` — domain logic.
-- `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/tenant_domain_alias_repository.go`,
+- `pk-modules/tenant_management/features/tenant_lifecycle/tenant_domain_alias_repository.go`,
   `tenant_domain_alias_repository_test.go` — host-alias resolver.
-- `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/handler.go`,
+- `pk-modules/tenant_management/features/tenant_lifecycle/handler.go`,
   `routes.go`, `permissions.go` — HTTP surface.
-- `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/section_renderer.go` —
+- `pk-modules/tenant_management/features/tenant_lifecycle/section_renderer.go` —
   admin section rendering.
 
 ## Related requirements

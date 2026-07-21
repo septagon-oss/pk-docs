@@ -120,13 +120,13 @@ because it includes the cookie-clearing handshake.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestGetUserSessions_Success`. |
+| AC-1 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestGetUserSessions_Success`. |
 | AC-2 | Inspection | `service_test.go::TestRevokeSession_*` covers the targeted-revoke path. _Verification gap: pending — cited evidence is prose / pattern / non-Go and cannot be auto-resolved._ |
-| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestRevokeSession_CannotRevokeCurrentSession`. |
-| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestRevokeSession_SessionNotFound`. |
-| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestSwitchTenantSession_GeneratesSessionTokenWithoutProviderSession`. |
+| AC-3 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestRevokeSession_CannotRevokeCurrentSession`. |
+| AC-4 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestRevokeSession_SessionNotFound`. |
+| AC-5 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestSwitchTenantSession_GeneratesSessionTokenWithoutProviderSession`. |
 | AC-6 | Inspection | The `SwitchTenantSession` request validation enforces membership; reviewers verify the uniform-error shape. |
-| AC-7 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestGetActiveSessionsCount_Success` + `TestGetSessionStatistics_Success`. |
+| AC-7 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestGetActiveSessionsCount_Success` + `TestGetSessionStatistics_Success`. |
 
 ## Edge cases & unhappy paths
 
@@ -176,13 +176,13 @@ because it includes the cookie-clearing handshake.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/auth_management/features/authentication/login_session.go` —
+- `pk-modules/auth_management/features/authentication/login_session.go` —
   the session-mutation helpers.
-- `modules/platformkit-business-modules/auth_management/features/authentication/session.go` — the
+- `pk-modules/auth_management/features/authentication/session.go` — the
   revoke / switch surface.
-- `modules/platformkit-business-modules/auth_management/features/authentication/stats_handler.go` —
+- `pk-modules/auth_management/features/authentication/stats_handler.go` —
   the aggregate-statistics surface.
-- `modules/platformkit-business-modules/auth_management/features/authentication/repository.go` —
+- `pk-modules/auth_management/features/authentication/repository.go` —
   the persistence layer.
 
 ## Related requirements

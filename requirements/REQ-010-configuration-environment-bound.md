@@ -80,10 +80,10 @@ would drift across environments and tenants.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Inspection | Code-review checklist over `modules/platformkit-business-modules/infrastructure/module.go` (provider selection via `cfg.GetServiceProvider(...)`), `modules/platformkit-business-modules/auth_management/features/authentication/feature.go` (service config from `cfg`), and `modules/platformkit-business-modules/auth_management/features/authentication/login_service.go` (callback URL derived from `config.BaseURL`, not literal host secrets). |
+| AC-1 | Inspection | Code-review checklist over `pk-modules/infrastructure/module.go` (provider selection via `cfg.GetServiceProvider(...)`), `pk-modules/auth_management/features/authentication/feature.go` (service config from `cfg`), and `pk-modules/auth_management/features/authentication/login_service.go` (callback URL derived from `config.BaseURL`, not literal host secrets). |
 | AC-2 | Inspection | CI workflow runs `gitleaks detect` and/or `trufflehog git file://.` with fail-on-findings policy; reviewers confirm no verified secret findings before release. _Verification gap: when the CI workflow file lands in-repo, link this row to its file path._ |
-| AC-3 | Inspection | Review `platformkit-backend-kit/infrastructure/config/interfaces.go`, `platformkit-backend-kit/infrastructure/config/providers/viper/loader.go`, and `platformkit-backend-kit/infrastructure/config/registry.go` to confirm provider abstraction and swappable provider wiring through `providers/`. |
-| AC-4 | Inspection | Review test helpers and defaults in `platformkit-backend-kit/infrastructure/config/builder_test.go`, `platformkit-backend-kit/infrastructure/config/providers/viper/loader_env_test.go`, and `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go` (`defaultTestService`, `testutil.*`) to confirm override-friendly test configuration. |
+| AC-3 | Inspection | Review `pk-core/infrastructure/config/interfaces.go`, `pk-core/infrastructure/config/providers/viper/loader.go`, and `pk-core/infrastructure/config/registry.go` to confirm provider abstraction and swappable provider wiring through `providers/`. |
+| AC-4 | Inspection | Review test helpers and defaults in `pk-core/infrastructure/config/builder_test.go`, `pk-core/infrastructure/config/providers/viper/loader_env_test.go`, and `pk-modules/auth_management/features/authentication/service_test.go` (`defaultTestService`, `testutil.*`) to confirm override-friendly test configuration. |
 
 ## Satisfied by
 
@@ -91,7 +91,7 @@ would drift across environments and tenants.
   codifies explicit runtime failure behaviour when required
   configuration is missing or invalid, rather than silently continuing
   with hidden literals.
-- `platformkit-backend-kit/infrastructure/config/` — canonical
+- `pk-core/infrastructure/config/` — canonical
   environment-bound configuration surface, including provider
   abstractions, runtime validation, and typed access.
 

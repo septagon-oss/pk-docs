@@ -24,7 +24,7 @@ gave up", "what we kept", "how we enforce it". Index at
 *convention*.
 
 **Admin shell.** The canonical administrative UI container
-rendered by `platformkit-frontend-kit/components/organisms/admin_shell`.
+rendered by the frontend kit's `components/organisms/admin_shell`.
 Business modules contribute surface metadata — routes, labels,
 capabilities — and the shell composes them.
 
@@ -51,7 +51,7 @@ component JSON files, and 55 icon SVGs. See
 [ADR 0022](../adr/0022-pkds-cue-authored-design-system-pipeline.md).
 
 **Business module.** A self-contained vertical slice under the full
-distribution's `modules/platformkit-business-modules/<name>/`: DB schema,
+distribution's `pk-modules/<name>/`: DB schema,
 domain logic, HTTP API, admin UI, and declared contracts. The public
 `pk-modules/pkg/<name>` packages are smaller reference implementations of the
 same boundary. Synonym of *module* when no ambiguity with fx's or Go's use of
@@ -69,7 +69,7 @@ does not duplicate this catalog. See
 2026-04-17) that consumes a PlatformKit `brand-context.tgz` as
 its brand context and produces handoff bundles that PKDS applies
 via `pkds handoff receive`. Integration via
-`platformkit-design-system/pkds/internal/emit/claudedesign` and
+the design system's `pkds/internal/emit/claudedesign` and
 `internal/handoff/`.
 
 **Contract (cross-module).** The interfaces a module exposes to
@@ -109,7 +109,7 @@ shapes. See
 ## E
 
 **Emitter (PKDS).** A Go package under
-`platformkit-design-system/pkds/internal/emit/<target>/` that
+the design system's `pkds/internal/emit/<target>/` that
 implements `Emit(ir pkds.IR) (Artifact, error)` for one
 downstream target (claude-design, mobile, storybook, etc.).
 
@@ -119,7 +119,7 @@ undeclared event is a CI failure. See
 [ADR 0018](../adr/0018-event-contracts-are-declared.md).
 
 **Event bus.** The interface `event.EventBus` provided by
-`platformkit-backend-kit/app/event`. In-process in the monolith;
+`pk-core/app/event`. In-process in the monolith;
 NATS-backed in microservices.
 
 **Experimental.** The fast-moving module tier. No preset
@@ -215,19 +215,19 @@ drained by a worker to the bus. See
 ## P
 
 **PKDS.** PlatformKit Design System — the `pkds/` subpackage of
-`platformkit-design-system` that is the single source of truth
+the design system that is the single source of truth
 for every design token, component contract, theme, experience,
 and icon. See
 [ADR 0022](../adr/0022-pkds-cue-authored-design-system-pipeline.md).
 
-**pkvet.** `platformkit-backend-kit/cmd/pkvet` — the aggregated
+**pkvet.** `pk-core/cmd/pkvet` — the aggregated
 `go vet` analyzer bundle for PlatformKit. Runs via
 `make check-pkvet`. Hosts `safeerror`, `importboundary`,
 `contractvar`, `interopimport`, `accesscontract`,
 `eventcontract`, `buildtags`.
 
 **Port.** An interface in the full distribution's
-`modules/platformkit-business-modules/ports/` that cross-module calls flow
+`pk-modules/ports/` that cross-module calls flow
 through. A module's provider contract lives in `contracts/provides/`. Public
 reference packages expose their OSS-facing interfaces from the package itself.
 See
@@ -287,7 +287,7 @@ outline, ghost, link). See
 [ADR 0022](../adr/0022-pkds-cue-authored-design-system-pipeline.md)
 R003.
 
-**Typed Tailwind DSL.** The `platformkit-design-system/tw/`
+**Typed Tailwind DSL.** The the design system's `tw/`
 package that compiles typed token values to Tailwind utility
 strings. Every utility class in the platform comes from this DSL.
 See [ADR 0004](../adr/0004-typed-design-token-dsl.md).

@@ -131,13 +131,13 @@ batch already made progress.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestArchiveAuditEvents_Success` (mark-and-persist) and `TestArchiveAuditEvents_EmptyResults`. |
-| AC-2 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestArchiveAuditEvents_PartialUpdateFailure` and `TestArchiveAuditEvents_QueryError`. |
+| AC-1 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestArchiveAuditEvents_Success` (mark-and-persist) and `TestArchiveAuditEvents_EmptyResults`. |
+| AC-2 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestArchiveAuditEvents_PartialUpdateFailure` and `TestArchiveAuditEvents_QueryError`. |
 | AC-3 | Inspection | `service.go::ArchiveAuditEvents` lines 450–452 — `s.metrics.Inc(ctx, "audit.events.archived", nil)` runs after the per-row loop regardless of per-row failures. Dedicated counter-increment test pending. |
-| AC-4 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestCleanupExpiredEvents_RetentionDisabled` — Info log + nil return when `Enabled = false`. |
-| AC-5 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestCleanupExpiredEvents_RepositorySupportsRetention` and `TestCleanupExpiredEvents_DeleteOlderThanError`. |
+| AC-4 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestCleanupExpiredEvents_RetentionDisabled` — Info log + nil return when `Enabled = false`. |
+| AC-5 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestCleanupExpiredEvents_RepositorySupportsRetention` and `TestCleanupExpiredEvents_DeleteOlderThanError`. |
 | AC-6 | Inspection | `service.go::CleanupExpiredEvents` lines 467–472 — `_, ok := s.repository.(interface{DeleteOlderThan ...})` probe; `if !ok` Warn-logs and returns nil. Dedicated unsupported-repo test pending. |
-| AC-7 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestCleanupExpiredEvents_FallbackRetentionDays`. |
+| AC-7 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestCleanupExpiredEvents_FallbackRetentionDays`. |
 
 ## Edge cases & unhappy paths
 
@@ -193,9 +193,9 @@ batch already made progress.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/audit_management/features/audit_trail/service.go::ArchiveAuditEvents, CleanupExpiredEvents`.
-- `modules/platformkit-business-modules/audit_management/features/audit_trail/retention.go::ProvideRetentionSettings, RetentionSettings`.
-- `modules/platformkit-business-modules/audit_management/features/audit_trail/cleanup.go::CleanupJobHandler` — the scheduler entry.
+- `pk-modules/audit_management/features/audit_trail/service.go::ArchiveAuditEvents, CleanupExpiredEvents`.
+- `pk-modules/audit_management/features/audit_trail/retention.go::ProvideRetentionSettings, RetentionSettings`.
+- `pk-modules/audit_management/features/audit_trail/cleanup.go::CleanupJobHandler` — the scheduler entry.
 
 ## Related requirements
 

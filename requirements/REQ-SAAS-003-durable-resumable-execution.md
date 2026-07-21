@@ -59,11 +59,11 @@ cannot execute concurrently.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/saas_lifecycle_execution_repository_test.go::TestSaaSLifecycleExecutionStoreRoundTripsCheckpoint` |
-| AC-2 | Test | `modules/platformkit-business-modules/ports/saas_lifecycle_test.go::TestSaaSLifecycleRunnerResumesAfterProviderFailure` |
-| AC-3 | Test | `modules/platformkit-business-modules/ports/saas_lifecycle_test.go::TestSaaSLifecycleRunnerRejectsIdempotencyKeyReuse` |
-| AC-4 | Test | `modules/platformkit-business-modules/ports/saas_lifecycle_test.go::TestSaaSLifecycleRunnerRejectsConcurrentExecution` |
-| AC-5 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/saas_lifecycle_execution_repository_test.go::TestSaaSLifecycleExportHandlerPersistsAndReusesManifest` |
+| AC-1 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/saas_lifecycle_execution_repository_test.go::TestSaaSLifecycleExecutionStoreRoundTripsCheckpoint` |
+| AC-2 | Test | `pk-modules/ports/saas_lifecycle_test.go::TestSaaSLifecycleRunnerResumesAfterProviderFailure` |
+| AC-3 | Test | `pk-modules/ports/saas_lifecycle_test.go::TestSaaSLifecycleRunnerRejectsIdempotencyKeyReuse` |
+| AC-4 | Test | `pk-modules/ports/saas_lifecycle_test.go::TestSaaSLifecycleRunnerRejectsConcurrentExecution` |
+| AC-5 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/saas_lifecycle_execution_repository_test.go::TestSaaSLifecycleExportHandlerPersistsAndReusesManifest` |
 
 ## Implements (cross-cutting)
 
@@ -74,9 +74,9 @@ cannot execute concurrently.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/ports/saas_lifecycle.go::SaaSLifecycleRunner` — checkpointed orchestration and lease protocol.
-- `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/saas_lifecycle_execution_repository.go` — durable GORM execution store.
-- `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/saas_lifecycle_handlers.go` — export-manifest persistence and reuse.
+- `pk-modules/ports/saas_lifecycle.go::SaaSLifecycleRunner` — checkpointed orchestration and lease protocol.
+- `pk-modules/tenant_management/features/tenant_lifecycle/saas_lifecycle_execution_repository.go` — durable GORM execution store.
+- `pk-modules/tenant_management/features/tenant_lifecycle/saas_lifecycle_handlers.go` — export-manifest persistence and reuse.
 
 ## Related requirements
 

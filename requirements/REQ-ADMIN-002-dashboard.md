@@ -50,7 +50,7 @@ they cannot reach.
 | AC | Method | Evidence |
 |---|---|---|
 | AC-1 | Inspection | Code review of `dashboard/handler.go` permission filtering. |
-| AC-2 | Test | `modules/platformkit-business-modules/admin_management/features/dashboard/entity_catalog_test.go::TestEntityCatalogBuilder_BuildUsesCanonicalModuleRoute`. |
+| AC-2 | Test | `pk-modules/admin_management/features/dashboard/entity_catalog_test.go::TestEntityCatalogBuilder_BuildUsesCanonicalModuleRoute`. |
 
 ## Implements (cross-cutting)
 

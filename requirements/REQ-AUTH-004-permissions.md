@@ -63,11 +63,11 @@ contract.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/permissions/service_crosstenant_test.go::TestCheckPermissionDelegatesExactPrincipalAndTenantToGovernedProvider` and `session_evaluator_topaz_test.go::TestSessionPermissionEvaluatorUsesGovernedDecider`. |
-| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/permissions/ui_test.go::TestPermissionsAdminContentIsReadOnly` and `admin_route_authorization_test.go::TestPermissionHandlerDoesNotOwnLegacyStandaloneAdminPage`. |
-| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/policy/migration_integrity_test.go::TestPolicySchemaRetirementIsForwardOnly`; repository-wide guards reject active references to the retired grant tables. |
-| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/stats_handler_directory_test.go::TestDirectoryObjectsAreConstrainedToActiveTenant` covers exact tenant scoping; shared write/delete controls and Topaz ETag conflicts have adjacent focused tests. |
-| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/permissions/session_evaluator_test.go::TestSessionPermissionEvaluatorGuestCeilingRunsBeforeDecisionPlane`. |
+| AC-1 | Test | `pk-modules/auth_management/features/permissions/service_crosstenant_test.go::TestCheckPermissionDelegatesExactPrincipalAndTenantToGovernedProvider` and `session_evaluator_topaz_test.go::TestSessionPermissionEvaluatorUsesGovernedDecider`. |
+| AC-2 | Test | `pk-modules/auth_management/features/permissions/ui_test.go::TestPermissionsAdminContentIsReadOnly` and `admin_route_authorization_test.go::TestPermissionHandlerDoesNotOwnLegacyStandaloneAdminPage`. |
+| AC-3 | Test | `pk-modules/auth_management/features/policy/migration_integrity_test.go::TestPolicySchemaRetirementIsForwardOnly`; repository-wide guards reject active references to the retired grant tables. |
+| AC-4 | Test | `pk-modules/auth_management/features/authentication/stats_handler_directory_test.go::TestDirectoryObjectsAreConstrainedToActiveTenant` covers exact tenant scoping; shared write/delete controls and Topaz ETag conflicts have adjacent focused tests. |
+| AC-5 | Test | `pk-modules/auth_management/features/permissions/session_evaluator_test.go::TestSessionPermissionEvaluatorGuestCeilingRunsBeforeDecisionPlane`. |
 
 ## Implements (cross-cutting)
 
@@ -78,9 +78,9 @@ contract.
 ## Satisfied by
 
 - `core/platformkit-ports/authz`
-- `core/platformkit-integrations/topaz`
-- `modules/platformkit-business-modules/auth_management/features/permissions`
-- `modules/platformkit-business-modules/auth_management/features/authentication/stats_handler.go`
+- the integrations layer's `topaz`
+- `pk-modules/auth_management/features/permissions`
+- `pk-modules/auth_management/features/authentication/stats_handler.go`
 
 ## Related requirements
 

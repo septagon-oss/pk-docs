@@ -36,7 +36,7 @@ Reusable test infrastructure is valuable only when two runs over the same
 inputs produce the same execution order, local browser state cannot leak
 between profiles, and broken trace linkage is reported rather than accepted.
 These properties specialize the workspace-wide shared-test requirement for the
-concrete flow, harness, and telemetry contracts owned by `platformkit-tests`.
+concrete flow, harness, and telemetry contracts owned by `pk-testkit`.
 
 ## Acceptance criteria
 
@@ -53,16 +53,16 @@ concrete flow, harness, and telemetry contracts owned by `platformkit-tests`.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `tooling/platformkit-tests/flow/registry_test.go::TestDependencyGraphTopologicalSortUsesStableIDOrder`. |
-| AC-2 | Test | `tooling/platformkit-tests/harness/harness_test.go::TestLocalBrowserEnvUsesProfileScopedPaths`. |
-| AC-3 | Test | `tooling/platformkit-tests/telemetry/conformance_test.go::TestCheckTraceContinuityDetectsMcpGap`. |
+| AC-1 | Test | `tooling/pk-testkit/flow/registry_test.go::TestDependencyGraphTopologicalSortUsesStableIDOrder`. |
+| AC-2 | Test | `tooling/pk-testkit/harness/harness_test.go::TestLocalBrowserEnvUsesProfileScopedPaths`. |
+| AC-3 | Test | `tooling/pk-testkit/telemetry/conformance_test.go::TestCheckTraceContinuityDetectsMcpGap`. |
 
 ## Satisfied by
 
 - [ADR 0021 — Interface contract test suites](../adr/0021-interface-contract-test-suites.md).
-- `tooling/platformkit-tests/flow/registry.go`.
-- `tooling/platformkit-tests/harness/harness.go`.
-- `tooling/platformkit-tests/telemetry/conformance.go`.
+- `tooling/pk-testkit/flow/registry.go`.
+- `tooling/pk-testkit/harness/harness.go`.
+- `tooling/pk-testkit/telemetry/conformance.go`.
 
 ## Related requirements
 

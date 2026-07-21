@@ -62,10 +62,10 @@ takeover via OAuth-style replay.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/registration/req_auth_002_test.go::TestRegister_NovelEmail_CreatesPendingUserAndDispatchesVerification`. |
-| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/registration/req_auth_002_test.go::TestRegister_DuplicateEmail_NoEnumeration` and `TestRegister_DuplicateUsername_NoEnumeration` assert that the service returns the typed sentinels `ErrEmailAlreadyRegistered` / `ErrUsernameAlreadyRegistered` without echoing the submitted value. The handler maps both to a generic 409 Conflict. |
-| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/registration/req_auth_002_test.go::TestRegister_PasswordPolicy_EnforcedAndOpaque` exercises the configurable `Config.PasswordPolicy` gate (`MinLength`, `RequireDigit/Upper/Lower/Symbol`). Violations return the typed `ErrPasswordPolicyViolation` with a generic "password does not meet requirements" message — naming the failed rule would let an attacker probe the policy. |
-| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/registration/req_auth_002_test.go::TestVerifyEmail_SingleUse_AndExpiry` exercises the `VerifiedAt` single-use guard at `verify_email.go:167-169` and the `ExpiresAt` check at `verify_email.go:163-165`. |
+| AC-1 | Test | `pk-modules/auth_management/features/registration/req_auth_002_test.go::TestRegister_NovelEmail_CreatesPendingUserAndDispatchesVerification`. |
+| AC-2 | Test | `pk-modules/auth_management/features/registration/req_auth_002_test.go::TestRegister_DuplicateEmail_NoEnumeration` and `TestRegister_DuplicateUsername_NoEnumeration` assert that the service returns the typed sentinels `ErrEmailAlreadyRegistered` / `ErrUsernameAlreadyRegistered` without echoing the submitted value. The handler maps both to a generic 409 Conflict. |
+| AC-3 | Test | `pk-modules/auth_management/features/registration/req_auth_002_test.go::TestRegister_PasswordPolicy_EnforcedAndOpaque` exercises the configurable `Config.PasswordPolicy` gate (`MinLength`, `RequireDigit/Upper/Lower/Symbol`). Violations return the typed `ErrPasswordPolicyViolation` with a generic "password does not meet requirements" message — naming the failed rule would let an attacker probe the policy. |
+| AC-4 | Test | `pk-modules/auth_management/features/registration/req_auth_002_test.go::TestVerifyEmail_SingleUse_AndExpiry` exercises the `VerifiedAt` single-use guard at `verify_email.go:167-169` and the `ExpiresAt` check at `verify_email.go:163-165`. |
 
 ## Implements (cross-cutting)
 
@@ -76,11 +76,11 @@ takeover via OAuth-style replay.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/auth_management/features/registration/feature.go`
-- `modules/platformkit-business-modules/auth_management/features/registration/check_availability.go`,
+- `pk-modules/auth_management/features/registration/feature.go`
+- `pk-modules/auth_management/features/registration/check_availability.go`,
   `complete_registration.go`, `password_reset.go`
-- `modules/platformkit-business-modules/auth_management/features/registration/handler.go`, `routes.go`
-- `modules/platformkit-business-modules/auth_management/features/registration/permissions.go`,
+- `pk-modules/auth_management/features/registration/handler.go`, `routes.go`
+- `pk-modules/auth_management/features/registration/permissions.go`,
   `capabilities.go`
 
 ## Related requirements

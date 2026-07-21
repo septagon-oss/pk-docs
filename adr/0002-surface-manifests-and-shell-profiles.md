@@ -17,13 +17,13 @@ Status: **Proposed** (2024-02-12)
 The three repos that should compose a product each own the right
 piece, but nothing ties them together cleanly.
 
-`platformkit-frontend-kit` has the shell mechanics
+the frontend kit has the shell mechanics
 (`components/organisms/admin_shell`), the page-pattern guidance, and
 the controller-backed behaviour contracts from ADR 0001. It knows
 how to render a product surface. `pk-modules` owns
 the domain-side inputs — routes, permissions, admin registrations,
 module manifests. It knows what a product *contains*. And
-`platformkit-apps` owns the deployment compositions. It knows how a
+`pk-apps` owns the deployment compositions. It knows how a
 product *ships*.
 
 The missing layer is what connects them. Today each app re-adapts
@@ -50,7 +50,7 @@ hints, capability/permission tags, shell-target hints (`admin`,
 `operator`, `public`). It does *not* carry DOM structure, CSS
 classes, controller identifiers, or any shell rendering code.
 
-**`SurfaceManifest`** — owned by `platformkit-frontend-kit`. The
+**`SurfaceManifest`** — owned by the frontend kit. The
 frontend-side composition contract for a concrete app surface:
 selected shell profile, route inventory, navigation model,
 page-pattern references, shell affordances (search, notifications,
@@ -58,12 +58,12 @@ tenant switcher, command palette, traceability slots), manifest-level
 defaults that can be merged with app policy and request-scoped
 preferences later.
 
-**`ShellProfile`** — owned by `platformkit-frontend-kit`. Named
+**`ShellProfile`** — owned by the frontend kit. Named
 presets for shell mechanics: initially `admin`, `app`, `auth`,
 `operator`. Profiles say what the shell *can* do; surface manifests
 say what a concrete product surface *does*.
 
-`platformkit-apps` owns the merge step: it takes shell-profile
+`pk-apps` owns the merge step: it takes shell-profile
 defaults, module surface contributions, app-level product policy,
 scenario/topology/rollout choices, and request-/tenant-/user-scoped
 preferences, and resolves them into concrete `SurfaceManifest`
@@ -77,9 +77,9 @@ deterministic merge of defaults/policy/preferences. We reuse the
 current seams rather than standing up a parallel composition stack:
 `pk-modules` derives `surface.Contribution`
 from the existing admin-registration, route, menu, and page-intent
-seams; `platformkit-apps` assembles manifests *above* topology
+seams; `pk-apps` assembles manifests *above* topology
 bootstraps, not inside topology-specific sidebar wiring;
-`platformkit-frontend-kit` adds a dedicated `surfaces/` package
+the frontend kit adds a dedicated `surfaces/` package
 rather than overloading `presentation/`; and
 `components/organisms/admin_shell` stays the rendering target —
 current prop assembly becomes an adapter boundary, not the long-term
@@ -139,6 +139,6 @@ Six boundary rules keep the layer honest:
 
 - [ADR 0001 — UI behaviour on two axes](./0001-interaction-architecture.md)
   — the interaction-architecture layer this composes on top of.
-- [docs/platform-composition-standard.md](../platform-composition-standard.md)
-- [docs/canonical-shell-adoption.md](../canonical-shell-adoption.md)
-- [docs/page-patterns-and-consumption.md](../page-patterns-and-consumption.md)
+- `platform-composition-standard` (internal companion doc, not in the public set)
+- `canonical-shell-adoption` (internal companion doc, not in the public set)
+- `page-patterns-and-consumption` (internal companion doc, not in the public set)

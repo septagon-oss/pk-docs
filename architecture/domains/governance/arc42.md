@@ -23,9 +23,9 @@ The domain holds three modules today:
 - **`audit_management`** — the canonical audit trail. Records every
   module's `audit.event.created` and projects it to the trail,
   compliance reports, and retention policies.
-- **`change_management`** — the change-tracking and approval
+- **`change`** — the change-tracking and approval
   workflow surface. Wraps writes that need a four-eyes gate.
-- **`cookie_consent_management`** — visitor cookie consent
+- **`cookie_consent`** — visitor cookie consent
   decisions. Newest member, ADR 0023's worked example.
 
 Sections present at this scale: §1 Goals · §3 Context · §4 Solution
@@ -60,7 +60,7 @@ the right shape:
 Non-goals — what governance deliberately doesn't do:
 
 - **Identity.** Who the actor is comes from
-  [`auth_management`](../identity-access/arc42.md) and
+  `auth_management` and
   `user_management`; governance modules accept actor identifiers,
   they do not authenticate.
 - **Tenant policy.** What a tenant *requires* of governance —
@@ -82,8 +82,8 @@ produces structured records.
 flowchart LR
     Catalog["Other modules<br/>(billing, booking, content, …)"]
     Audit["audit_management"]
-    Change["change_management"]
-    Cookie["cookie_consent_management"]
+    Change["change"]
+    Cookie["cookie_consent"]
     Storage[(Postgres)]
     Compliance["Compliance / SBOM<br/>(reports, exports)"]
 
@@ -144,7 +144,7 @@ Concretely:
   pseudonymous subject id from the originating module.
 
 The discipline this strategy buys: a tenant who switches off
-`change_management` still has full audit coverage because every
+`change` still has full audit coverage because every
 write that *would* have gone through change still emits an audit
 event. Compose-or-not stays a switch, not a downgrade.
 
@@ -165,19 +165,17 @@ Each module owns its own charter. The blocks below transclude the
 
 *Full charter: `pk-modules/audit_management/MODULE.md`* (pending Phase 4 — bulk skeleton migration)
 
-### change_management
+### change
 
-<!-- @transclude ../../../../pk-modules/change_management/MODULE.cue#identity -->
-<!-- @transclude ../../../../pk-modules/change_management/MODULE.cue#boundary -->
+<!-- @transclude ../../../../pk-modules/change/MODULE.cue#identity -->
+<!-- @transclude ../../../../pk-modules/change/MODULE.cue#boundary -->
 
-*Full charter: `pk-modules/change_management/MODULE.md`* (pending Phase 4 — bulk skeleton migration)
+*Full charter: `pk-modules/change/MODULE.md`* (pending Phase 4 — bulk skeleton migration)
 
-### cookie_consent_management
+### cookie_consent
 
-<!-- @transclude ../../../../pk-modules/cookie_consent_management/MODULE.cue#identity -->
-<!-- @transclude ../../../../pk-modules/cookie_consent_management/MODULE.cue#boundary -->
 
-*Full charter: [pk-modules/cookie_consent_management/MODULE.md](../../../../pk-modules/cookie_consent_management/MODULE.md)*
+*Full charter lives with the module source.*
 
 ## §6 — Runtime view
 
@@ -193,10 +191,10 @@ cookie consent gates whether marketing-channel notifications fire.
 ```mermaid
 sequenceDiagram
     actor Admin
-    participant Billing as billing_management
-    participant Change as change_management
+    participant Billing as billing
+    participant Change as change
     participant Audit as audit_management
-    participant Cookie as cookie_consent_management
+    participant Cookie as cookie_consent
     participant Notify as notification_management
 
     Admin->>Billing: PUT /rates/123 {price: 49}
@@ -219,9 +217,9 @@ sequenceDiagram
 Two governance properties to notice:
 
 - The audit trail is the only record that gets every event in this
-  flow. `change_management` and `billing_management` each see a
+  flow. `change` and `billing` each see a
   slice; `audit_management` sees the full chain.
-- `cookie_consent_management` is consulted at fanout time, not at
+- `cookie_consent` is consulted at fanout time, not at
   decision time. Notifications without consent never reach the
   channel; the audit record still includes the
   `notification.skipped` event, so "why didn't I get the email"
@@ -270,17 +268,17 @@ Domain-wide risks that don't belong inside any single module.
   per record, but the archive-to-cold-storage job
   (`audit_management/features/audit_compliance`) is currently a
   cron stub. Closing the gap is a Phase-2 follow-up to ADR 0017.
-- **Change_management coverage gaps.** Not every write that
+- **Change-module coverage gaps.** Not every write that
   *should* go through change does.
   `standard.WithDep(module.OptionalPort[changeprovides.ChangeRegistrar](module.PortSpec{...}))`
   is optional today, so a module can write straight to the
   database without registering a change. The
   `check-change-coverage` analyzer is on the backlog and is the
-  load-bearing follow-up before promoting `change_management`
+  load-bearing follow-up before promoting `change`
   to `core-certified`.
 - **Cookie consent and authenticated users.** A visitor who
   signs in *after* recording consent currently has two ids: the
   pseudonymous `subjectId` from the consent cookie and their real
   `userId`. Linking the two so post-sign-in audit queries can
   find the visitor's pre-sign-in consent is a known follow-up
-  (`cookie_consent_management` Phase 1).
+  (`cookie_consent` Phase 1).

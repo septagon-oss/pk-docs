@@ -53,7 +53,7 @@ MUST be reachable through both transports:
 - **HTTP** — via the module's feature-registered Huma routes (see
   [Convention C-03 — features own their routes](../conventions.md#c-03-features-own-their-routes)).
 - **EventBus** — via
-  `platformkit-backend-kit/client/transports/eventbus`, the
+  `pk-core/client/transports/eventbus`, the
   NATS-backed server/client pair that mirrors the HTTP surface.
 
 The request/response shapes are shared: both transports
@@ -122,9 +122,9 @@ know or care which transport they're talking to.
 ## References
 
 - `platformkit-module-bindings/` — NATS-backed port proxies.
-- `platformkit-backend-kit/client/transports/eventbus/` —
+- `pk-core/client/transports/eventbus/` —
   server-side eventbus transport.
-- `platformkit-backend-kit/api/transport/` — server-side HTTP
+- `pk-core/api/transport/` — server-side HTTP
   transport.
 - Related:
   [ADR 0018 — every event has a declared contract](./0018-event-contracts-are-declared.md)

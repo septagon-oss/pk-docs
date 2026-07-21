@@ -18,9 +18,9 @@ The design-system pipeline had three sources of truth in three
 languages and shipped broken contracts to every downstream consumer.
 
 Tokens were authored as Go structs in
-`platformkit-design-system/tokens/*.go` and rendered to W3C DTCG
+the design system's `tokens/*.go` and rendered to W3C DTCG
 via `adapters/w3c`. Component contracts were authored as TypeScript
-component code in `platformkit-frontend-kit`, then *extracted* into
+component code in the frontend kit, then *extracted* into
 `stories.json` by Storybook autogen, compiled into
 `shared.ComponentSpec` values by
 `adapters/figma/figmagen`, and packaged by `adapters/claudedesign`.
@@ -80,7 +80,7 @@ Two adjacent forces closed the decision window:
 ## The decision
 
 Introduce **PKDS** (PlatformKit Design System), a new subpackage of
-`platformkit-design-system` that is the single source of truth for
+the design system that is the single source of truth for
 every design token, component contract, theme, experience, and
 icon.
 
@@ -88,7 +88,7 @@ Five load-bearing choices:
 
 1. **CUE is the authoring language.** Tokens, components, themes,
    experiences, and validation rules are all authored as `.cue`
-   files under `platformkit-design-system/pkds/src/`. CUE is
+   files under the design system's `pkds/src/`. CUE is
    declarative, typed, composable, supports first-class constraints
    and aliases, treats values and types uniformly, and emits JSON,
    JSON Schema, Go, and TypeScript via its standard toolchain.
@@ -270,10 +270,10 @@ the rest.
 - W3C Design Tokens Community Group Format Module (Editor's
   Draft).
 - CUE language specification — <https://cuelang.org>.
-- `platformkit-design-system/adapters/claudedesign/` (retired) —
+- the design system's `adapters/claudedesign/` (retired) —
   the file-based adapter PKDS's `claude-design` emitter
   superseded.
-- `platformkit-design-system/adapters/figma/figmagen/` — the
+- the design system's `adapters/figma/figmagen/` — the
   Figma-push compiler; PKDS's `figma` emitter will supersede it
   in the remaining Phase 5 work.
 - 2026-04-23 audit findings — the concrete defect list that

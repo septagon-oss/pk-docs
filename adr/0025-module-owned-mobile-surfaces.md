@@ -53,12 +53,12 @@ The package direction is therefore:
 - `pk-modules/<module>/...` owns domain-specific mobile
   forms, actions, projections, and port-backed handlers.
 - `pk-modules/ports/` owns cross-module service interfaces.
-- `platformkit-backend-kit/app/module.MobileCapabilityProvider` is the current
+- `pk-core/app/module.MobileCapabilityProvider` is the current
   runtime provider seam for module-owned mobile manifests, screens, and
   actions.
-- `platformkit-shared/presentation` owns the neutral mobile component/action
+- `pk-shared/presentation` owns the neutral mobile component/action
   contract.
-- `platformkit-apps/surfacecatalog/` should become the long-term home for
+- `pk-apps/surfacecatalog/` should become the long-term home for
   app-owned mobile and operator surface presets.
 - `complete-saas-*/*/bootstrap` may wire topology and route transport, but it
   must not become the long-term home for module business behavior.
@@ -113,7 +113,7 @@ mobile except through status, admin, or operator projections.
 - Gap — there is no app-level `surfacecatalog/` composition path for mobile
   presets yet. The current bridge is module-owned `MobileCapabilityProvider`
   implementations plus explicit app wiring. The follow-up is to compose those
-  providers through `platformkit-apps/surfacecatalog/`, parallel to admin
+  providers through `pk-apps/surfacecatalog/`, parallel to admin
   surface contributions.
 
 The initial rollout order should be practical, not exhaustive:
@@ -121,11 +121,11 @@ The initial rollout order should be practical, not exhaustive:
 1. `auth_management`, `user_management`, and `tenant_management` — login,
    session, MFA, profile identity, and tenant context must be native-quality
    before any tenant app feels real.
-2. `site_management`, `siteprofile`, and `translation_management` — tenant
+2. `site`, `siteprofile`, and `translation` — tenant
    identity, design tokens, public profile, and localized app context.
-3. `notification_management`, `mail_management`, and `chat_management` —
+3. `notification_management`, `mail`, and `chat` —
    confirmations, reminders, in-app messages, mail/package workflows, and help.
-4. `billing_management` and `entitlement_management` — account state, plan
+4. `billing` and `entitlement` — account state, plan
    status, access, and commercial lifecycle where the OSS build owns those
    surfaces.
 5. Vertical modules from private/client distributions — compose only when a
@@ -141,6 +141,6 @@ The initial rollout order should be practical, not exhaustive:
 - [ADR 0019 — Every port works over HTTP and NATS](./0019-dual-path-transport-symmetry.md).
 - [ADR 0024 — Page assets are module-owned and loaded by declaration](./0024-module-owned-page-assets.md).
 - [ADR 0028 — Domain modules own security decisions and delivery modules deliver messages](./0028-domain-owned-security-and-delivery-capabilities.md).
-- `platformkit-apps/docs/reference-surface-manifest-compositions-task.md`.
+- `pk-apps/docs/reference-surface-manifest-compositions-task.md`.
 - `pk-modules/auth_management/mobileauth/`.
-- `platformkit-apps/internal/bootstrap/complete_saas_mobile_runtime.go`.
+- `pk-apps/internal/bootstrap/complete_saas_mobile_runtime.go`.

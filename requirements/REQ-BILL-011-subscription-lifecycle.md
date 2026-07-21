@@ -19,8 +19,8 @@ satisfied_by:
 implements_cross_cutting: [REQ-001, REQ-004, REQ-005]
 refines: REQ-BILL-001
 type: doc
-tags: [requirement, capability, billing_management, subscriptions, cancel, reactivate]
-module: billing_management
+tags: [requirement, capability, billing, subscriptions, cancel, reactivate]
+module: billing
 feature: subscriptions
 capability: subscription_lifecycle
 capability_kind: state_machine
@@ -143,16 +143,16 @@ properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestCancelSubscription_Immediately`. |
-| AC-2 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestCancelSubscription_AtPeriodEnd`. |
-| AC-3 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestCancelSubscription_AlreadyCanceled`. |
-| AC-4 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestCancelSubscription_WithoutReason`. |
-| AC-5 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestCancelSubscription_NotFound`. |
-| AC-6 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestReactivateSubscription_CancelingSubscription`. |
-| AC-7 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestReactivateSubscription_CanceledWithinGracePeriod`. |
-| AC-8 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestReactivateSubscription_GracePeriodExpired`. |
-| AC-9 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestReactivateSubscription_NotCanceled`. |
-| AC-10 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestReactivateSubscription_NotFound`. |
+| AC-1 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestCancelSubscription_Immediately`. |
+| AC-2 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestCancelSubscription_AtPeriodEnd`. |
+| AC-3 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestCancelSubscription_AlreadyCanceled`. |
+| AC-4 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestCancelSubscription_WithoutReason`. |
+| AC-5 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestCancelSubscription_NotFound`. |
+| AC-6 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestReactivateSubscription_CancelingSubscription`. |
+| AC-7 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestReactivateSubscription_CanceledWithinGracePeriod`. |
+| AC-8 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestReactivateSubscription_GracePeriodExpired`. |
+| AC-9 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestReactivateSubscription_NotCanceled`. |
+| AC-10 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestReactivateSubscription_NotFound`. |
 
 ## Edge cases & unhappy paths
 
@@ -201,8 +201,8 @@ properties:
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/billing_management/features/subscriptions/service.go::CancelSubscription, ReactivateSubscription`.
-- `modules/platformkit-business-modules/billing_management/features/subscriptions/subscription_fsm.go::ValidateTransition` — the underlying state machine.
+- `pk-modules/billing/features/subscriptions/service.go::CancelSubscription, ReactivateSubscription`.
+- `pk-modules/billing/features/subscriptions/subscription_fsm.go::ValidateTransition` — the underlying state machine.
 
 ## Related requirements
 

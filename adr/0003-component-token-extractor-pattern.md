@@ -16,7 +16,7 @@ the case for separation of concerns.
 
 ## The problem
 
-Every component in `platformkit-frontend-kit` used to hardcode
+Every component in the frontend kit used to hardcode
 Tailwind strings into its builder — `"bg-surface-primary"`,
 `"z-50"`, `"h-5 w-5"` wired directly into the render. That produced
 four real problems, not theoretical ones.
@@ -25,7 +25,7 @@ Client customisation was impossible beyond the global theme. A
 client who wanted different modal padding, a different table-stripe
 colour, or a different z-index layer had to fork the builder. The
 design system had tokens — rich `XxxTokens` structs in
-`platformkit-design-system/adapters/frontend/types.go` — but no
+the design system's `adapters/frontend/types.go` — but no
 builder read them. Even the frontend kit's own molecules pulled from
 hardcoded strings. Some atoms *declared* `TokenExtractor` variables
 but never called `base.ExtractTokens`; the tokens looked wired and
@@ -71,10 +71,10 @@ The structural rules:
   `resolveXxxStyle` again — `Build()` resolves once, threads it
   down.
 - Token types live in the design system. A new component's tokens
-  get added to `platformkit-design-system/adapters/frontend/types.go`
+  get added to the design system's `adapters/frontend/types.go`
   first, defaults populated in `defaults.go`, then a type alias
   `type X = designfrontend.X` lands in
-  `platformkit-frontend-kit/renderer/theme/tokens.go`.
+  the frontend kit's `renderer/theme/tokens.go`.
 
 Exemptions (intentional, not cracks in the rule):
 
@@ -87,7 +87,7 @@ Exemptions (intentional, not cracks in the rule):
   palette shade they mirror (`emailAccent = "#2563eb" // brand-600`).
 
 A reference implementation lives at
-`platformkit-frontend-kit/components/molecules/modal/{style.go, builder.go, style_test.go}`.
+the frontend kit's `components/molecules/modal/{style.go, builder.go, style_test.go}`.
 
 ## What we gave up
 
@@ -113,7 +113,7 @@ A reference implementation lives at
 
 ## How we enforce it
 
-- **`platformkit-frontend-kit/cmd/guard-tokens`** — lint rule that
+- **the frontend kit's `cmd/guard-tokens`** — lint rule that
   flags token-aware class resolution outside a `style.go` file. The
   specific violations it catches:
   - Raw `z-NN` Tailwind classes in `builder.go` (allowed only in
@@ -135,21 +135,21 @@ A reference implementation lives at
 
 ## References
 
-- `platformkit-design-system/adapters/frontend/types.go` — token
+- the design system's `adapters/frontend/types.go` — token
   struct definitions.
-- `platformkit-design-system/adapters/frontend/defaults.go` —
+- the design system's `adapters/frontend/defaults.go` —
   default values.
-- `platformkit-design-system/overlays/` — client/tenant overlay
+- the design system's `overlays/` — client/tenant overlay
   pipeline.
-- `platformkit-frontend-kit/components/base/component.go` —
+- the frontend kit's `components/base/component.go` —
   `TokenExtractor`, `ExtractTokens`, `ComponentTokenSet`,
   `ZIndexClass`.
-- `platformkit-frontend-kit/renderer/theme/tokens.go` — type
+- the frontend kit's `renderer/theme/tokens.go` — type
   aliases.
-- `platformkit-frontend-kit/components/molecules/modal/` — the
+- the frontend kit's `components/molecules/modal/` — the
   canonical reference implementation.
-- `platformkit-frontend-kit/cmd/guard-tokens/main.go` — lint rules.
-- `platformkit-frontend-kit/docs/TOKEN_MIGRATION_GUIDE.md` — the
+- the frontend kit's `cmd/guard-tokens/main.go` — lint rules.
+- the frontend kit's `docs/TOKEN_MIGRATION_GUIDE.md` — the
   step-by-step migration walkthrough.
 - Related: [ADR 0004 — every Tailwind class goes through a typed DSL](./0004-typed-design-token-dsl.md)
   — what feeds the `defaultXxxStyle` literal.

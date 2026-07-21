@@ -1,13 +1,13 @@
 ---
 id: REQ-DOCS-001
-title: "Eager-loaded Claude documentation stays under the per-tier byte budget"
+title: "Claude context guard enforces per-tier eager-load budgets"
 status: Active
 date: 2026-05-10
 slug: req-docs-001-progressive-disclosure-budget
 category: governance  # cmd/-only implementation; traceability policy excludes /cmd/, so this REQ is docs/analysis-satisfied
 ears_pattern: ubiquitous
 verification_methods:
-  - analysis
+  - test
 satisfied_by:
   adr: [ADR-0030]
   conventions: []
@@ -15,16 +15,15 @@ type: doc
 tags: [requirement, documentation, claude, context-budget]
 ---
 
-# REQ DOCS-001 — Eager-loaded Claude documentation stays under the per-tier byte budget
+# REQ DOCS-001 — Claude context guard enforces per-tier eager-load budgets
 
 Status: **Active** (2026-05-10)
 
 ## Statement
 
-Every Markdown document that Claude eagerly loads on every turn —
-`CLAUDE.md` files at the workspace root, repo root, or module root,
-and any document those files transclude with the `@<path>` syntax —
-**shall** stay under the byte budget defined for its tier in
+The canonical Claude context checker **shall** evaluate `CLAUDE.md`
+files and their `@<path>` transclusions against the byte budget defined
+for each tier in
 [ADR-0030](../adr/0030-progressive-disclosure-for-claude-context.md):
 
 | Tier | Path                                        | Eager budget |
@@ -33,10 +32,9 @@ and any document those files transclude with the `@<path>` syntax —
 | Module | linked summary docs under `.claude/generated/` and module-level CLAUDE.md transclusions | ≤ 5 KB |
 | Detail | full reference docs, package indexes, exhaustive lists | no cap; loaded on demand only |
 
-No Markdown document Claude auto-loads **shall** contain a contiguous
-list of 30 or more bullet items — exhaustive enumerations are
-detail-tier content and **shall** be moved to the on-demand `.full.md`
-sibling.
+The checker **shall** reject a contiguous list of 30 or more bullet
+items in eager content and shall ignore workspace-owned `.tmp-*`
+transient directories without ignoring canonical source directories.
 
 ## Rationale
 
@@ -54,31 +52,29 @@ makes the rule machine-checkable rather than a stylistic preference.
 
 ## Acceptance criteria
 
-- **AC-1** No `CLAUDE.md` file at the workspace root or a repo root
-  exceeds 2 KB after `@`-transclusions are resolved.
-- **AC-2** No module-level summary doc (under
-  `.claude/generated/modules/` or transcluded into a module's
-  `CLAUDE.md`) exceeds 5 KB after transclusion.
-- **AC-3** No eager-tier document contains a contiguous list of 30
-  or more bullet items.
-- **AC-4** `make check-claude-discipline` runs in CI on every push;
-  the build is red until the offending file is split into eager +
-  on-demand siblings or the budget is restructured.
+- **AC-1** The checker reports a root-tier `CLAUDE.md` whose effective
+  content exceeds 2 KB after `@`-transclusions are resolved.
+- **AC-2** The checker reports a module-tier `CLAUDE.md` whose effective
+  content exceeds 5 KB after transclusion.
+- **AC-3** The checker reports an eager transclusion containing a
+  contiguous list of 30 or more bullet items.
+- **AC-4** The checker ignores `.tmp-*` transient directories while
+  continuing to scan canonical source directories.
 
 ## Verification
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Analysis | `make check-claude-discipline` enforces the 2 KB root-tier budget after `@`-transclusion. |
-| AC-2 | Analysis | `make check-claude-discipline` enforces the 5 KB module-tier budget after `@`-transclusion. |
-| AC-3 | Analysis | `make check-claude-discipline` rejects contiguous bullet runs of 30+ in any eager-tier doc. |
-| AC-4 | Analysis | The workspace `Makefile`'s `check-all` target runs `check-claude-discipline`; CI invokes it on every push. |
+| AC-1 | Test | `pk-tools/cmd/check-claudemd-discipline/main_test.go::TestEvaluateEnforcesRootAndModuleBudgets` proves the exact root-tier budget. |
+| AC-2 | Test | `pk-tools/cmd/check-claudemd-discipline/main_test.go::TestEvaluateEnforcesRootAndModuleBudgets` proves the exact module-tier budget. |
+| AC-3 | Test | `pk-tools/cmd/check-claudemd-discipline/main_test.go::TestEvaluateRejectsExhaustiveTranscludedEnumeration` proves the exact enumeration threshold. |
+| AC-4 | Test | `pk-tools/cmd/check-claudemd-discipline/main_test.go::TestShouldIgnoreWorkspaceTransientDirectories` proves transient-directory filtering without a canonical-source exemption. |
 
 ## Satisfied by
 
 - [ADR-0030 — Progressive disclosure for Claude context](../adr/0030-progressive-disclosure-for-claude-context.md) —
   the architectural decision that defines the tier model and budgets.
-- `platformkit-devtools/cmd/check-claudemd-discipline/` — the guard
+- `pk-tools/cmd/check-claudemd-discipline/` — the guard
   implementation.
 
 ## Related requirements

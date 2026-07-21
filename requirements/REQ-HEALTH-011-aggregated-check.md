@@ -144,19 +144,19 @@ system up?" gauge. Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/health_management/registry_test.go::TestCheckAllAllHealthy`. |
-| AC-2 | Test | `modules/platformkit-business-modules/health_management/registry_test.go::TestCheckAllMixedHealthyAndUnhealthy`. |
-| AC-3 | Test | `modules/platformkit-business-modules/health_management/registry_test.go::TestCheckAllDegradedDoesNotOverrideUnhealthy`. |
-| AC-4 | Test | `modules/platformkit-business-modules/health_management/registry_test.go::TestCheckAllOnlyDegradedSetsDegradedOverall`. |
-| AC-5 | Test | `modules/platformkit-business-modules/health_management/registry_test.go::TestCheckAllPrependsModuleIDToCheckNames`. |
-| AC-6 | Test | `modules/platformkit-business-modules/health_management/registry_test.go::TestCheckAllEmptyNameUsesModuleIDAlone`. |
-| AC-7 | Test | `modules/platformkit-business-modules/health_management/registry_test.go::TestCheckAllEmptyRegistryReturnsHealthy`. |
-| AC-8 | Test | `modules/platformkit-business-modules/health_management/registry_test.go::TestCheckModuleReturnsResultsForSpecificModule` and `TestCheckModuleReturnsErrorForUnknownModule`. |
-| AC-9 | Test | `modules/platformkit-business-modules/health_management/registry_test.go::TestGetAggregatedStatusCountsModulesByStatus`. |
-| AC-10 | Test | `modules/platformkit-business-modules/health_management/registry_test.go::TestGetAggregatedStatusAllHealthy`. |
-| AC-11 | Test | `modules/platformkit-business-modules/health_management/registry_test.go::TestGetAggregatedStatusDegradedOnlySetsDegradedOverall`. |
-| AC-12 | Test | `modules/platformkit-business-modules/health_management/registry_test.go::TestGetAggregatedStatusTimestampIsSet`. |
-| AC-13 | Test | `modules/platformkit-business-modules/health_management/registry_test.go::TestCheckAllWithCancelledContext`. |
+| AC-1 | Test | `pk-modules/health_management/registry_test.go::TestCheckAllAllHealthy`. |
+| AC-2 | Test | `pk-modules/health_management/registry_test.go::TestCheckAllMixedHealthyAndUnhealthy`. |
+| AC-3 | Test | `pk-modules/health_management/registry_test.go::TestCheckAllDegradedDoesNotOverrideUnhealthy`. |
+| AC-4 | Test | `pk-modules/health_management/registry_test.go::TestCheckAllOnlyDegradedSetsDegradedOverall`. |
+| AC-5 | Test | `pk-modules/health_management/registry_test.go::TestCheckAllPrependsModuleIDToCheckNames`. |
+| AC-6 | Test | `pk-modules/health_management/registry_test.go::TestCheckAllEmptyNameUsesModuleIDAlone`. |
+| AC-7 | Test | `pk-modules/health_management/registry_test.go::TestCheckAllEmptyRegistryReturnsHealthy`. |
+| AC-8 | Test | `pk-modules/health_management/registry_test.go::TestCheckModuleReturnsResultsForSpecificModule` and `TestCheckModuleReturnsErrorForUnknownModule`. |
+| AC-9 | Test | `pk-modules/health_management/registry_test.go::TestGetAggregatedStatusCountsModulesByStatus`. |
+| AC-10 | Test | `pk-modules/health_management/registry_test.go::TestGetAggregatedStatusAllHealthy`. |
+| AC-11 | Test | `pk-modules/health_management/registry_test.go::TestGetAggregatedStatusDegradedOnlySetsDegradedOverall`. |
+| AC-12 | Test | `pk-modules/health_management/registry_test.go::TestGetAggregatedStatusTimestampIsSet`. |
+| AC-13 | Test | `pk-modules/health_management/registry_test.go::TestCheckAllWithCancelledContext`. |
 
 ## Edge cases & unhappy paths
 
@@ -206,8 +206,8 @@ system up?" gauge. Three properties:
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/health_management/registry.go::CheckAll, CheckModule, GetAggregatedStatus`.
-- `modules/platformkit-business-modules/health_management/ports_adapter.go::PortHealthProviderAdapter, HealthPortsAdapter`.
+- `pk-modules/health_management/registry.go::CheckAll, CheckModule, GetAggregatedStatus`.
+- `pk-modules/health_management/ports_adapter.go::PortHealthProviderAdapter, HealthPortsAdapter`.
 
 ## Related requirements
 

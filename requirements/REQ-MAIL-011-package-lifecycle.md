@@ -19,8 +19,8 @@ satisfied_by:
 implements_cross_cutting: [REQ-001, REQ-009]
 refines: REQ-MAIL-002
 type: doc
-tags: [requirement, capability, mail_management, package_tracking, lifecycle]
-module: mail_management
+tags: [requirement, capability, mail, package_tracking, lifecycle]
+module: mail
 feature: package_tracking
 capability: package_lifecycle
 capability_kind: state_machine
@@ -115,17 +115,17 @@ keeps subscribers unambiguous.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/mail_management/features/package_tracking/service_test.go::TestLogPackage_SetsDefaults`. |
-| AC-2 | Test | `modules/platformkit-business-modules/mail_management/features/package_tracking/service_test.go::TestLogPackage_EmitsEvent`. |
-| AC-3 | Test | `modules/platformkit-business-modules/mail_management/features/package_tracking/service_test.go::TestLogPackage_PropagatesCreateError`. |
-| AC-4 | Test | `modules/platformkit-business-modules/mail_management/features/package_tracking/service_test.go::TestNotifyRecipient_SetsNotifiedStatus`. |
-| AC-5 | Test | `modules/platformkit-business-modules/mail_management/features/package_tracking/service_test.go::TestNotifyRecipient_WrongTenantReturnsError`. |
-| AC-6 | Test | `modules/platformkit-business-modules/mail_management/features/package_tracking/service_test.go::TestCollectPackage_Success`. |
-| AC-7 | Test | `modules/platformkit-business-modules/mail_management/features/package_tracking/service_test.go::TestCollectPackage_AlreadyCollected`. |
-| AC-8 | Test | `modules/platformkit-business-modules/mail_management/features/package_tracking/service_test.go::TestCollectPackage_WrongTenant`. |
-| AC-9 | Test | `modules/platformkit-business-modules/mail_management/features/package_tracking/service_test.go::TestListPendingPackages_ExcludesTerminalStatuses`. |
-| AC-10 | Test | `modules/platformkit-business-modules/mail_management/features/package_tracking/service_test.go::TestGetPackage_ReturnsNilForWrongTenant`. |
-| AC-11 | Test | `modules/platformkit-business-modules/mail_management/features/package_tracking/service_test.go::TestGetPackage_ReturnsSummary`. |
+| AC-1 | Test | `pk-modules/mail/features/package_tracking/service_test.go::TestLogPackage_SetsDefaults`. |
+| AC-2 | Test | `pk-modules/mail/features/package_tracking/service_test.go::TestLogPackage_EmitsEvent`. |
+| AC-3 | Test | `pk-modules/mail/features/package_tracking/service_test.go::TestLogPackage_PropagatesCreateError`. |
+| AC-4 | Test | `pk-modules/mail/features/package_tracking/service_test.go::TestNotifyRecipient_SetsNotifiedStatus`. |
+| AC-5 | Test | `pk-modules/mail/features/package_tracking/service_test.go::TestNotifyRecipient_WrongTenantReturnsError`. |
+| AC-6 | Test | `pk-modules/mail/features/package_tracking/service_test.go::TestCollectPackage_Success`. |
+| AC-7 | Test | `pk-modules/mail/features/package_tracking/service_test.go::TestCollectPackage_AlreadyCollected`. |
+| AC-8 | Test | `pk-modules/mail/features/package_tracking/service_test.go::TestCollectPackage_WrongTenant`. |
+| AC-9 | Test | `pk-modules/mail/features/package_tracking/service_test.go::TestListPendingPackages_ExcludesTerminalStatuses`. |
+| AC-10 | Test | `pk-modules/mail/features/package_tracking/service_test.go::TestGetPackage_ReturnsNilForWrongTenant`. |
+| AC-11 | Test | `pk-modules/mail/features/package_tracking/service_test.go::TestGetPackage_ReturnsSummary`. |
 
 ## Edge cases & unhappy paths
 
@@ -167,7 +167,7 @@ keeps subscribers unambiguous.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/mail_management/features/package_tracking/service.go::LogPackage, NotifyRecipient, CollectPackage, ListPendingPackages, GetPackage`.
+- `pk-modules/mail/features/package_tracking/service.go::LogPackage, NotifyRecipient, CollectPackage, ListPendingPackages, GetPackage`.
 
 ## Related requirements
 

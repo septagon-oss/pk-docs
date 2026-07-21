@@ -17,7 +17,7 @@ the canonical resolver location).
 ## The problem
 
 PlatformKit has a rich typed token system in
-`platformkit-design-system/tokens` — themes, experiences, overlays,
+the design system's `tokens` — themes, experiences, overlays,
 module contributions, the full story. But the last mile, the
 actual Tailwind utility strings that ship in the rendered HTML, was
 handwritten. 79 component builders and
@@ -36,7 +36,7 @@ were stringly-typed CSS.
 Every semantic token — colour, spacing, radius, z-layer, variant,
 size, shape, state, typography, motion — is a named Go type with
 `const` enum values. The DSL lives in
-`platformkit-design-system/tw/classes.go` and emits the final class
+the design system's `tw/classes.go` and emits the final class
 string via `.Compile()`. The mapping from enum to class literal
 lives in exactly one file, `tw/compile.go`; nowhere else in the
 workspace writes a Tailwind utility string.
@@ -51,7 +51,7 @@ tokens → typed enums → tw DSL → utility classes → frontend defaults
 
 Six rules follow:
 
-1. `platformkit-design-system/tw` is the **single source of Tailwind
+1. the design system's `tw` is the **single source of Tailwind
    class strings**. Every token has a typed representation and a
    compile step.
 2. `tw/compile.go` is the **only authorised location** for Tailwind
@@ -153,11 +153,11 @@ Migration is component by component. The reference is Button:
 
 - ADR 0003 — `style.go` as the canonical resolver location. This
   ADR extends it.
-- `platformkit-design-system/tw/classes_test.go` — DSL contract
+- the design system's `tw/classes_test.go` — DSL contract
   tests.
-- `platformkit-design-system/adapters/frontend/button_dsl_test.go`
+- the design system's `adapters/frontend/button_dsl_test.go`
   — the byte-identical output lock on the reference component.
-- `platformkit-frontend-kit/components/atoms/button/` — canonical
+- the frontend kit's `components/atoms/button/` — canonical
   migration reference.
 - Related: [ADR 0022 — the design system is CUE-authored end to end](./0022-pkds-cue-authored-design-system-pipeline.md)
   — the upstream source that feeds the typed DSL after migration

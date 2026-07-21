@@ -58,10 +58,10 @@ one business module direct access to another module's repositories.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/ports/saas_lifecycle_test.go::TestSaaSLifecycleTransitionPolicy` |
-| AC-2 | Inspection | `modules/platformkit-business-modules/ports/saas_lifecycle.go::SaaSLifecycleStepsForTransition` |
-| AC-3 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/saas_lifecycle_handlers_test.go::TestSubscriptionMatchesLifecycleState` |
-| AC-4 | Inspection | `modules/platformkit-business-modules/ports/saas_lifecycle.go::SaaSLifecycleStepHandler` and the lifecycle handlers in `tenant_management` and `billing_management`. |
+| AC-1 | Test | `pk-modules/ports/saas_lifecycle_test.go::TestSaaSLifecycleTransitionPolicy` |
+| AC-2 | Inspection | `pk-modules/ports/saas_lifecycle.go::SaaSLifecycleStepsForTransition` |
+| AC-3 | Test | `pk-modules/billing/features/subscriptions/saas_lifecycle_handlers_test.go::TestSubscriptionMatchesLifecycleState` |
+| AC-4 | Inspection | `pk-modules/ports/saas_lifecycle.go::SaaSLifecycleStepHandler` and the lifecycle handlers in `tenant_management` and `billing`. |
 
 ## Implements (cross-cutting)
 
@@ -72,9 +72,9 @@ one business module direct access to another module's repositories.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/ports/saas_lifecycle.go::SaaSLifecycleStepsForTransition`.
-- `modules/platformkit-business-modules/billing_management/features/subscriptions/saas_lifecycle_handlers.go`.
-- `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/saas_lifecycle_handlers.go`.
+- `pk-modules/ports/saas_lifecycle.go::SaaSLifecycleStepsForTransition`.
+- `pk-modules/billing/features/subscriptions/saas_lifecycle_handlers.go`.
+- `pk-modules/tenant_management/features/tenant_lifecycle/saas_lifecycle_handlers.go`.
 
 ## Related requirements
 

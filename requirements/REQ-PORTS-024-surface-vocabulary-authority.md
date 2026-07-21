@@ -38,8 +38,8 @@ nav sections, widgets, settings, page contracts, the
 design-authority repo. Consumers **shall** import that package
 directly. Compatibility aliases, constant re-exports, validator
 wrappers, and duplicate vocabulary in
-`platformkit-shared/presentation` or
-`platformkit-business-modules/ports` are prohibited.
+`pk-shared/presentation` or
+`pk-modules/ports` are prohibited.
 
 Every `surface.Provider` implementation **shall** return a
 contribution that is valid under `ValidateContribution`, stable
@@ -88,7 +88,7 @@ caller mutation, would corrupt every registry built from it.
 | AC | Method | Evidence |
 |---|---|---|
 | AC-1 | Inspection | `core/platformkit-ports/surface/surface.go` (vocabulary + validators) and `core/platformkit-ports/surface/provider.go` (`Provider` + `ProviderContract`). |
-| AC-2 | Test | `core/platformkit-shared/presentation/surface_alias_retirement_test.go::TestPresentationSurfaceAliasesStayRetired` and `modules/platformkit-business-modules/ports/surface_vocabulary_retirement_test.go` scan declarations and import-qualified selectors so compatibility paths cannot return. |
+| AC-2 | Test | `core/pk-shared/presentation/surface_alias_retirement_test.go::TestPresentationSurfaceAliasesStayRetired` and `pk-modules/ports/surface_vocabulary_retirement_test.go` scan declarations and import-qualified selectors so compatibility paths cannot return. |
 | AC-3 | Test | `core/platformkit-ports/surface/surfacetest/surfacetest_test.go::TestStaticPassesProviderConformance` — runs `surfacetest.ProviderConformance` (validity, call stability, mutation isolation) against the reference `Static` provider. |
 | AC-4 | Test | `core/platformkit-ports/surface/surfacetest/surfacetest_test.go::TestValidateContributionCatchesWidgetAndSettingShape` — validator rejection coverage for malformed shapes. |
 
@@ -103,9 +103,9 @@ caller mutation, would corrupt every registry built from it.
   design authority for cross-cutting seams.
 - `core/platformkit-ports/surface/surfacetest/surfacetest.go::ProviderConformance` —
   the reusable behavioral suite every provider is held to.
-- `core/platformkit-shared/presentation/surface_alias_retirement_test.go` —
+- `core/pk-shared/presentation/surface_alias_retirement_test.go` —
   the forward-only retirement guard for the former presentation path.
-- `modules/platformkit-business-modules/ports/surface_vocabulary_retirement_test.go` —
+- `pk-modules/ports/surface_vocabulary_retirement_test.go` —
   the forward-only retirement guard for the former business-ports re-exports.
 
 ## Related requirements

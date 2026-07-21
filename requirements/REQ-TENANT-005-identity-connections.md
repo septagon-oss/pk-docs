@@ -61,9 +61,9 @@ across which neither side reaches.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/tenant_management/features/identity_connections/service_test.go::TestCreateIdentityConnection_Success` covers tenant-scoped CRUD. |
-| AC-2 | Test | `modules/platformkit-business-modules/tenant_management/features/identity_connections/service_test.go::TestCreateIdentityConnection_Success` covers default-flag mutual exclusion per (tenant, purpose) pair. |
-| AC-3 | Inspection | Module-contract check (`make check-module-contracts`) verifies that consumers (auth_management) import only `modules/platformkit-business-modules/tenant_management/contracts/provides`, never `modules/platformkit-business-modules/tenant_management/entities` or `modules/platformkit-business-modules/tenant_management/features/identity_connections` directly. |
+| AC-1 | Test | `pk-modules/tenant_management/features/identity_connections/service_test.go::TestCreateIdentityConnection_Success` covers tenant-scoped CRUD. |
+| AC-2 | Test | `pk-modules/tenant_management/features/identity_connections/service_test.go::TestCreateIdentityConnection_Success` covers default-flag mutual exclusion per (tenant, purpose) pair. |
+| AC-3 | Inspection | Module-contract check (`make check-module-contracts`) verifies that consumers (auth_management) import only `pk-modules/tenant_management/contracts/provides`, never `pk-modules/tenant_management/entities` or `pk-modules/tenant_management/features/identity_connections` directly. |
 
 ## Implements (cross-cutting)
 
@@ -74,10 +74,10 @@ across which neither side reaches.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/tenant_management/features/identity_connections/feature.go`
-- `modules/platformkit-business-modules/tenant_management/features/identity_connections/service.go`,
+- `pk-modules/tenant_management/features/identity_connections/feature.go`
+- `pk-modules/tenant_management/features/identity_connections/service.go`,
   `service_test.go`
-- `modules/platformkit-business-modules/tenant_management/features/identity_connections/handler.go`,
+- `pk-modules/tenant_management/features/identity_connections/handler.go`,
   `routes.go`, `permissions.go`
 
 ## Related requirements

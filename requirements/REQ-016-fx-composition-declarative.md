@@ -81,10 +81,10 @@ a notification-management module just to satisfy an import.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Analysis | `make check-structure` (`platformkit-devtools/internal/modulechecks/structure.go`) — verifies every module declares `NewModule`, `GetModule`, and `GetFeatures`. |
-| AC-2 | Inspection | Code review checklist: `platformkit-apps/complete-saas-monolith/main.go` is the canonical reference; new entrypoints follow the same shape. |
-| AC-3 | Analysis | `make check-module-deps` (catalog contract check) — fails on unresolved required deps. |
-| AC-4 | Test | `core/platformkit-backend-kit/core/mcp/platform_tools_test.go::TestPlatformTools_ListModules` verifies catalog-tool registration and module introspection; `core/platformkit-backend-kit/core/mcp/ai_agent_e2e_test.go::TestAIAgentFullWorkflow` invokes `platform.GetDependencyGraph` through the governed runtime. |
+| AC-1 | Analysis | `make -C pk-modules check-structure` verifies every module declares `NewModule`, `GetModule`, and `GetFeatures`. |
+| AC-2 | Inspection | Code review checklist: `pk-apps/complete-saas-monolith/main.go` is the canonical reference; new entrypoints follow the same shape. |
+| AC-3 | Analysis | `make -C pk-modules check-module-deps` fails on unresolved required dependencies. |
+| AC-4 | Test | `pk-core/core/mcp/platform_tools_test.go::TestPlatformTools_ListModules` verifies catalog-tool registration and module introspection; `pk-core/core/mcp/ai_agent_e2e_test.go::TestAIAgentFullWorkflow` invokes `platform.GetDependencyGraph` through the governed runtime. |
 
 ## Satisfied by
 
@@ -103,7 +103,7 @@ a notification-management module just to satisfy an import.
 
 ## References
 
-- `platformkit-backend-kit/app/module/` — module-helper builders.
-- `modules/platformkit-business-modules/catalog/` — registry + presets.
-- `platformkit-apps/complete-saas-monolith/main.go` — reference
+- `pk-core/app/module/` — module-helper builders.
+- `pk-modules/catalog/` — registry + presets.
+- `pk-apps/complete-saas-monolith/main.go` — reference
   bootstrap.

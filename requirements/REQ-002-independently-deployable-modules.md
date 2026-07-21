@@ -41,7 +41,7 @@ monolith binary, a microservices mesh, or a per-client overlay. Every
 coupling that lives at the import level forecloses one of those
 topologies.
 
-This requirement's `modules/platformkit-business-modules` paths and catalog
+This requirement's `pk-modules` paths and catalog
 checks apply to the full PlatformKit distribution. The public
 `github.com/septagon-oss/pk-modules/pkg` repository is a smaller reference pack
 that composes its exported packages directly; it does not maintain a second
@@ -49,7 +49,7 @@ tier or module-set catalog.
 
 ## Acceptance criteria
 
-- **AC-1** No package under `modules/platformkit-business-modules/<module>/`
+- **AC-1** No package under `pk-modules/<module>/`
   imports a Go package owned by a different business module's
   implementation. The only allowed cross-module imports are into
   `<other-module>/contracts/provides/` (the public port surface) and
@@ -69,9 +69,9 @@ tier or module-set catalog.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Analysis | `platformkit-backend-kit/analysis/importboundary` — rejects cross-module implementation imports at `make precommit`. |
-| AC-2 | Test | `apps/platformkit-apps/modulecatalog/catalog_test.go::TestPlanModuleOnlyDoesNotReEnableDisabledModule` and `apps/platformkit-apps/modulecatalog/catalog_test.go::TestPlanIgnoresDisabledUnknownModuleKeys` exercise selective composition and explicit module removal. **Verification gap: a dedicated sweep that removes each module in turn and verifies the plan still composes is pending.** |
-| AC-3 | Analysis | `make check-module-contracts` (`modules/platformkit-business-modules/cmd/module-contract-check`). |
+| AC-1 | Analysis | `pk-core/analysis/importboundary/importboundary.go` defines the analyzer that rejects cross-module implementation imports during module precommit verification. |
+| AC-2 | Test | `pk-apps/modulecatalog/catalog_test.go::TestPlanModuleOnlyDoesNotReEnableDisabledModule` and `pk-apps/modulecatalog/catalog_test.go::TestPlanIgnoresDisabledUnknownModuleKeys` exercise selective composition and explicit module removal. **Verification gap: a dedicated sweep that removes each module in turn and verifies the plan still composes is pending.** |
+| AC-3 | Analysis | `make check-module-contracts` (`pk-modules/cmd/module-contract-check`). |
 
 ## Satisfied by
 
@@ -96,10 +96,10 @@ one.)
 
 ## References
 
-- `modules/platformkit-business-modules/catalog/modulecontracts/authored_catalog.go`
+- `pk-modules/catalog/modulecontracts/authored_catalog.go`
   — the typed registry that names tier and preset membership for every
   full-distribution module.
-- `modules/platformkit-business-modules/catalog/modulecontracts/authored_module_sets.go`
+- `pk-modules/catalog/modulecontracts/authored_module_sets.go`
   — typed named-set definitions that exercise the "compose any subset"
   property.
 - [ADR 0048 — the catalog is Go-authored; serialized formats are generated exports](../adr/0048-go-authored-catalog-and-generated-exports.md)

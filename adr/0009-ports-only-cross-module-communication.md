@@ -14,9 +14,9 @@ Status: **Accepted** (2024-06-10)
 
 ## The problem
 
-If `blog_management` imports `user_management` directly, we've
+If `blog` imports `user_management` directly, we've
 already lost. The two modules become co-deployed by construction.
-We can't swap the user provider. We can't test `blog_management` in
+We can't swap the user provider. We can't test `blog` in
 isolation. We can't split the deployment across services without
 unwinding the import graph. That's the distributed-monolith trap —
 all of microservices' operational cost and none of the decoupling
@@ -36,13 +36,13 @@ under `pk-modules/<other_module>/...` is off-limits
    contracts are for — see
    [Convention C-04 — public contracts live away from their implementation](../conventions.md#c-04-public-contracts-live-away-from-their-implementation).
 2. Catalog wiring in `pk-modules/catalog/` and the
-   composition layer in `platformkit-apps/modulecatalog/` can
+   composition layer in `pk-apps/modulecatalog/` can
    import any module's `NewModule()` — they exist precisely to
    compose the graph.
 
 Everywhere else, cross-module calls go through an owner contract in
 `contracts/provides/` or a cross-cutting interface in
-`platformkit-business-modules/ports/`. The caller declares the typed dependency
+`pk-modules/ports/`. The caller declares the typed dependency
 in `dependencies.go` with
 `standard.WithDep(module.RequiresPort[T](module.PortSpec{...}))` or the
 `OptionalPort[T]` variant. The consumer imports the contract; the app wires the
@@ -78,13 +78,13 @@ We're strict about this. One exception breeds ten.
   (type assertions on a cross-module concrete type,
   reflection-based access, etc.) that a plain import-grep would
   miss.
-- **`platformkit-backend-kit/cmd/repo-split-importcheck`** —
+- **`pk-core/cmd/repo-split-importcheck`** —
   validates boundaries at the repo-split layer to prevent
   backend-kit ↔ business-modules leaks.
 
 ## References
 
-- CLAUDE.md — Invariant #1: "No cross-module direct imports."
+- The workspace agent guide — invariant: "No cross-module direct imports."
 - `pk-modules` `check-pkvet` — the CI target.
 - `pk-modules/ports/` — the canonical cross-module
   interface surface.

@@ -16,7 +16,7 @@ Status: **Accepted** (2026-04-13)
 
 PlatformKit ships a lot of interfaces with more than one
 implementation. `cache.Cache` has memory, Redis, mock, and middleware
-providers under `platformkit-backend-kit/infrastructure/cache/providers/`.
+providers under `pk-core/infrastructure/cache/providers/`.
 Frontend service registries can accept app-owned implementations in addition
 to the concrete providers shipped by frontend-kit. `FieldRenderer` has
 per-type renderers (boolean, date, number, select, text,
@@ -46,8 +46,8 @@ production.
 
 ## The decision
 
-Every interface in `platformkit-backend-kit`,
-`platformkit-frontend-kit`, or `platformkit-shared` that has (or
+Every interface in `pk-core`,
+the frontend kit, or `pk-shared` that has (or
 could have) more than one implementation SHOULD ship a sibling
 `*contract/` package with a behavioural test suite. Every new
 production-facing provider SHOULD wire the suite from its own
@@ -58,7 +58,7 @@ migration.
 The canonical shape, from the existing `cachecontract` suite:
 
 ```go
-// platformkit-backend-kit/infrastructure/cache/cachecontract/cache_contract.go
+// pk-core/infrastructure/cache/cachecontract/cache_contract.go
 package cachecontract
 
 // CacheFactory produces a fresh cache.Cache instance. Each subtest
@@ -78,7 +78,7 @@ func RunCacheTests(t *testing.T, newCache CacheFactory) {
 Each provider wires the suite in a single-function test file:
 
 ```go
-// platformkit-backend-kit/infrastructure/cache/providers/memory/contract_test.go
+// pk-core/infrastructure/cache/providers/memory/contract_test.go
 func TestMemoryCacheContract(t *testing.T) {
     cachecontract.RunCacheTests(t, func() cache.Cache {
         c := NewMemoryCacheWithConfig(MemoryCacheConfig{
@@ -116,20 +116,20 @@ Five rules keep the pattern honest:
 Adjacent patterns that live in `*contract/` directories but are
 NOT this pattern (out of scope):
 
-- `platformkit-backend-kit/analysis/accesscontract` and
+- `pk-core/analysis/accesscontract` and
   `analysis/eventcontract` — `go/analysis` linters that enforce
   architectural rules statically.
-- `platformkit-backend-kit/observability/logger/providercontract` —
+- `pk-core/observability/logger/providercontract` —
   shared fx constructor parameter struct (`Params` with `fx.In`).
-- `platformkit-backend-kit/pwa/providercontract` — an interface +
+- `pk-core/pwa/providercontract` — an interface +
   DTO declaration package (a `NotificationService` interface
   declared separately from its implementations to avoid an import
   cycle). An interface that *could* gain a behavioural contract
   suite but currently ships without one.
-- `platformkit-backend-kit/internal/runtimecontract` — generates
+- `pk-core/internal/runtimecontract` — generates
   and diffs a serialised API contract (OpenAPI-style) across
   revisions. Not an interface behavioural suite.
-- `platformkit-shared/presentation/componentcontract` — validates
+- `pk-shared/presentation/componentcontract` — validates
   the component spec catalog.
 - `pk-modules/tests/ui_contract` — `go test`
   files that assert module UI authoring conventions across the
@@ -176,9 +176,9 @@ NOT this pattern (out of scope):
   contract package's exported signatures no longer match what the
   provider imports. `go build` alone doesn't catch this because
   it doesn't compile `_test.go` files. Which `make` targets
-  exercise this varies per kit: `platformkit-backend-kit`'s
-  `make precommit` runs `test`, and `platformkit-shared`'s runs
-  `verify → test`; `platformkit-frontend-kit`'s `make precommit`
+  exercise this varies per kit: `pk-core`'s
+  `make precommit` runs `test`, and `pk-shared`'s runs
+  `verify → test`; the frontend kit's `make precommit`
   runs `verify → guard-pr test-js` and does NOT chain to
   `test-go`, so contract-test compile regressions there surface
   only when `make test-go`, `make test`, or the reusable Go CI
@@ -199,7 +199,7 @@ NOT this pattern (out of scope):
   frontend-kit provider directories where most contract suites
   live.
 - **Frontend provider selection is mechanically fail-closed.**
-  `platformkit-frontend-kit/providers.Registry.Require` rejects missing,
+  the frontend kit's `providers.Registry.Require` rejects missing,
   non-canonical, and unregistered names. Every canonical frontend service
   factory delegates to that resolver and propagates its error. The
   repository-level `service_provider_contract_test.go` verifies those
@@ -209,17 +209,17 @@ NOT this pattern (out of scope):
 ## References
 
 - Reference implementations:
-  - `platformkit-backend-kit/infrastructure/cache/cachecontract/cache_contract.go`
+  - `pk-core/infrastructure/cache/cachecontract/cache_contract.go`
     — 16 subtests covering TTL expiry, overwrite, concurrency,
     special-character keys, large values, zero-TTL, nil context,
     stats/health.
-  - `platformkit-backend-kit/resilience/resiliencecontract/resilience_contract.go`
+  - `pk-core/resilience/resiliencecontract/resilience_contract.go`
     — multi-interface contract with a separate state-transition
     suite.
-  - `platformkit-frontend-kit/services/auth/authcontract/auth_contract.go`
+  - the frontend kit's `services/auth/authcontract/auth_contract.go`
     — fail-closed identity contract with the factory-per-subtest
     pattern.
-  - `platformkit-frontend-kit/service_provider_contract_test.go` and
+  - the frontend kit's `service_provider_contract_test.go` and
     `providers/registry_test.go` — forward-only provider-selection evidence:
     exact registered names, explicit construction errors, real provider
     construction, and source ratchets against retired pretend providers.

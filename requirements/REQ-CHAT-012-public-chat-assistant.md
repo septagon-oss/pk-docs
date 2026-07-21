@@ -18,8 +18,8 @@ satisfied_by:
 implements_cross_cutting: [REQ-005, REQ-009, REQ-013, REQ-014]
 refines: REQ-CHAT-002
 type: doc
-tags: [requirement, capability, chat_management, public_chat, assistant]
-module: chat_management
+tags: [requirement, capability, chat, public_chat, assistant]
+module: chat
 feature: public_chat
 capability: public_chat_assistant
 capability_kind: failure_mode
@@ -102,9 +102,9 @@ surface. Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/chat_management/features/public_chat/assistant_test.go::TestSiteAssistantReplyBuildsArticleAwarePublicPrompt`. |
-| AC-2 | Test | `modules/platformkit-business-modules/chat_management/features/public_chat/assistant_test.go::TestSendPublicMessageUsesAssistantReply`. |
-| AC-3 | Test | `modules/platformkit-business-modules/chat_management/features/public_chat/assistant_test.go::TestSendPublicMessageFallsBackWhenAssistantFails`. |
+| AC-1 | Test | `pk-modules/chat/features/public_chat/assistant_test.go::TestSiteAssistantReplyBuildsArticleAwarePublicPrompt`. |
+| AC-2 | Test | `pk-modules/chat/features/public_chat/assistant_test.go::TestSendPublicMessageUsesAssistantReply`. |
+| AC-3 | Test | `pk-modules/chat/features/public_chat/assistant_test.go::TestSendPublicMessageFallsBackWhenAssistantFails`. |
 
 ## Edge cases & unhappy paths
 
@@ -161,8 +161,8 @@ surface. Three properties:
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/chat_management/features/public_chat/assistant.go` — prompt builder and reply orchestration.
-- `modules/platformkit-business-modules/chat_management/features/public_chat/service.go` — public-chat orchestration entry.
+- `pk-modules/chat/features/public_chat/assistant.go` — prompt builder and reply orchestration.
+- `pk-modules/chat/features/public_chat/service.go` — public-chat orchestration entry.
 
 ## Related requirements
 

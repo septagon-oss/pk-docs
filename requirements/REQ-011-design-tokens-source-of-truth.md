@@ -25,8 +25,8 @@ Status: **Active** (2026-05-06)
 
 **If** a UI component requires a color, spacing, typography, radius,
 shadow, or motion value, **then** it **shall** reference a registered
-design token from `platformkit-design-system/tokens/` or
-`platformkit-shared/tokens/` and **shall not** use a literal hex code,
+design token from the design system's `tokens/` or
+`pk-shared/tokens/` and **shall not** use a literal hex code,
 raw `px`/`rem`, `rgb(...)`, or named CSS color in component rendering
 code. Tenant-overlay branding **shall** flow through the same token
 registry and overlay pipeline.
@@ -38,8 +38,8 @@ drifts by default. Two buttons that are both intended to be
 "primary" can end up with different shades, different corner radii, and
 different spacing simply because one file copied an older literal and
 another used a new one. Central token definitions in
-`platformkit-design-system/tokens/` and shared token contracts in
-`platformkit-shared/tokens/` prevent this drift by forcing all visual
+the design system's `tokens/` and shared token contracts in
+`pk-shared/tokens/` prevent this drift by forcing all visual
 semantics through named, reviewable primitives.
 
 Tenant branding depends on the same invariant. PlatformKit overlays are
@@ -47,7 +47,7 @@ supposed to remap semantic intent (brand, surface, foreground, spacing,
 focus, motion) without rewriting component code. When components bypass
 tokens and hardcode literals, tenant overlays cannot reliably apply and
 customers get partial or broken theming. Token-driven components,
-including `platformkit-frontend-kit/components/atoms/*` that consume
+including the frontend kit's `components/atoms/*` that consume
 token-provided style props, preserve a single branding pipeline.
 
 Accessibility evidence also requires a finite semantic surface. Contrast
@@ -75,10 +75,10 @@ whole-catalog review process.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Analysis | `frontend/platformkit-frontend-kit/cmd/guard-tokens` rejects literal hex/rgb/named-color usage in component code. |
+| AC-1 | Analysis | the frontend kit's `cmd/guard-tokens` rejects literal hex/rgb/named-color usage in component code. |
 | AC-2 | Inspection | Code-review checklist over admin shell renderers confirms style consumption via `theme.Tokens` only. |
-| AC-3 | Inspection | Code-review checklist over tenant branding paths confirms overlays are applied through `platformkit-design-system/overlays/` and the registered token pipeline. |
-| AC-4 | Inspection | Design-system catalog review confirms token categories are fully enumerated from `platformkit-design-system/tokens/` and `platformkit-shared/tokens/`. |
+| AC-3 | Inspection | Code-review checklist over tenant branding paths confirms overlays are applied through the design system's `overlays/` and the registered token pipeline. |
+| AC-4 | Inspection | Design-system catalog review confirms token categories are fully enumerated from the design system's `tokens/` and `pk-shared/tokens/`. |
 
 ## Satisfied by
 

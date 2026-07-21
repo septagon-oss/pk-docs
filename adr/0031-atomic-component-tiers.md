@@ -14,7 +14,7 @@ Status: **Accepted** (2026-05-10)
 
 ## The problem
 
-`platformkit-frontend-kit` ships ~100 reusable components. Without a
+the frontend kit ships ~100 reusable components. Without a
 discipline, three failure modes appear within weeks:
 
 1. **Tier inversion** — a "button" atom imports a "card" molecule for
@@ -34,7 +34,7 @@ discipline, three failure modes appear within weeks:
 
 We already classify components into the canonical Brad-Frost atomic
 tiers (atoms → molecules → organisms → templates → pages) on disk
-under `platformkit-frontend-kit/components/<tier>/<name>/`. The
+under the frontend kit's `components/<tier>/<name>/`. The
 classification has been load-bearing in the codebase for over a year
 — the registry has a `ComponentCategory` enum, the storybook
 generator groups by tier, the Figma export reads tier from the
@@ -53,7 +53,7 @@ guards that enforce each one.
 
 ## The decision
 
-Every reusable frontend component in `platformkit-frontend-kit/components/`
+Every reusable frontend component in the frontend kit's `components/`
 sits in exactly one of five tiers:
 
 | Tier        | Path                         | Definition                                                                              | May import (component tiers) | May import (support)   |
@@ -65,7 +65,7 @@ sits in exactly one of five tiers:
 | **page**    | `components/pages/<name>/`   | A concrete composition of templates + organisms producing a renderable page.            | `atoms`, `molecules`, `organisms`, `templates` | `base`, `layouts` |
 
 The rules above are normative. Their machine-readable form lives at
-`platformkit-frontend-kit/.platformkit/component_tier_rules.json` and is
+the frontend kit's `.platformkit/component_tier_rules.json` and is
 the source of truth for the contract tests. **If the table in this
 ADR and the JSON disagree, the JSON wins until the ADR is updated.**
 
@@ -143,14 +143,14 @@ The boundary that catches most misclassifications:
 
 All five run in the `fast`, `pr`, `ui-hardening`, `full`, and
 `nightly` lanes via `make guard-fast` (etc.) and are catalogued in
-`platformkit-frontend-kit/.platformkit/guards/ui-hardening.yaml`.
+the frontend kit's `.platformkit/guards/ui-hardening.yaml`.
 
 ## Adding a new tier
 
 Adding a sixth tier (e.g. `widgets`) is a deliberate ADR-amending
 decision. The mechanical change is small (add a row to
 `component_tier_rules.json`), but it touches the storybook generator,
-the Figma export, the PKDS pipeline, and every CLAUDE.md mention of
+the Figma export, the PKDS pipeline, and every agent-context mention of
 the model. Don't slip a new tier in via PR.
 
 ## Risks

@@ -102,10 +102,10 @@ operate on a zero-valued `Tenant{}` as if it were real.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/tenant_management/ports_provider_test.go::TestModuleProvidesTenancyPorts`. |
-| AC-2 | Test | `modules/platformkit-business-modules/tenant_management/ports_provider_test.go::TestTenancyReaderAdapter`. |
-| AC-3 | Test | `modules/platformkit-business-modules/tenant_management/ports_provider_test.go::TestTenancyResolverAdapter`. |
-| AC-4 | Inspection | `modules/platformkit-business-modules/tenant_management/ports_provider.go::ResolveByHost` + `toTenancyTenant` — delegation and nil-DTO conversion. Dedicated host-resolution test pending (the underlying alias lookup is covered by REQ-TENANT-012). |
+| AC-1 | Test | `pk-modules/tenant_management/ports_provider_test.go::TestModuleProvidesTenancyPorts`. |
+| AC-2 | Test | `pk-modules/tenant_management/ports_provider_test.go::TestTenancyReaderAdapter`. |
+| AC-3 | Test | `pk-modules/tenant_management/ports_provider_test.go::TestTenancyResolverAdapter`. |
+| AC-4 | Inspection | `pk-modules/tenant_management/ports_provider.go::ResolveByHost` + `toTenancyTenant` — delegation and nil-DTO conversion. Dedicated host-resolution test pending (the underlying alias lookup is covered by REQ-TENANT-012). |
 
 ## Edge cases & unhappy paths
 
@@ -145,7 +145,7 @@ operate on a zero-valued `Tenant{}` as if it were real.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/tenant_management/ports_provider.go::registerTenancyPorts, tenancyReaderAdapter, tenancyResolverAdapter, toTenancyTenant`.
+- `pk-modules/tenant_management/ports_provider.go::registerTenancyPorts, tenancyReaderAdapter, tenancyResolverAdapter, toTenancyTenant`.
 - `core/platformkit-ports/tenancy/tenancy.go` — the seam
   definition: `Tenant`, `Reader`, `Resolver`, and the authored
   contracts.

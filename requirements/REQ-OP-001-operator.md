@@ -13,8 +13,8 @@ satisfied_by:
   conventions: [C-04, C-14]
 implements_cross_cutting: [REQ-005, REQ-007]
 type: doc
-tags: [requirement, feature, operator_management]
-module: operator_management
+tags: [requirement, feature, operator]
+module: operator
 feature: operator
 ---
 
@@ -63,8 +63,8 @@ inference.
 | AC | Method | Evidence |
 |---|---|---|
 | AC-1 | Inspection | Code review of the operator-auth wiring; reviewers verify the credential pool is independent of `auth_management`. |
-| AC-2 | Test | `modules/platformkit-business-modules/operator_management/features/operator/html_handler_test.go::TestNewHTMLRenderHandler_SwapsToOperatorPrincipal` covers the cross-tenant entry guard. |
-| AC-3 | Test | `modules/platformkit-business-modules/operator_management/features/operator/page_test.go::TestOperatorPagePreview_NilRenderer` covers default-landing behaviour. |
+| AC-2 | Test | `pk-modules/operator/features/operator/html_handler_test.go::TestNewHTMLRenderHandler_SwapsToOperatorPrincipal` covers the cross-tenant entry guard. |
+| AC-3 | Test | `pk-modules/operator/features/operator/page_test.go::TestOperatorPagePreview_NilRenderer` covers default-landing behaviour. |
 
 ## Implements (cross-cutting)
 
@@ -73,9 +73,9 @@ inference.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/operator_management/features/operator/handler.go`,
+- `pk-modules/operator/features/operator/handler.go`,
   `html_handler.go`, `html_handler_test.go`
-- `modules/platformkit-business-modules/operator_management/features/operator/page.go`, `page_test.go`
+- `pk-modules/operator/features/operator/page.go`, `page_test.go`
 
 ## Related requirements
 

@@ -149,7 +149,7 @@ monolith's synchronous call sites.
 
 **The rule.** Every design token, component contract, theme,
 experience, and icon is authored in CUE under
-`platformkit-design-system/pkds/src/`. Every consumer (Claude
+the design system's `pkds/src/`. Every consumer (Claude
 Design, mobile, Storybook, Tailwind, future Figma/iOS/React)
 receives its artifact from a pure emitter function that reads the
 compiled IR.

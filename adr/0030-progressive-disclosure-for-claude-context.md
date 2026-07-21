@@ -26,7 +26,7 @@ content.
 The May 2026 readiness audit measured what we were spending. The
 top-of-tree files for the two largest repos —
 `.claude/generated/repos/pk-modules.md` (57 KB) and
-`.claude/generated/repos/platformkit-backend-kit.md` (22 KB) — together
+`.claude/generated/repos/pk-core.md` (22 KB) — together
 shipped roughly 18,000 tokens to the model on every turn, almost
 entirely as an exhaustive `## Go Modules And Packages` enumeration:
 ~250 lines listing every Go import path inside business-modules, plus
@@ -117,9 +117,8 @@ Concretely:
 ## How we enforce it
 
 - **`check-claudemd-discipline`**
-  (`platformkit-devtools/cmd/check-claudemd-discipline/main.go`,
-  invoked via `platformkit verify claudemd`, wired as
-  `make check-claudemd-discipline` at the workspace root).
+  (`pk-tools/cmd/check-claudemd-discipline/main.go`,
+  verified by its package-local executable contract tests).
   Walks every `CLAUDE.md` in the workspace plus every file the
   encountered `@include` directives transclude, computes the
   effective eager-load size, and fails the build when:
@@ -129,7 +128,7 @@ Concretely:
       pattern (a contiguous list of ≥ 30 backtick-fenced bullet items
       with the same prefix — typically the package-listing shape).
   Failures name the file, the measured size, and the budget; the
-  exclusion allowlist lives in `.claude/check-claudemd-discipline.yaml`
+  exclusion allowlist lives in the checker's reviewed configuration file
   so adding a category is a deliberate one-line diff.
 - **Module-doc generator size mode**
   (`pk-modules/cmd/module-docs-generate`): emits a

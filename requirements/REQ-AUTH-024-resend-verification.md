@@ -119,15 +119,15 @@ the account-existence oracle the opaque response prevents.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/registration/resend_verification_test.go::TestResendVerificationHandler_ReturnsOpaqueSuccessForEveryServiceOutcome`. |
-| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/registration/resend_verification_test.go::TestResendVerification_CooldownPrecedesLookupAndRotation` and `TestResendVerification_UnknownAccountStillClaimsCooldownBeforeLookup`. |
-| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/registration/resend_verification_test.go::TestResendVerification_SharedCooldownHasOneConcurrentWinner`, `TestResendVerification_LocalFallbackHasOneConcurrentWinner`, `TestResendVerification_WiredCacheFailuresFailClosedBeforeLookup`, `TestResendVerification_SharedCooldownKeyContainsNoRawEmail`, and `TestResendVerification_MissingTenantFailsClosedBeforeLookup`. |
-| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/registration/resend_verification_test.go::TestResendVerification_ReplacesTokenBeforeDispatch`. |
-| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/registration/resend_verification_test.go::TestResendVerification_ReplacesTokenBeforeDispatch` and `TestResendVerificationUsesDistinctSensitiveDeliveryIntentPerCredential`. |
-| AC-6 | Test | `modules/platformkit-business-modules/auth_management/features/registration/resend_verification_test.go::TestResendVerification_SuppressesUnknownAndVerifiedAccounts` and `TestResendVerification_PreservesLookupOutageForOperatorVisibility`. |
-| AC-7 | Test | `modules/platformkit-business-modules/auth_management/features/registration/resend_verification_test.go::TestResendVerification_FailureOrdering` and `TestResendVerificationHandler_ReturnsOpaqueSuccessForEveryServiceOutcome`. |
-| AC-8 | Test | `modules/platformkit-business-modules/auth_management/features/registration/resend_verification_test.go::TestResendVerification_FailureOrdering` and `TestResendVerificationHandler_ReturnsOpaqueSuccessForEveryServiceOutcome`. |
-| AC-9 | Test | `modules/platformkit-business-modules/auth_management/features/registration/resend_verification_test.go::TestResendVerification_FailureOrdering` and `TestResendVerificationHandler_ReturnsOpaqueSuccessForEveryServiceOutcome`. |
+| AC-1 | Test | `pk-modules/auth_management/features/registration/resend_verification_test.go::TestResendVerificationHandler_ReturnsOpaqueSuccessForEveryServiceOutcome`. |
+| AC-2 | Test | `pk-modules/auth_management/features/registration/resend_verification_test.go::TestResendVerification_CooldownPrecedesLookupAndRotation` and `TestResendVerification_UnknownAccountStillClaimsCooldownBeforeLookup`. |
+| AC-3 | Test | `pk-modules/auth_management/features/registration/resend_verification_test.go::TestResendVerification_SharedCooldownHasOneConcurrentWinner`, `TestResendVerification_LocalFallbackHasOneConcurrentWinner`, `TestResendVerification_WiredCacheFailuresFailClosedBeforeLookup`, `TestResendVerification_SharedCooldownKeyContainsNoRawEmail`, and `TestResendVerification_MissingTenantFailsClosedBeforeLookup`. |
+| AC-4 | Test | `pk-modules/auth_management/features/registration/resend_verification_test.go::TestResendVerification_ReplacesTokenBeforeDispatch`. |
+| AC-5 | Test | `pk-modules/auth_management/features/registration/resend_verification_test.go::TestResendVerification_ReplacesTokenBeforeDispatch` and `TestResendVerificationUsesDistinctSensitiveDeliveryIntentPerCredential`. |
+| AC-6 | Test | `pk-modules/auth_management/features/registration/resend_verification_test.go::TestResendVerification_SuppressesUnknownAndVerifiedAccounts` and `TestResendVerification_PreservesLookupOutageForOperatorVisibility`. |
+| AC-7 | Test | `pk-modules/auth_management/features/registration/resend_verification_test.go::TestResendVerification_FailureOrdering` and `TestResendVerificationHandler_ReturnsOpaqueSuccessForEveryServiceOutcome`. |
+| AC-8 | Test | `pk-modules/auth_management/features/registration/resend_verification_test.go::TestResendVerification_FailureOrdering` and `TestResendVerificationHandler_ReturnsOpaqueSuccessForEveryServiceOutcome`. |
+| AC-9 | Test | `pk-modules/auth_management/features/registration/resend_verification_test.go::TestResendVerification_FailureOrdering` and `TestResendVerificationHandler_ReturnsOpaqueSuccessForEveryServiceOutcome`. |
 
 ## Edge cases and explicit limits
 
@@ -174,11 +174,11 @@ the account-existence oracle the opaque response prevents.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/auth_management/features/registration/resend_verification.go` —
+- `pk-modules/auth_management/features/registration/resend_verification.go` —
   the opaque handler and pre-lookup cooldown orchestration.
-- `modules/platformkit-business-modules/auth_management/features/registration/resend_verification_cooldown.go` —
+- `pk-modules/auth_management/features/registration/resend_verification_cooldown.go` —
   tenant/email-digest atomic cooldown and bounded local fallback.
-- `modules/platformkit-business-modules/auth_management/features/registration/register_user_service.go::sendVerificationEmail` —
+- `pk-modules/auth_management/features/registration/register_user_service.go::sendVerificationEmail` —
   fresh bearer creation, digest persistence, TTL assignment, and sensitive
   notification dispatch.
 

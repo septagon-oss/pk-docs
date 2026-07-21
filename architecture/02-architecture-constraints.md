@@ -60,7 +60,7 @@ Components compile to semantic Tailwind classes through a typed DSL
 ([ADR 0004](../adr/0004-typed-design-token-dsl.md)).
 
 **Design system authored in CUE.** The `pkds/` subpackage of
-`platformkit-design-system` is the source of truth for every design
+the design system is the source of truth for every design
 token, component contract, theme, experience, and icon
 ([ADR 0022](../adr/0022-pkds-cue-authored-design-system-pipeline.md)).
 CUE evaluates at build time; emitters produce DTCG JSON, Storybook
@@ -77,8 +77,8 @@ the integration boundaries).
 
 **21 repositories, tied together by `go.work`.** The repo split is
 deliberate: it enforces boundary hygiene by making certain imports
-impossible at the Go module level. `platformkit-devtools` and
-`platformkit-tests` carry the browser-automation and Docker SDK
+impossible at the Go module level. `pk-tools` and
+`pk-testkit` carry the browser-automation and Docker SDK
 dependencies; server-producing repos never can
 ([Convention C-05](../conventions.md#c-05-server-binaries-dont-ship-browsers-or-docker)).
 

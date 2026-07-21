@@ -47,7 +47,7 @@ on.
 ## The decision
 
 Every module's `ModuleContract` in
-`modules/platformkit-business-modules/catalog/modulecontracts/authored_catalog.go`
+`pk-modules/catalog/modulecontracts/authored_catalog.go`
 declares exactly one typed `Tier` value:
 
 - **core-certified** — strongest compatibility posture,
@@ -83,7 +83,7 @@ feature, but they must *say* so.
 ## What we kept
 
 - Honest integrator signal. A product team adopting
-  `chat_management` sees `tier: experimental` and plans
+  `chat` sees `tier: experimental` and plans
   accordingly. A team integrating `auth_management` sees
   `core-certified` and gets the contract review to match.
 - A proportional audit surface. Core-certified gets the highest
@@ -93,7 +93,7 @@ feature, but they must *say* so.
 ## How we enforce it
 
 - **`make check-module-contracts` in
-  `modules/platformkit-business-modules/`** — runs
+  `pk-modules/`** — runs
   `cmd/module-contract-check` over `modulecontracts.Authored()`, validates the
   typed catalog against the module tree, validates conformance, and compares
   authored contracts with instantiated runtime manifests. There is no YAML
@@ -123,11 +123,11 @@ feature, but they must *say* so.
 
 ## References
 
-- `modules/platformkit-business-modules/catalog/modulecontracts/authored_catalog.go`
+- `pk-modules/catalog/modulecontracts/authored_catalog.go`
   — full-distribution typed tier and compatibility authority.
-- `modules/platformkit-business-modules/catalog/modulequality/authored_policy.go`
+- `pk-modules/catalog/modulequality/authored_policy.go`
   — typed maturity policy authority.
-- `modules/platformkit-business-modules/cmd/module-assurance-evidence-generate`
+- `pk-modules/cmd/module-assurance-evidence-generate`
   — evidence generator.
 - [ADR 0048 — the catalog is Go-authored; serialized formats are generated exports](./0048-go-authored-catalog-and-generated-exports.md)
   — superseding source-of-truth decision.

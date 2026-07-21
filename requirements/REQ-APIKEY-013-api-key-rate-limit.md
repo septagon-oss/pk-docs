@@ -192,7 +192,7 @@ firing).
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/api_key_management/features/key_management/service.go::CheckRateLimit, ResetRateLimit`.
+- `pk-modules/api_key_management/features/key_management/service.go::CheckRateLimit, ResetRateLimit`.
 
 ## Related requirements
 

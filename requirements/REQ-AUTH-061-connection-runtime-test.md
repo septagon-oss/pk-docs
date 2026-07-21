@@ -127,11 +127,11 @@ will see exactly the same failure shape.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/auth_provider/handlers_test.go::TestConnection_UsesRuntimeWithConnectionMetadata` — the resolution path runs before the runtime call. |
+| AC-1 | Test | `pk-modules/auth_management/features/auth_provider/handlers_test.go::TestConnection_UsesRuntimeWithConnectionMetadata` — the resolution path runs before the runtime call. |
 | AC-2 | Inspection | `handlers.go::TestConnection` — `validateConnectionForPurpose` runs before `runConnectionRuntimeChecks`; static failure short-circuits with no adapter invocation. Dedicated assertion test pending (tracked as test gap). |
 | AC-3 | Inspection | `handlers.go::runConnectionRuntimeChecks` + `runLoginConnectionCheck` + `runProvisioningConnectionCheck` — the per-provider switch is the source of truth. Dedicated table-driven test pending. |
 | AC-4 | Inspection | `handlers.go::runLoginConnectionCheck` — the `runtime, ok := h.authProvider.(backendidentity.InteractiveRuntime)` optional-interface gate produces a typed check failure, not a panic. Dedicated test pending. |
-| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/auth_provider/handlers_test.go::TestConnection_UsesRuntimeWithConnectionMetadata` — asserts the runtime received tenant + connection key in `Metadata`. |
+| AC-5 | Test | `pk-modules/auth_management/features/auth_provider/handlers_test.go::TestConnection_UsesRuntimeWithConnectionMetadata` — asserts the runtime received tenant + connection key in `Metadata`. |
 | AC-6 | Inspection | `handlers.go::TestConnection` — no `Update` / session-mint / event-emit on the runtime path. Dedicated repository-spy test pending. |
 | AC-7 | Inspection | `handlers.go::ConnectionTestResponseBody` struct — the response shape's source of truth. |
 
@@ -189,11 +189,11 @@ will see exactly the same failure shape.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/auth_management/features/auth_provider/handlers.go::TestConnection` —
+- `pk-modules/auth_management/features/auth_provider/handlers.go::TestConnection` —
   the dispatch + adapter-call orchestration.
-- `modules/platformkit-business-modules/auth_management/features/auth_provider/handlers.go::runConnectionRuntimeChecks` —
+- `pk-modules/auth_management/features/auth_provider/handlers.go::runConnectionRuntimeChecks` —
   the per-purpose runtime-call branch.
-- `modules/platformkit-business-modules/auth_management/features/auth_provider/handlers.go::connectionRuntimeMetadata` —
+- `pk-modules/auth_management/features/auth_provider/handlers.go::connectionRuntimeMetadata` —
   the tenant + connection-key plumbing.
 
 ## Related requirements

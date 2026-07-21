@@ -105,11 +105,11 @@ returns a wrapped error; the handler translates to 500.
 
 ## How we enforce it
 
-- **`platformkit-backend-kit/analysis/safeerror`** — static
+- **`pk-core/analysis/safeerror`** — static
   analyzer bundled into `pkvet`. Flags known silent-error
   anti-patterns in production code paths. Runs via
   `go vet -vettool=./pkvet ./...` and gates `make check-pkvet`.
-- **`platformkit-backend-kit/cmd/safeerror-check`** — standalone
+- **`pk-core/cmd/safeerror-check`** — standalone
   CLI for spot-checking a subtree.
 - **Review rule**: any `_ = err` or `_, _ = fn(...)` in a PR must
   be paired with a `// justified: <reason>` comment or it's

@@ -65,11 +65,11 @@ flowchart TB
 |---|---|---|
 | End-user requests | In | HTTP with tenant + user context resolved by `tenant_management` + `auth_management` |
 | Admin requests | In | HTTP, admin-scoped routes behind permission checks |
-| Partner webhooks (in) | In | HTTP POST, signed, verified by `webhook_management` |
+| Partner webhooks (in) | In | HTTP POST, signed, verified by `webhook` |
 | Partner webhooks (out) | Out | HTTP POST, signed with tenant-scoped secret, retried with backoff |
 | Emails / SMS / push | Out | Through `notification_management`, pluggable providers (Twilio, SMTP, Meta Cloud API, web-push) |
-| Payments | Out | Through `payment_management` and `billing_management`, multi-provider |
-| File uploads | Bidirectional | `file_management` writes to the configured object storage (S3-compatible, local, or tenant-scoped) |
+| Payments | Out | Through `payment` and `billing`, multi-provider |
+| File uploads | Bidirectional | `file` writes to the configured object storage (S3-compatible, local, or tenant-scoped) |
 | External identity | In | SSO / OIDC federation via `auth_management` providers |
 | Audit evidence | Out | Generated on demand by `check-module-assurance-evidence` |
 | Design context | Out | `brand-context.tgz` uploaded to Claude Design |
@@ -83,17 +83,17 @@ PlatformKit's own code: 21 repositories, tied by `go.work`.
 
 | Repo | Role |
 |---|---|
-| `platformkit-backend-kit` | Runtime primitives: module system, fx wiring, events, CRUD, observability, auth transport |
+| `pk-core` | Runtime primitives: module system, fx wiring, events, CRUD, observability, auth transport |
 | `pk-modules` | 47 business modules (auth, tenant, billing, content, booking, notifications, audit, …) |
-| `platformkit-frontend-kit` | Server-rendered HTML with typed controllers, shell mechanics, Storybook |
-| `platformkit-design-system` | Design tokens, themes, overlays, `pkds/` CUE pipeline |
-| `platformkit-apps` | App compositions: `complete-saas-monolith`, `complete-saas-microservices` |
-| `platformkit-devtools` | `platformkit` CLI, scaffolders, build tooling |
-| `platformkit-shared` | Shared transport types (`AgentSkill`, presentation, etc.) |
+| the frontend kit | Server-rendered HTML with typed controllers, shell mechanics, Storybook |
+| the design system | Design tokens, themes, overlays, `pkds/` CUE pipeline |
+| `pk-apps` | App compositions: `complete-saas-monolith`, `complete-saas-microservices` |
+| `pk-tools` | `platformkit` CLI, scaffolders, build tooling |
+| `pk-shared` | Shared transport types (`AgentSkill`, presentation, etc.) |
 | `platformkit-module-bindings` | NATS-backed port proxies for microservices topology |
-| `platformkit-agent-runtime` | AI agent execution governance plane |
-| `platformkit-tests` | Cross-repo E2E, flow harness, browser automation |
-| `platformkit-integrations` | Third-party provider adapters |
+| the agent runtime | AI agent execution governance plane |
+| `pk-testkit` | Cross-repo E2E, flow harness, browser automation |
+| the integrations layer | Third-party provider adapters |
 | `platformkit-mobile` | React Native / Expo native shell |
 | `pk-docs` | This documentation |
 | `platformkit-infra-pulumi` | Infrastructure catalog and paved-road deployment blueprints |
@@ -101,7 +101,7 @@ PlatformKit's own code: 21 repositories, tied by `go.work`.
 | `platformkit-cluster-ops` | Cluster bootstrap + desired-state for Kubernetes |
 | `platformkit-kube-apps` | Reusable Kubernetes delivery artifacts |
 | `platformkit-community` | Public discussion + community coordination |
-| `platformkit-design-system/pkds` | Sub-module: CUE-authored design system pipeline |
+| the design system's `pkds` | Sub-module: CUE-authored design system pipeline |
 | `infra` | Terraform for the private infrastructure GitHub org |
 | `platformkit` | Public flagship repository |
 | `repo-template` | Template for new Septagon repos |
@@ -110,19 +110,19 @@ PlatformKit's own code: 21 repositories, tied by `go.work`.
 
 | System | Purpose | Integration point |
 |---|---|---|
-| **PostgreSQL** | Primary database | `platformkit-backend-kit/infrastructure/database` |
-| **NATS** | Event bus + microservices transport | `platformkit-backend-kit/client/transports/eventbus`, `platformkit-module-bindings` |
-| **Redis** (optional) | Cache layer | `platformkit-backend-kit/infrastructure/cache/providers/redis` |
-| **SMTP provider** | Transactional email | `notification_management` + `platformkit-integrations` |
+| **PostgreSQL** | Primary database | `pk-core/infrastructure/database` |
+| **NATS** | Event bus + microservices transport | `pk-core/client/transports/eventbus`, `platformkit-module-bindings` |
+| **Redis** (optional) | Cache layer | `pk-core/infrastructure/cache/providers/redis` |
+| **SMTP provider** | Transactional email | `notification_management` + the integrations layer |
 | **Twilio / Meta Cloud API** | SMS / WhatsApp | `notification_management` |
 | **Web-push** | Browser/PWA push | `notification_management/push` |
-| **Stripe / other** | Payments | `payment_management` + `billing_management` |
-| **S3-compatible storage** | File uploads | `file_management` |
+| **Stripe / other** | Payments | `payment` + `billing` |
+| **S3-compatible storage** | File uploads | `file` |
 | **External OIDC / SAML** | SSO federation | `auth_management` providers |
-| **Facturalusa / other** | Portuguese-compliant invoicing | `invoicing_management` + `platformkit-integrations` |
-| **Claude Design (Anthropic)** | AI-driven design generation | `platformkit-design-system/pkds/internal/emit/claudedesign` + `pkds handoff` |
-| **Figma** | Design authoring + variable sync | `platformkit-design-system/adapters/figma` |
-| **Prometheus / OTEL collector** | Metrics + tracing | `platformkit-backend-kit/observability` |
+| **Facturalusa / other** | Portuguese-compliant invoicing | `invoicing` + the integrations layer |
+| **Claude Design (Anthropic)** | AI-driven design generation | the design system's `pkds/internal/emit/claudedesign` + `pkds handoff` |
+| **Figma** | Design authoring + variable sync | the design system's `adapters/figma` |
+| **Prometheus / OTEL collector** | Metrics + tracing | `pk-core/observability` |
 | **GitHub Actions** | CI | workflows under each repo's `.github/workflows/` |
 | **Pulumi / Terraform** | Infrastructure-as-code | `platformkit-infra-pulumi`, `infra` |
 
@@ -130,7 +130,7 @@ PlatformKit's own code: 21 repositories, tied by `go.work`.
 
 **Inbound HTTP.** Huma-registered routes with OpenAPI generated
 automatically. Every route sits behind the auth + tenant middleware
-chain from `platformkit-backend-kit/security`. Integrator-facing
+chain from `pk-core/security`. Integrator-facing
 endpoints are separately permission-gated and typically
 API-key-authenticated via `api_key_management`.
 
@@ -139,7 +139,7 @@ into endpoints owned by the relevant business module. Signatures
 are verified; idempotency is enforced via request-id dedup.
 
 **Outbound webhooks.** Tenant-configured subscribers receive
-signed POSTs from `webhook_management`. Delivery rides on the
+signed POSTs from `webhook`. Delivery rides on the
 outbox pattern
 ([ADR 0007](../adr/0007-transactional-outbox-for-event-delivery.md))
 so a bus failure never loses a subscription emission. Retry is

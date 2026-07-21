@@ -97,7 +97,7 @@ you try to scope them per module.
 
 Adjacent forces close the decision window now:
 
-- The `cookie_consent_management` module just shipped. It has the
+- The `cookie_consent` module just shipped. It has the
   same generated stub as every other module and is opaque to anyone
   who didn't write it. It is also a regulatory surface — auditors
   *will* read its docs.
@@ -288,7 +288,7 @@ Each phase has a binary exit criterion and is independently mergeable.
    `pk-docs/schemas/module_charter.cue`. Land
    `pk-docs/templates/MODULE.cue.tmpl` and
    `MODULE.md.tmpl`. Author
-   `cookie_consent_management/MODULE.cue` and `MODULE.md` fully —
+   `cookie_consent/MODULE.cue` and `MODULE.md` fully —
    the worked example. Land
    `pk-docs/architecture/domains/governance/arc42.md` as
    the first domain doc, transcluding the cookie_consent module
@@ -300,13 +300,13 @@ Each phase has a binary exit criterion and is independently mergeable.
    generated outputs (`docs/doc.go`, `docs/README.md`,
    `.claude/generated/modules/<m>.md`, the catalog yaml entry,
    the agent-skill manifest) from `MODULE.cue`. Exit:
-   `cookie_consent_management`'s generated outputs are produced
+   `cookie_consent`'s generated outputs are produced
    by the new generator and are byte-identical (or
    intentionally-improved) to the current outputs.
 3. **Phase 2 — Analyzers.** Build the five charter analyzers and
    wire them into the business-modules `precommit` target. Exit:
    `make check-module-charter` runs and passes for
-   `cookie_consent_management`.
+   `cookie_consent`.
 4. **Phase 3 — Bulk skeleton migration.** Run
    `platformkit charter init` against every module to generate a
    skeleton `MODULE.cue` from existing metadata
@@ -385,4 +385,4 @@ Each phase has a binary exit criterion and is independently mergeable.
 - [ADR 0018 — event contracts are declared](./0018-event-contracts-are-declared.md) — the event surface captured in `surfaces.events`.
 - [ADR 0021 — interface contract test suites](./0021-interface-contract-test-suites.md) — the test posture captured in `maturity.testCoverage`.
 - `pk-docs/architecture/` — the existing workspace arc42 doc this ADR formalises as the workspace tier.
-- `pk-modules/cookie_consent_management/` — the worked example shipped with this slice.
+- `pk-modules/cookie_consent/` — the worked example shipped with this slice.

@@ -10,15 +10,20 @@ tags: [adr, governance, conventions, file-organisation]
 
 # ADR 0029 — Every Go file declares its purpose with structured traceability
 
-Status: **Accepted** (2026-05-06)
+Status: **Accepted** (2026-05-06), revised 2026-07-20.
 
 > **Current authority:** [ADR 0064](./0064-file-purpose-traceability-is-a-blocking-workspace-invariant.md)
 > restores this decision's universal,
-> blocking target after ADR 0053's temporary de-scope and defines the
-> exact-content historical-debt ratchet. Where enforcement mechanics here
-> conflict with ADR 0064, ADR 0064 governs. Its repository-scope note
+> blocking target after ADR 0053's temporary de-scope. Where enforcement
+> mechanics here conflict with ADR 0064, ADR 0064 governs. Its repository-scope note
 > distinguishes the full workspace gate from narrower public-repository
 > wrappers.
+
+> **Revision 2 amendment (2026-07-20).** The first accepted enforcement wave
+> used ADR 0064's exact-content baseline as a temporary adoption ratchet. C-14
+> debt is now zero, so the transitional baseline configuration, inventory,
+> maintenance flag, matching logic, and result fields are retired. Every
+> governed file now passes the current contract or fails the gate directly.
 
 ## The problem
 
@@ -105,12 +110,11 @@ the IDs are for the guards.
 The check is mechanical, not aspirational. Two tools enforce the
 property:
 
-- **`check-file-purpose`** (`platformkit-devtools/cmd/check-file-purpose`)
+- **`check-file-purpose`** (`pk-tools/cmd/check-file-purpose`)
   — scans every governed hand-authored Go file and fails the workspace gate
-  when a new or changed file lacks any structured role or cites an unknown
-  identifier. The forward half of traceability. Unchanged inherited failures
-  remain visible through ADR 0064's exact-content baseline.
-- **`check-traceability`** (`platformkit-devtools/cmd/check-traceability`)
+  when any file lacks a structured role or cites an unknown identifier. The
+  forward half of traceability.
+- **`check-traceability`** (`pk-tools/cmd/check-traceability`)
   — walks the REQ docs, parses the acceptance-criteria + verification
   tables, then walks Go files and validates that every REQ has at
   least one `Implements:` reference and one `Validates:` reference,
@@ -133,9 +137,9 @@ suppression is unsupported.
   must identify the requirement the file implements or validates, the ADR
   governing it, and C-14. This is the point, not a cost: it forces the
   question "which requirement and decision govern this file?" at write time.
-- A blocking workspace gate. A new or changed incomplete header fails until
-  fixed; individual child repositories do not all expose the equivalent local
-  target yet.
+- A blocking workspace gate. Every incomplete or invalid governed header fails
+  until fixed; individual child repositories do not all expose the equivalent
+  local target yet.
 
 ## What we kept
 
@@ -153,18 +157,17 @@ suppression is unsupported.
 ## How we enforce it
 
 - `check-file-purpose`
-  (`platformkit-devtools/cmd/check-file-purpose/main.go`,
+  (`pk-tools/cmd/check-file-purpose/main.go`,
   invoked via `platformkit verify file-purpose`, wired as
   `make check-file-purpose` at the workspace root and per repo).
   Walks every `.go` file under configured roots, verifies that those roots
   cover every root `go.work` member and every discovered standalone owned
   `go.mod` module, applies the exclusions from
-  `.claude/check-file-purpose.yaml`, and emits a pass/fail report. Failures name
-  incomplete structured roles, unknown IDs, and stale debt acknowledgements.
-- Historical adoption debt is an exact path-and-SHA-256 inventory of unchanged
-  committed violations. New and untracked files are never eligible; editing,
-  deleting, or conforming an acknowledged file invalidates its entry and fails
-  the gate until the source and inventory are reconciled.
+  the checker's reviewed configuration file, and emits a pass/fail report. Failures name
+  incomplete structured roles and unknown IDs.
+- C-14 adoption debt is zero. The checker has no baseline file, configuration
+  key, refresh flag, match branch, or compatibility result fields; every
+  regression is corrected at the source.
 - The exclusion allowlist is a deliberate inventory, not a filename trick.
   Canonical generated-file provenance is parsed; a marker after `package` or a
   `_gen.go` suffix cannot bypass the rule.

@@ -66,4 +66,4 @@ from masquerading as the policy actually serving decisions.
 ## Satisfied by
 
 - `core/platformkit-ports/authz`.
-- `core/platformkit-integrations/topaz`.
+- the integrations layer's `topaz`.

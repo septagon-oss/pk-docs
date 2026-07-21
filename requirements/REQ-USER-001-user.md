@@ -78,10 +78,13 @@ without giving every consumer a direct database hook.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/user_management/features/user/service_test.go::TestNewService` exercises tenant-scoped lookup paths against the mock repository; `table_handler_test.go` covers the HTTP surface honouring tenant context. |
-| AC-2 | Test | `modules/platformkit-business-modules/user_management/features/user/service_test.go::TestNewService` covers both entity-shaped and boundary read paths against the same backing store; the boundary suite is the import-clean DTO contract. |
-| AC-3 | Test | `modules/platformkit-business-modules/user_management/features/user/service_test.go::TestNewService` includes coverage of event publication on the user lifecycle. The full event catalogue (`user.created`, `user.updated`, `user.deleted`) is registered in `feature.go` `Emits(...)` declarations and verified at module-contract check time (`make check-module-contracts`). |
-| AC-4 | Mixed | `service_roles.go::AssignRole` / `RemoveRole` owns identity metadata and audit; `core/platformkit-backend-kit/security/authz/runtime/runtime_test.go::TestRuntimeDoesNotTreatIdentityRoleClaimsAsAuthorizationGrants` proves the authorization boundary. |
+| AC-1 | Test | `pk-modules/user_management/features/user/service_test.go::TestNewService` exercises tenant-scoped lookup paths against the mock repository; `table_handler_test.go` covers the HTTP surface honouring tenant context. |
+| AC-2 | Test | `pk-modules/user_management/features/user/service_test.go::TestNewService` covers both entity-shaped and boundary read paths against the same backing store; the boundary suite is the import-clean DTO contract. |
+| AC-3 | Test | `pk-modules/user_management/features/user/service_test.go::TestNewService` includes coverage of event publication on the user lifecycle. The full event catalogue (`user.created`, `user.updated`, `user.deleted`) is registered in `feature.go` `Emits(...)` declarations and verified at module-contract check time (`make check-module-contracts`). |
+| AC-4 | Inspection | `pk-modules/user_management/features/user/service_roles.go` owns identity-role metadata and audit publication. |
+| AC-4 | Test | `pk-modules/user_management/features/user/service_test.go::TestService_AssignRole` proves assignment behavior and audit emission. |
+| AC-4 | Test | `pk-modules/user_management/features/user/service_test.go::TestService_RemoveRole` proves removal behavior and audit emission. |
+| AC-4 | Test | `pk-core/security/authz/runtime/runtime_test.go::TestRuntimeDoesNotTreatIdentityRoleClaimsAsAuthorizationGrants` proves identity roles cannot become authorization grants. |
 
 ## Implements (cross-cutting)
 
@@ -91,14 +94,14 @@ without giving every consumer a direct database hook.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/user_management/features/user/feature.go` — wiring + admin UI.
-- `modules/platformkit-business-modules/user_management/features/user/service.go`, `service_test.go`,
+- `pk-modules/user_management/features/user/feature.go` — wiring + admin UI.
+- `pk-modules/user_management/features/user/service.go`, `service_test.go`,
   `service_roles.go` — domain logic, role delegation.
-- `modules/platformkit-business-modules/user_management/features/user/handler.go`,
+- `pk-modules/user_management/features/user/handler.go`,
   `table_handler.go`, `routes.go`, `representation.go` — HTTP surface.
-- `modules/platformkit-business-modules/user_management/features/user/notification_service.go`,
+- `pk-modules/user_management/features/user/notification_service.go`,
   `notification_service_test.go` — admin-pending notification fan-out.
-- `modules/platformkit-business-modules/user_management/features/user/section_renderer.go`,
+- `pk-modules/user_management/features/user/section_renderer.go`,
   `section_renderer_test.go` — admin section rendering.
 
 ## Related requirements

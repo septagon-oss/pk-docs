@@ -97,10 +97,10 @@ properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/content_management/features/articles/service_test.go::TestService_GetBySlug_Found`. |
-| AC-2 | Test | `modules/platformkit-business-modules/content_management/features/articles/service_test.go::TestService_GetBySlug_NotFound`. |
-| AC-3 | Test | `modules/platformkit-business-modules/content_management/features/articles/service_test.go::TestService_ListPublished_FiltersCorrectly`. |
-| AC-4 | Test | `modules/platformkit-business-modules/content_management/features/articles/service_test.go::TestService_ListPublishedByLocale_FiltersCorrectly`. |
+| AC-1 | Test | `pk-modules/content_management/features/articles/service_test.go::TestService_GetBySlug_Found`. |
+| AC-2 | Test | `pk-modules/content_management/features/articles/service_test.go::TestService_GetBySlug_NotFound`. |
+| AC-3 | Test | `pk-modules/content_management/features/articles/service_test.go::TestService_ListPublished_FiltersCorrectly`. |
+| AC-4 | Test | `pk-modules/content_management/features/articles/service_test.go::TestService_ListPublishedByLocale_FiltersCorrectly`. |
 
 ## Edge cases & unhappy paths
 
@@ -150,8 +150,8 @@ properties:
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/content_management/features/articles/service.go::GetBySlug, ListPublished, ListPublishedByLocale`.
-- `modules/platformkit-business-modules/content_management/features/articles/docs_pagination.go::ListAllPublishedDocs` — the pagination harness.
+- `pk-modules/content_management/features/articles/service.go::GetBySlug, ListPublished, ListPublishedByLocale`.
+- `pk-modules/content_management/features/articles/docs_pagination.go::ListAllPublishedDocs` — the pagination harness.
 
 ## Related requirements
 

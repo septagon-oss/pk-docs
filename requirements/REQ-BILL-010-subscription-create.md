@@ -19,8 +19,8 @@ satisfied_by:
 implements_cross_cutting: [REQ-001, REQ-004, REQ-009]
 refines: REQ-BILL-001
 type: doc
-tags: [requirement, capability, billing_management, subscriptions, create]
-module: billing_management
+tags: [requirement, capability, billing, subscriptions, create]
+module: billing
 feature: subscriptions
 capability: subscription_create
 capability_kind: data_invariant
@@ -133,16 +133,16 @@ feature. Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestCreateSubscription_WithTrialPeriod`. |
-| AC-2 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestCreateSubscription_WithRequestTrialDaysOverride`. |
-| AC-3 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestCreateSubscription_WithoutTrial`. |
-| AC-4 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestCreateSubscription_WithMetadata`. |
-| AC-5 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestCreateSubscription_PlanNotFound`. |
-| AC-6 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestCreateSubscription_InactivePlan`. |
-| AC-7 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestCreateSubscription_CreateFails`. |
-| AC-8 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestCreateSubscription_UsageLimitsCopiedFromPlan`. |
-| AC-9 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestCreateDefaultSubscription_WithDefaultPlan`. |
-| AC-10 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestCreateDefaultSubscription_NoDefaultPlan` and `TestCreateDefaultSubscription_InvalidData`. |
+| AC-1 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestCreateSubscription_WithTrialPeriod`. |
+| AC-2 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestCreateSubscription_WithRequestTrialDaysOverride`. |
+| AC-3 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestCreateSubscription_WithoutTrial`. |
+| AC-4 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestCreateSubscription_WithMetadata`. |
+| AC-5 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestCreateSubscription_PlanNotFound`. |
+| AC-6 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestCreateSubscription_InactivePlan`. |
+| AC-7 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestCreateSubscription_CreateFails`. |
+| AC-8 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestCreateSubscription_UsageLimitsCopiedFromPlan`. |
+| AC-9 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestCreateDefaultSubscription_WithDefaultPlan`. |
+| AC-10 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestCreateDefaultSubscription_NoDefaultPlan` and `TestCreateDefaultSubscription_InvalidData`. |
 
 ## Edge cases & unhappy paths
 
@@ -196,7 +196,7 @@ feature. Three properties:
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/billing_management/features/subscriptions/service.go::CreateSubscription, CreateDefaultSubscription`.
+- `pk-modules/billing/features/subscriptions/service.go::CreateSubscription, CreateDefaultSubscription`.
 
 ## Related requirements
 

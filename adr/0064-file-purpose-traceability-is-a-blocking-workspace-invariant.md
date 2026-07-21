@@ -11,7 +11,14 @@ affects: [ADR-0029, ADR-0053]
 
 # ADR 0064 — File-purpose traceability is a blocking workspace invariant
 
-Status: **Accepted** (2026-07-15)
+Status: **Accepted** (2026-07-15), revised 2026-07-20.
+
+> **Revision 2 amendment (2026-07-20).** Revision 1 introduced an
+> exact-content historical-debt baseline solely to make initial adoption
+> monotonic. The workspace has since reached zero C-14 debt. This revision
+> retires that transition completely: there is no baseline configuration,
+> inventory, refresh flag, matching branch, or compatibility result surface.
+> Every missing or invalid governed header now fails directly.
 
 > **Repository scope.** The canonical workspace gate runs from the full
 > PlatformKit distribution and covers every owned Go module configured there.
@@ -61,31 +68,19 @@ declaration. It may appear immediately before or after the `package` clause.
 
 The word *universal* describes the governed source surface, not generated or
 vendored material. Downloaded caches, testdata, build state, and other
-non-source categories in `.claude/check-file-purpose.yaml` remain explicit
+non-source categories in the checker's reviewed configuration remain explicit
 directory exclusions. Generated-looking filenames do not qualify: Go output is
 exempt only when its parsed pre-package comments contain the canonical
 `// Code generated ... DO NOT EDIT.` marker. Hand-authored tests, migration
 embed wrappers, command-line tools, and code generators are governed. New
 exclusions are reviewed inventory changes; inline suppression is unsupported.
 
-The initial adoption cannot truthfully pretend that all historical source is
-already conformant. We therefore acknowledge the exact inventory recorded in
-the reviewed, static baseline. Each entry binds a workspace-relative path to
-the SHA-256 digest of the committed file bytes. The baseline is a one-way debt
-ratchet, not an allowlist:
-
-- New and untracked files are never eligible.
-- Editing an acknowledged file invalidates its digest, so that file must be
-  brought into conformance as part of the edit.
-- Deleting or conforming an acknowledged file leaves a stale entry, which also
-  fails until the acknowledgement is removed.
-- Regenerating the baseline is an explicit, reviewed debt decision and is not
-  part of the normal check or CI path.
-
-Consequently the gate blocks every new or changed violation while reporting
-the precise unchanged historical balance on every run. Universal conformance
-remains the destination; the baseline makes progress monotonic and observable
-without disguising inherited debt.
+The initial adoption transition is complete and C-14 debt is zero. The gate
+therefore has one current path: every governed file is checked against the
+same contract, and every missing or invalid structured header fails directly.
+Historical source receives no baseline, waiver, digest acknowledgement, or
+grandfathered result. Universal conformance is the invariant rather than a
+future destination.
 
 ## What we gave up
 
@@ -108,27 +103,20 @@ without disguising inherited debt.
 
 ## How we enforce it
 
-- `platformkit-devtools/cmd/check-file-purpose/main.go` loads the convention,
+- `pk-tools/cmd/check-file-purpose/main.go` loads the convention,
   ADR, and requirement registries, scans the configured roots, and exits
-  non-zero for a missing structured role, an invalid leading reference,
-  changed baseline files, or stale baseline acknowledgements.
+  non-zero for a missing structured role or an invalid leading reference.
 - Workspace `make check-file-purpose` is the canonical invocation.
-- `.claude/check-file-purpose.yaml` owns repository roots, the 100-line header
-  window, registry paths, explicit exclusions, and baseline location.
+- The checker's reviewed configuration file owns repository roots, the 100-line header
+  window, registry paths, and explicit exclusions.
 - The checker validates that those roots cover every owned Go module: root
   `go.work` members and standalone `go.mod` modules discovered outside explicit
   archive, recovery, generated, dependency-cache, vendor, and Git-worktree
   trees. Adding an owned module without governance is a hard configuration
   error.
-- `platformkit-devtools/config/check-file-purpose-baseline.txt` is the reviewed
-  static debt inventory. Normal output reports the number of entries that still
-  match exactly; successful checks are therefore not silent about remaining
-  debt.
-- Maintainers may rebuild that inventory only through the explicit
-  `-write-baseline-from-head` maintenance flag. It snapshots unchanged
-  violations from child-repository `HEAD`s and refuses to launder dirty or
-  untracked working-tree violations. A regenerated file requires ordinary code
-  review like any other governance change.
+- The checker exposes no compatibility or debt-recording API. A failing file is
+  fixed, deleted, generated with canonical provenance, or moved into a genuinely
+  non-source category through a reviewed exclusion change.
 - Runtime commands and generator implementations under `cmd/`, hand-authored
   tests, and Go migration wrappers are included. Only canonical generated-file
   provenance exempts generated Go output.

@@ -72,11 +72,11 @@ review.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `core/platformkit-backend-kit/core/entity/repository/gorm_security_test.go::TestScopedDB_AppliesTenantFilter` |
-| AC-2 | Test | `core/platformkit-backend-kit/core/entity/repository/gorm_security_test.go::TestScopedDB_RejectsMissingTenantContext` |
-| AC-3 | Test | `core/platformkit-backend-kit/core/entity/repository/gorm_tenant_test.go::TestScopedDB_HonoursCrossTenantMarker` |
-| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_UsesCrossTenantLookupBeforeTenantMembershipResolution` exercises the membership-verification path; cross-tenant probing is rejected before session minting. **Verification gap: a dedicated tenant-override-without-membership test is pending.** |
-| AC-2 | Analysis | `make check-module-deps` (run from `pk-modules`) — rejects business-module → business-module implementation imports that would bypass the tenant scope. |
+| AC-1 | Test | `pk-core/core/entity/repository/gorm_security_test.go::TestScopedDB_AppliesTenantFilter` |
+| AC-2 | Test | `pk-core/core/entity/repository/gorm_security_test.go::TestScopedDB_RejectsMissingTenantContext` |
+| AC-3 | Test | `pk-core/core/entity/repository/gorm_tenant_test.go::TestScopedDB_HonoursCrossTenantMarker` |
+| AC-4 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_UsesDurableTenantAuthorityAfterCrossTenantCredentialLookup` exercises the membership-verification path; cross-tenant probing is rejected before session minting. **Verification gap: a dedicated tenant-override-without-membership test is pending.** |
+| AC-2 | Analysis | `make -C pk-modules check-module-deps` rejects business-module → business-module implementation imports that would bypass the tenant scope. |
 
 ## Satisfied by
 
@@ -86,7 +86,7 @@ review.
 - [Convention C-04 — Public contracts live away from their implementation](../conventions.md#c-04-public-contracts-live-away-from-their-implementation) —
   the discipline that keeps `contracts/provides/` import-safe so the
   scope is not bypassed.
-- `platformkit-backend-kit/core/entity/repository/gorm_authz.go` — the
+- `pk-core/core/entity/repository/gorm_authz.go` — the
   GORM session-context injection that puts `platformkit.tenant_id` on
   every connection, plus the role and field-permission propagation
   that complements it.

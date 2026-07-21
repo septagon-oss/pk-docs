@@ -108,7 +108,7 @@ operators can reconcile orphaned rows manually.
 
 - Commit: `e3c5cb720 fix(tenant_management): wrap onboarding in a
   real database transaction`
-- Precedent: `booking_management/notification_queue.go` — existing
+- Precedent: `booking/notification_queue.go` — existing
   multi-step writes already use `deliveryRepo.WithTransaction`.
 - Related:
   [ADR 0005 — no silent failures](./0005-error-handling-discipline.md)

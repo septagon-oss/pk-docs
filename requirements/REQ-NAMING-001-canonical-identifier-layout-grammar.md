@@ -69,11 +69,11 @@ not fragile filename heuristics.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `tooling/platformkit-devtools/internal/modulechecks/naming_check_test.go::TestCheckNamingConventionFlagsDeclarationSites`. |
-| AC-2 | Test | `tooling/platformkit-devtools/internal/modulechecks/naming_check_test.go::TestCheckNamingConventionScansModuleIDsBeyondManagementSuffix`. |
-| AC-3 | Test | `tooling/platformkit-devtools/internal/modulechecks/naming_check_test.go::TestCheckNamingConventionAllowsMainOnlyForCommandPackages`. |
-| AC-4 | Test | `tooling/platformkit-devtools/internal/modulechecks/naming_check_test.go::TestCheckNamingConventionScansEventDeclarationsInAnySourceFile`. |
-| AC-5 | Test | `tooling/platformkit-devtools/internal/modulechecks/naming_check_test.go::TestCheckNamingConventionCollectRoundTrip`. |
+| AC-1 | Test | `pk-tools/internal/modulechecks/naming_check_test.go::TestCheckNamingConventionFlagsDeclarationSites`. |
+| AC-2 | Test | `pk-tools/internal/modulechecks/naming_check_test.go::TestCheckNamingConventionScansModuleIDsBeyondManagementSuffix`. |
+| AC-3 | Test | `pk-tools/internal/modulechecks/naming_check_test.go::TestCheckNamingConventionAllowsMainOnlyForCommandPackages`. |
+| AC-4 | Test | `pk-tools/internal/modulechecks/naming_check_test.go::TestCheckNamingConventionScansEventDeclarationsInAnySourceFile`. |
+| AC-5 | Test | `pk-tools/internal/modulechecks/naming_check_test.go::TestCheckNamingConventionCollectRoundTrip`. |
 
 ## Implements (cross-cutting)
 
@@ -84,7 +84,7 @@ not fragile filename heuristics.
 
 - ADR 0062 — One identifier grammar, projected per surface.
 - Convention C-12 — Identifiers use one grammar projected per surface.
-- `tooling/platformkit-devtools/internal/modulechecks/naming_check.go`.
+- `pk-tools/internal/modulechecks/naming_check.go`.
 
 ## Related requirements
 

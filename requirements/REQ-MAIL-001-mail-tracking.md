@@ -13,8 +13,8 @@ satisfied_by:
   conventions: [C-04, C-14]
 implements_cross_cutting: [REQ-001, REQ-004]
 type: doc
-tags: [requirement, feature, mail_management]
-module: mail_management
+tags: [requirement, feature, mail]
+module: mail
 feature: mail_tracking
 ---
 
@@ -64,10 +64,10 @@ notifications real-time as state changes.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/mail_management/features/mail_tracking/service_test.go::TestLogMailItem_SetsDefaults` and `TestNotifyRecipient_WrongTenantReturnsError` cover tenant-scoped persistence and refusal. |
-| AC-2 | Test | `modules/platformkit-business-modules/mail_management/features/mail_tracking/service_test.go::TestLogMailItem_PreservesExplicitStatus` and `TestLogMailItem_SetsDefaults` cover the default-and-override status assignment. |
-| AC-3 | Test | `modules/platformkit-business-modules/mail_management/features/mail_tracking/service_test.go::TestLogMailItem_EmitsEvent` and `TestCollectMailItem_Success` cover event emission per transition. |
-| AC-4 | Test | `modules/platformkit-business-modules/mail_management/features/mail_tracking/state_machine_test.go::TestValidateMailTransition_AllowsForwardLifecycle`, `TestValidateMailTransition_RejectsBackwardsTransitions`, `TestValidateMailTransition_RejectsUnknownState`, `TestValidateMailTransition_AllowsNoOp`. |
+| AC-1 | Test | `pk-modules/mail/features/mail_tracking/service_test.go::TestLogMailItem_SetsDefaults` and `TestNotifyRecipient_WrongTenantReturnsError` cover tenant-scoped persistence and refusal. |
+| AC-2 | Test | `pk-modules/mail/features/mail_tracking/service_test.go::TestLogMailItem_PreservesExplicitStatus` and `TestLogMailItem_SetsDefaults` cover the default-and-override status assignment. |
+| AC-3 | Test | `pk-modules/mail/features/mail_tracking/service_test.go::TestLogMailItem_EmitsEvent` and `TestCollectMailItem_Success` cover event emission per transition. |
+| AC-4 | Test | `pk-modules/mail/features/mail_tracking/state_machine_test.go::TestValidateMailTransition_AllowsForwardLifecycle`, `TestValidateMailTransition_RejectsBackwardsTransitions`, `TestValidateMailTransition_RejectsUnknownState`, `TestValidateMailTransition_AllowsNoOp`. |
 
 ## Implements (cross-cutting)
 
@@ -76,10 +76,10 @@ notifications real-time as state changes.
 
 ## Satisfied by
 
-- `mail_management/features/mail_tracking/feature.go`
-- `mail_management/features/mail_tracking/service.go`,
+- `mail/features/mail_tracking/feature.go`
+- `mail/features/mail_tracking/service.go`,
   `service_test.go`
-- `mail_management/features/mail_tracking/handler.go`, `routes.go`,
+- `mail/features/mail_tracking/handler.go`, `routes.go`,
   `permissions.go`
 
 ## Related requirements

@@ -139,14 +139,14 @@ and avoids the SQL-injection surface that dynamic filters bring.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/tenant_management/features/identity_connections/service_test.go::TestCreateIdentityConnection_Success` (canonical-form persistence) and `TestCreateIdentityConnection_RejectsUnsupportedUsage` (provider+usage matrix gate). The dedupe path is by inspection of `service.go::CreateIdentityConnection` lines 63–69; dedicated dedupe-collision test pending. |
+| AC-1 | Test | `pk-modules/tenant_management/features/identity_connections/service_test.go::TestCreateIdentityConnection_Success` (canonical-form persistence) and `TestCreateIdentityConnection_RejectsUnsupportedUsage` (provider+usage matrix gate). The dedupe path is by inspection of `service.go::CreateIdentityConnection` lines 63–69; dedicated dedupe-collision test pending. |
 | AC-2 | Inspection | `service.go::GetIdentityConnection` lines 113–115 — the `connection.TenantID != tenantID` check returns the typed not-found error. Dedicated cross-tenant-refuse test pending. |
 | AC-3 | Inspection | `service.go::GetIdentityConnectionByKey` lines 124–132 — `(nil, nil)` on `isNotFoundError`. Dedicated probe-semantics test pending. |
-| AC-4 | Test | `modules/platformkit-business-modules/tenant_management/features/identity_connections/service_test.go::TestListIdentityConnections_FiltersByPurpose` covers the filter branch; the in-memory pagination is by inspection of `service.go::paginateBounds`. |
+| AC-4 | Test | `pk-modules/tenant_management/features/identity_connections/service_test.go::TestListIdentityConnections_FiltersByPurpose` covers the filter branch; the in-memory pagination is by inspection of `service.go::paginateBounds`. |
 | AC-5 | Inspection | `service.go::UpdateIdentityConnection` lines 232–234 — `validateUsage` is re-applied with the post-mutation field set. Dedicated re-validation test pending. |
 | AC-6 | Inspection | `service.go::UpdateIdentityConnection` lines 175–177 — same `connection.TenantID != tenantID` guard as AC-2. Dedicated test pending. |
 | AC-7 | Inspection | `service.go::DeleteIdentityConnection` lines 252–254 — same tenant-scope guard before delete. Dedicated test pending. |
-| AC-8 | Test | `modules/platformkit-business-modules/tenant_management/features/identity_connections/service_test.go::TestGetDefaultIdentityConnection_NotFound` covers the miss path; the purpose-routing branch is by inspection of `service.go::GetDefaultIdentityConnection` lines 264–290. |
+| AC-8 | Test | `pk-modules/tenant_management/features/identity_connections/service_test.go::TestGetDefaultIdentityConnection_NotFound` covers the miss path; the purpose-routing branch is by inspection of `service.go::GetDefaultIdentityConnection` lines 264–290. |
 
 ## Edge cases & unhappy paths
 
@@ -207,7 +207,7 @@ and avoids the SQL-injection surface that dynamic filters bring.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/tenant_management/features/identity_connections/service.go::CreateIdentityConnection, GetIdentityConnection, GetIdentityConnectionByKey, ListIdentityConnections, UpdateIdentityConnection, DeleteIdentityConnection, GetDefaultIdentityConnection`.
+- `pk-modules/tenant_management/features/identity_connections/service.go::CreateIdentityConnection, GetIdentityConnection, GetIdentityConnectionByKey, ListIdentityConnections, UpdateIdentityConnection, DeleteIdentityConnection, GetDefaultIdentityConnection`.
 
 ## Related requirements
 

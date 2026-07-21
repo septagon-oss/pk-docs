@@ -128,15 +128,15 @@ metric and evidence rather than borrowing the bounded-response histogram.
   defines the measurable cross-layer acceptance criteria.
 - [Convention C-24](../conventions.md#c-24-warm-latency-claims-require-segmented-exact-candidate-evidence)
   defines the mechanical measurement and release-evidence rules.
-- `core/platformkit-backend-kit/observability/latency` owns the request classes,
+- `pk-core/observability/latency` owns the request classes,
   p95/p99 objectives, local-feedback target, and exact histogram boundaries;
   middleware and OpenTelemetry tests preserve route/status/class dimensions.
   The wire-level 202 class remains diagnostic; release-manifest enrollment is
   the conformance authority.
-- `tooling/platformkit-tests/cmd/latency-gate` primes the client pool, requires
+- `tooling/pk-testkit/cmd/latency-gate` primes the client pool, requires
   at least 100 samples per route, measures routes independently, and emits a
   fail-closed machine-readable report.
-- `apps/platformkit-apps/config/latency-release.json` declares the release route
+- `pk-apps/config/latency-release.json` declares the release route
   set. The release workflow runs it against the digest-pinned candidate,
   validates the report before promotion, retains the evidence, and rechecks the
   candidate digest immediately before moving release tags.
@@ -151,7 +151,7 @@ metric and evidence rather than borrowing the bounded-response histogram.
 
 - [ADR 0005 — Error handling discipline](./0005-error-handling-discipline.md)
 - [ADR 0008 — Async goroutine context semantics](./0008-async-goroutine-context-semantics.md)
-- [ADR 0055 — Observability correlation spine and durable decisions](./0055-observability-correlation-spine-and-durable-decisions.md)
+- ADR 0055 — Observability correlation spine and durable decisions (not in the public ADR set)
 - [REQ 009 — Every operation is observable](../requirements/REQ-009-observability-everywhere.md)
-- `core/platformkit-backend-kit/docs/architecture/runtime_latency_slo.md`
-- `tooling/platformkit-tests/docs/latency-gate.md`
+- `pk-core/docs/architecture/runtime_latency_slo.md`
+- `tooling/pk-testkit/docs/latency-gate.md`

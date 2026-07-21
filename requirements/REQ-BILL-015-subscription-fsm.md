@@ -18,8 +18,8 @@ satisfied_by:
 implements_cross_cutting: [REQ-005]
 refines: REQ-BILL-001
 type: doc
-tags: [requirement, capability, billing_management, subscriptions, fsm]
-module: billing_management
+tags: [requirement, capability, billing, subscriptions, fsm]
+module: billing
 feature: subscriptions
 capability: subscription_fsm
 capability_kind: state_machine
@@ -107,9 +107,9 @@ properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/subscription_fsm_test.go::TestValidateTransition_ValidTransitions`. |
-| AC-2 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/subscription_fsm_test.go::TestValidateTransition_InvalidTransitions`. |
-| AC-3 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/subscription_fsm_test.go::TestValidateTransition_UnknownStatus`. |
+| AC-1 | Test | `pk-modules/billing/features/subscriptions/subscription_fsm_test.go::TestValidateTransition_ValidTransitions`. |
+| AC-2 | Test | `pk-modules/billing/features/subscriptions/subscription_fsm_test.go::TestValidateTransition_InvalidTransitions`. |
+| AC-3 | Test | `pk-modules/billing/features/subscriptions/subscription_fsm_test.go::TestValidateTransition_UnknownStatus`. |
 
 ## Edge cases & unhappy paths
 
@@ -155,7 +155,7 @@ properties:
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/billing_management/features/subscriptions/subscription_fsm.go::ValidateTransition`.
+- `pk-modules/billing/features/subscriptions/subscription_fsm.go::ValidateTransition`.
 
 ## Related requirements
 

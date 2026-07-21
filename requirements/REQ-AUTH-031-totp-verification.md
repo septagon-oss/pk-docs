@@ -108,11 +108,11 @@ on that first successful verification.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/twofactor/service_test.go::TestService_Verify_ValidCode`. |
-| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/twofactor/service_test.go::TestService_Verify_TimeSkewTolerance`. |
-| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/twofactor/req_auth_003_test.go::TestTOTP_RejectsReplay_WithinDriftWindow` exercises a `replayGuardedStore`. |
+| AC-1 | Test | `pk-modules/auth_management/features/twofactor/service_test.go::TestService_Verify_ValidCode`. |
+| AC-2 | Test | `pk-modules/auth_management/features/twofactor/service_test.go::TestService_Verify_TimeSkewTolerance`. |
+| AC-3 | Test | `pk-modules/auth_management/features/twofactor/req_auth_003_test.go::TestTOTP_RejectsReplay_WithinDriftWindow` exercises a `replayGuardedStore`. |
 | AC-4 | Inspection | `service.go::Verify` — the type-assert-and-fallthrough path when the store does not satisfy `ReplayGuardedSecretStore`. |
-| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/twofactor/service_test.go::TestService_Verify_NotEnrolled`. |
+| AC-5 | Test | `pk-modules/auth_management/features/twofactor/service_test.go::TestService_Verify_NotEnrolled`. |
 | AC-6 | Inspection | `service.go::Verify` — the `SetEnabled(ctx, userID, true)` write at line 173. |
 
 ## Edge cases & unhappy paths
@@ -161,11 +161,11 @@ on that first successful verification.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/auth_management/features/twofactor/service.go::Verify` —
+- `pk-modules/auth_management/features/twofactor/service.go::Verify` —
   the orchestration.
-- `modules/platformkit-business-modules/auth_management/features/twofactor/service.go::validateCodeCounter` —
+- `pk-modules/auth_management/features/twofactor/service.go::validateCodeCounter` —
   the matched-counter helper.
-- `modules/platformkit-business-modules/auth_management/features/twofactor/service.go::ReplayGuardedSecretStore` —
+- `pk-modules/auth_management/features/twofactor/service.go::ReplayGuardedSecretStore` —
   the optional replay-protection interface.
 
 ## Related requirements

@@ -128,15 +128,15 @@ fall into three states:
 - **Decomposed.** The umbrella has at least one capability REQ:
   `auth_management`, `user_management`, `tenant_management`,
   `audit_management`, `api_key_management`, `notification_management`,
-  `billing_management`, `content_management`, `admin_management`,
-  `site_management`, `health_management`, `translation_management`,
-  `entitlement_management`, `chat_management`, `mail_management`, and
+  `billing`, `content_management`, `admin_management`,
+  `site`, `health_management`, `translation`,
+  `entitlement`, `chat`, `mail`, and
   the `platformkit_ports` design authority.
 - **Cross-cutting-only by design.** The feature is pure CRUD or pure
   rendering and the cross-cutting REQs (REQ-001..017) carry the entire
   discipline. No capability REQ is owed for pure rendering or other
   thin cross-cutting surfaces.
-- **Partial decomposition.** `operator_management` already has a
+- **Partial decomposition.** `operator` already has a
   capability REQ for the operator surface, and its follow-on
   capability REQs should continue in the `NNN ≥ 010` range as the
   surface grows.
@@ -366,7 +366,7 @@ Capability-level (NNN ≥ 010):
 - [REQ-NOTIF-011 — Send orchestration](./REQ-NOTIF-011-send-orchestration.md)
 - [REQ-NOTIF-012 — In-app read-state](./REQ-NOTIF-012-in-app-read-state.md)
 
-#### chat_management (REQ-CHAT-NNN)
+#### chat (REQ-CHAT-NNN)
 
 Feature umbrellas (NNN ≤ 009):
 
@@ -379,7 +379,7 @@ Capability-level (NNN ≥ 010):
 - [REQ-CHAT-011 — Room lifecycle](./REQ-CHAT-011-room-lifecycle.md)
 - [REQ-CHAT-012 — Public chat with assistant](./REQ-CHAT-012-public-chat-assistant.md)
 
-#### mail_management (REQ-MAIL-NNN)
+#### mail (REQ-MAIL-NNN)
 
 Feature umbrellas (NNN ≤ 009):
 
@@ -391,7 +391,7 @@ Capability-level (NNN ≥ 010):
 - [REQ-MAIL-010 — Mail item lifecycle](./REQ-MAIL-010-mail-item-lifecycle.md)
 - [REQ-MAIL-011 — Package lifecycle](./REQ-MAIL-011-package-lifecycle.md)
 
-#### billing_management (REQ-BILL-NNN)
+#### billing (REQ-BILL-NNN)
 
 Feature umbrellas (NNN ≤ 009):
 
@@ -406,7 +406,7 @@ Capability-level (NNN ≥ 010):
 - [REQ-BILL-014 — Usage metering](./REQ-BILL-014-usage-metering.md)
 - [REQ-BILL-015 — Subscription FSM](./REQ-BILL-015-subscription-fsm.md)
 
-#### entitlement_management (REQ-ENTITLE-NNN)
+#### entitlement (REQ-ENTITLE-NNN)
 
 Feature umbrellas (NNN ≤ 009):
 
@@ -439,7 +439,7 @@ Capability-level (NNN ≥ 010):
 - [REQ-ADMIN-014 — Ecosystem search](./REQ-ADMIN-014-ecosystem-search.md)
 - [REQ-ADMIN-015 — Discovery route plans](./REQ-ADMIN-015-discovery-route-plan.md)
 
-#### operator_management (REQ-OP-NNN)
+#### operator (REQ-OP-NNN)
 
 - [REQ-OP-001 — Operator](./REQ-OP-001-operator.md)
 
@@ -458,7 +458,7 @@ Capability-level (NNN ≥ 010):
 - [REQ-CONTENT-013 — RSS feed](./REQ-CONTENT-013-rss-feed.md)
 - [REQ-CONTENT-014 — Category navigation](./REQ-CONTENT-014-category-navigation.md)
 
-#### site_management (REQ-SITE-NNN)
+#### site (REQ-SITE-NNN)
 
 Feature umbrellas (NNN ≤ 009):
 
@@ -470,7 +470,7 @@ Capability-level (NNN ≥ 010):
 - [REQ-SITE-010 — Homepage content loader](./REQ-SITE-010-homepage-content-loader.md)
 - [REQ-SITE-011 — Public content shell](./REQ-SITE-011-public-shell.md)
 
-#### translation_management (REQ-TRANS-NNN)
+#### translation (REQ-TRANS-NNN)
 
 Feature umbrellas (NNN ≤ 009):
 

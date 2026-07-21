@@ -92,5 +92,5 @@ pages do not pay for either.
 - ADR 0003 — Component token extractor pattern.
 - ADR 0004 — Typed design token DSL.
 - ADR 0022 — PKDS CUE-authored design system pipeline.
-- `platformkit-frontend-kit/docs/browser-asset-strategy.md`.
+- the frontend kit's `docs/browser-asset-strategy.md`.
 - `pk-modules/internal/moduleassets`.

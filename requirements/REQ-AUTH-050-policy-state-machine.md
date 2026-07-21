@@ -106,8 +106,8 @@ property; this REQ scopes to the lifecycle.
 | AC-2 | Inspection | Same — each method begins with a state-precondition check. |
 | AC-3 | Inspection | `service.go` — `Reject` + `Withdraw` paths produce terminal states. |
 | AC-4 | Inspection | `service_rollout.go` — `Rollback` emits `policy.rollout.rolled_back`. |
-| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/policy/service_test.go::TestPublishPolicyEvent` exercises the publish primitive that every transition uses. |
-| AC-6 | Test | `modules/platformkit-business-modules/auth_management/features/policy/service_test.go::TestComputeRiskAndSeverity` covers the scoring path. |
+| AC-5 | Test | `pk-modules/auth_management/features/policy/service_test.go::TestPublishPolicyEvent` exercises the publish primitive that every transition uses. |
+| AC-6 | Test | `pk-modules/auth_management/features/policy/service_test.go::TestComputeRiskAndSeverity` covers the scoring path. |
 
 ## Edge cases & unhappy paths
 
@@ -154,13 +154,13 @@ property; this REQ scopes to the lifecycle.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/auth_management/features/policy/service.go` — the
+- `pk-modules/auth_management/features/policy/service.go` — the
   state-changing API.
-- `modules/platformkit-business-modules/auth_management/features/policy/service_rollout.go` —
+- `pk-modules/auth_management/features/policy/service_rollout.go` —
   canary and rollback logic.
-- `modules/platformkit-business-modules/auth_management/features/policy/service_impact.go` —
+- `pk-modules/auth_management/features/policy/service_impact.go` —
   impact-report computation.
-- `modules/platformkit-business-modules/auth_management/features/policy/service_events.go` —
+- `pk-modules/auth_management/features/policy/service_events.go` —
   the publish primitive.
 
 ## Related requirements

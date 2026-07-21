@@ -16,7 +16,7 @@ and glossary.
 - Mechanical house rules belong in [`../conventions.md`](../conventions.md).
 - Reference-module behavior belongs beside the code in the public
   `github.com/septagon-oss/pk-modules/pkg/<name>` package. The release-oriented
-  module index lives in [`../docs/v0.0.0/module-reference.md`](../docs/v0.0.0/module-reference.md).
+  module index lives in [`../docs/v0.1.0/module-reference.md`](../docs/v0.1.0/module-reference.md).
 
 The abandoned CUE/module-charter projection plan is preserved only as history
 in superseded [ADR 0023](../adr/0023-module-documentation-stack.md). Do not add
@@ -26,7 +26,7 @@ in superseded [ADR 0023](../adr/0023-module-documentation-stack.md). Do not add
 
 Code owns executable facts. In the full PlatformKit distribution, typed
 `ModuleContract` values own catalog, tier, preset, and set facts under
-`modules/platformkit-business-modules/catalog/modulecontracts`; serialized
+`pk-modules/catalog/modulecontracts`; serialized
 catalog formats are generated exports under
 [ADR 0048](../adr/0048-go-authored-catalog-and-generated-exports.md).
 

@@ -56,8 +56,8 @@ on the public site.
 | AC | Method | Evidence |
 |---|---|---|
 | AC-1 | Inspection | Code review of `community_journal_stylesheet.go` + handler scoping. |
-| AC-2 | Test | `modules/platformkit-business-modules/content_management/features/articles/docs_link_rewrite_test.go::TestRewriteAdrCrossLinks`. |
-| AC-3 | Test | `modules/platformkit-business-modules/content_management/features/articles/community_journal_stylesheet_test.go::TestFallbackCommunityJournalPageUsesPageScopedStylesheet` + `docs_override_service_test.go`. |
+| AC-2 | Test | `pk-modules/content_management/features/articles/docs_link_rewrite_test.go::TestRewriteAdrCrossLinks`. |
+| AC-3 | Test | `pk-modules/content_management/features/articles/community_journal_stylesheet_test.go::TestFallbackCommunityJournalPageUsesPageScopedStylesheet` + `docs_override_service_test.go`. |
 
 ## Implements (cross-cutting)
 

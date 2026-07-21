@@ -108,7 +108,7 @@ gateway and service transports.
 The control plane must be small enough to trust and boring enough to
 operate. It should include:
 
-- `platformkit-backend-kit` runtime services: manifest validation,
+- `pk-core` runtime services: manifest validation,
   mount store contracts, reconciler contracts, GatewayRuntime adapters,
   service-binding abstractions, health observation, and audit event
   types.
@@ -118,7 +118,7 @@ operate. It should include:
   minimal entitlement/policy surfaces required to decide who may install
   or activate a module.
 - A module-control surface implemented either as a new
-  `module_management` business module or as an `admin_management`
+  dedicated business module or as an `admin_management`
   feature if we intentionally consolidate it there. The capability is
   required even if the final package name changes.
 
@@ -233,7 +233,7 @@ runtime deployment docs, and the microservice deployment guide.
 
 ### Phase 1 - Expand the manifest contract
 
-Extend `platformkit-backend-kit/app/module/manifestschema` and
+Extend `pk-core/app/module/manifestschema` and
 `BuildModuleManifest` so manifests describe runtime placement instead
 of hardcoding `supportedModes: ["local"]`.
 
@@ -258,8 +258,8 @@ from source metadata or explicit manifest declarations.
 ### Phase 2 - Add the mount model and store
 
 Create backend-kit runtime contracts, likely under
-`platformkit-backend-kit/app/module/runtime` or
-`platformkit-backend-kit/app/module/mount`.
+`pk-core/app/module/runtime` or
+`pk-core/app/module/mount`.
 
 Core interfaces:
 
@@ -503,11 +503,11 @@ targets with explicit capabilities, timeouts, memory limits, and audit.
 - [ADR 0017 - Fx dependency injection as composition](./0017-fx-dependency-injection-as-composition.md)
 - [ADR 0019 - every port works over HTTP and NATS](./0019-dual-path-transport-symmetry.md)
 - [ADR 0016 - module sets and preset composition](./0016-module-sets-and-preset-composition.md)
-- `platformkit-backend-kit/app/module/bundle.go` - startup module bundle contract.
-- `platformkit-apps/modulecatalog/full/catalog.go` - app catalog planning for local, HTTP, and NATS modes.
-- `platformkit-backend-kit/infrastructure/config/model.go` - module mode config.
-- `platformkit-backend-kit/app/application/dynamic_http_proxy.go` - runtime HTTP routing registry.
-- `platformkit-backend-kit/app/application/gateway_runtime.go` - replaceable gateway data-plane contract.
+- `pk-core/app/module/bundle.go` - startup module bundle contract.
+- `pk-apps/modulecatalog/full/catalog.go` - app catalog planning for local, HTTP, and NATS modes.
+- `pk-core/infrastructure/config/model.go` - module mode config.
+- `pk-core/app/application/dynamic_http_proxy.go` - runtime HTTP routing registry.
+- `pk-core/app/application/gateway_runtime.go` - replaceable gateway data-plane contract.
 - `pk-modules/proxies/remote_catalog.go` - remote transport bundle contract.
 - `pk-modules/proxies/remote_runtime.go` - startup NATS client wiring.
 - `pk-modules/proxies/publisher.go` - local module port publication over NATS.

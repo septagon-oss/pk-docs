@@ -15,8 +15,8 @@ satisfied_by:
 implements_cross_cutting: [REQ-001, REQ-005]
 refines: REQ-SITE-001
 type: doc
-tags: [requirement, capability, site_management, homepage, content_loader]
-module: site_management
+tags: [requirement, capability, site, homepage, content_loader]
+module: site
 feature: homepage
 capability: content_loader
 capability_kind: data_invariant
@@ -92,10 +92,10 @@ properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/site_management/features/homepage/content_loader_test.go::TestLoadHomepageContent_LocaleAndFallback`. |
-| AC-2 | Test | `modules/platformkit-business-modules/site_management/features/homepage/content_loader_test.go::TestLoadHomepageContent_DefaultProfileIncludesJoinHref`. |
-| AC-3 | Test | `modules/platformkit-business-modules/site_management/features/homepage/content_loader_test.go::TestLoadHomepageContent_UnknownProfileFails`. |
-| AC-4 | Test | `modules/platformkit-business-modules/site_management/features/homepage/content_loader_test.go::TestLoadHomepageContent_NonProductProfilesMustComeFromOverlay`. |
+| AC-1 | Test | `pk-modules/site/features/homepage/content_loader_test.go::TestLoadHomepageContent_LocaleAndFallback`. |
+| AC-2 | Test | `pk-modules/site/features/homepage/content_loader_test.go::TestLoadHomepageContent_DefaultProfileIncludesJoinHref`. |
+| AC-3 | Test | `pk-modules/site/features/homepage/content_loader_test.go::TestLoadHomepageContent_UnknownProfileFails`. |
+| AC-4 | Test | `pk-modules/site/features/homepage/content_loader_test.go::TestLoadHomepageContent_NonProductProfilesMustComeFromOverlay`. |
 
 ## Edge cases & unhappy paths
 
@@ -129,7 +129,7 @@ properties:
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/site_management/features/homepage/content_loader.go::LoadHomepageContent`.
+- `pk-modules/site/features/homepage/content_loader.go::LoadHomepageContent`.
 
 ## Related requirements
 

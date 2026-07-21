@@ -97,10 +97,10 @@ sink at FX assembly time.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/twofactor/service_test.go::TestService_Recover_ConsumesBackupCode`. |
+| AC-1 | Test | `pk-modules/auth_management/features/twofactor/service_test.go::TestService_Recover_ConsumesBackupCode`. |
 | AC-2 | Inspection | The mock store's `ConsumeBackupCode` removes the code from the slice on the first call; the second call returns `false` from the slice search. |
 | AC-3 | Inspection | `service.go::Recover` returns `(false, nil)` when `ConsumeBackupCode` reports `ok=false`. |
-| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/twofactor/req_auth_003_test.go::TestBackupCode_EmitsAuditEvent`. |
+| AC-4 | Test | `pk-modules/auth_management/features/twofactor/req_auth_003_test.go::TestBackupCode_EmitsAuditEvent`. |
 | AC-5 | Inspection | `service.go::emitAudit` returns immediately when `s.audit` is nil. |
 | AC-6 | Inspection | `service.go::Recover` calls `SetEnabled(ctx, userID, true)` after a successful consume. |
 
@@ -150,11 +150,11 @@ sink at FX assembly time.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/auth_management/features/twofactor/service.go::Recover` —
+- `pk-modules/auth_management/features/twofactor/service.go::Recover` —
   the orchestration.
-- `modules/platformkit-business-modules/auth_management/features/twofactor/service.go::AuditSink` —
+- `pk-modules/auth_management/features/twofactor/service.go::AuditSink` —
   the optional audit-emission interface.
-- `modules/platformkit-business-modules/auth_management/features/twofactor/service.go::ConsumeBackupCode`
+- `pk-modules/auth_management/features/twofactor/service.go::ConsumeBackupCode`
   contract — the atomic remove primitive.
 
 ## Related requirements

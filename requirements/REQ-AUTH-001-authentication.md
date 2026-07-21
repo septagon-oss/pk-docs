@@ -79,11 +79,11 @@ A.9.4 compliance.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_Success` + `TestCompleteInteractiveAuthentication_PersistsPlatformSession` + `TestAuthenticate_MetricsRecorded` (covers session + audit + metrics). |
-| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/req_auth_001_test.go::TestAuthenticate_HTTPFailureShape_IsIndistinguishable` asserts that `apierrors.AuthErrorMapper` collapses `ErrInvalidCredentials`, `ErrAccountLocked`, `ErrAccountSuspended`, and `ErrEmailNotVerified` to a uniform 401 + uniform "Invalid email or password" message. Rate-limit (429) is kept distinct as it is not account-state-revealing. |
-| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_RateLimited` + `TestAuthenticate_CacheBasedRateLimit`. |
-| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestDurableRefreshSequentialReplayRevokesFamilyAndSession`, `TestDurableRefreshConcurrentRedemptionHasExactlyOneWinner`, and `TestBrowserLogoutWithoutRefreshTokenRevokesDurableFamilyDuringCacheOutage`; `modules/platformkit-business-modules/auth_management/features/authentication/req_auth_001_test.go::TestRefresh_SingleUse_FailsOnReplay` pins the umbrella contract. |
-| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/login_csrf_test.go::TestLoginPageCSRFSupportsNoJavaScriptFirstLoadAndRotatedErrorRender` and `TestLoginFlavorReceivesResponseAuthoritativeCSRFToken`; core `security/csrf/middleware_test.go::TestMiddleware_SetsCookie` and `TestMiddleware_ContextCarriesRotatedToken` prove that the renderer context and response cookie carry the same first-load or rotated token. |
+| AC-1 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_Success` + `TestCompleteInteractiveAuthentication_PersistsPlatformSession` + `TestAuthenticate_MetricsRecorded` (covers session + audit + metrics). |
+| AC-2 | Test | `pk-modules/auth_management/features/authentication/req_auth_001_test.go::TestAuthenticate_HTTPFailureShape_IsIndistinguishable` asserts that `apierrors.AuthErrorMapper` collapses `ErrInvalidCredentials`, `ErrAccountLocked`, `ErrAccountSuspended`, and `ErrEmailNotVerified` to a uniform 401 + uniform "Invalid email or password" message. Rate-limit (429) is kept distinct as it is not account-state-revealing. |
+| AC-3 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_RateLimited` + `TestAuthenticate_CacheBasedRateLimit`. |
+| AC-4 | Test | `pk-modules/auth_management/features/authentication/refresh_token_durable_test.go::TestDurableRefreshSequentialReplayRevokesFamilyAndSession`, `TestDurableRefreshConcurrentRedemptionHasExactlyOneWinner`, and `TestBrowserLogoutWithoutRefreshTokenRevokesDurableFamilyDuringCacheOutage`; `pk-modules/auth_management/features/authentication/req_auth_001_test.go::TestRefresh_SingleUse_FailsOnReplay` pins the umbrella contract. |
+| AC-5 | Test | `pk-modules/auth_management/features/authentication/login_csrf_test.go::TestLoginPageCSRFSupportsNoJavaScriptFirstLoadAndRotatedErrorRender` and `TestLoginFlavorReceivesResponseAuthoritativeCSRFToken`; core `security/csrf/middleware_test.go::TestMiddleware_SetsCookie` and `TestMiddleware_ContextCarriesRotatedToken` prove that the renderer context and response cookie carry the same first-load or rotated token. |
 
 ## Implements (cross-cutting)
 
@@ -94,15 +94,15 @@ A.9.4 compliance.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/auth_management/features/authentication/feature.go` — wiring.
-- `modules/platformkit-business-modules/auth_management/features/authentication/login.go`, `login_service.go`, `login_session.go`, `login_resolution.go` — credential verification, session minting.
-- `modules/platformkit-business-modules/auth_management/features/authentication/login_2fa.go`, `twofactor_store.go` — MFA branch.
-- `modules/platformkit-business-modules/auth_management/features/authentication/logout.go`, `refresh_token.go`, `forgot_password.go` — session lifecycle.
-- `modules/platformkit-business-modules/auth_management/features/authentication/login_rate_limit.go` — bounded-retry policy.
-- `modules/platformkit-business-modules/auth_management/features/authentication/handler.go` and feature-owned registration files — HTTP surface.
-- `modules/platformkit-business-modules/auth_management/features/authentication/login_viewer.go`, `components/login_form.go`, and `ports/auth_page_renderer.go` — response-authoritative CSRF propagation for default and custom login forms.
-- `core/platformkit-backend-kit/security/csrf/middleware.go` — first-load token context and pre-handler mutation rotation.
-- `modules/platformkit-business-modules/auth_management/features/authentication/repository.go` — tenant-scoped session persistence.
+- `pk-modules/auth_management/features/authentication/feature.go` — wiring.
+- `pk-modules/auth_management/features/authentication/login.go`, `login_service.go`, `login_session.go`, `login_resolution.go` — credential verification, session minting.
+- `pk-modules/auth_management/features/authentication/login_2fa.go`, `twofactor_store.go` — MFA branch.
+- `pk-modules/auth_management/features/authentication/logout.go`, `refresh_token.go`, `forgot_password.go` — session lifecycle.
+- `pk-modules/auth_management/features/authentication/login_rate_limit.go` — bounded-retry policy.
+- `pk-modules/auth_management/features/authentication/handler.go` and feature-owned registration files — HTTP surface.
+- `pk-modules/auth_management/features/authentication/login_viewer.go`, `components/login_form.go`, and `ports/auth_page_renderer.go` — response-authoritative CSRF propagation for default and custom login forms.
+- `pk-core/security/csrf/middleware.go` — first-load token context and pre-handler mutation rotation.
+- `pk-modules/auth_management/features/authentication/repository.go` — tenant-scoped session persistence.
 
 ## Related requirements
 

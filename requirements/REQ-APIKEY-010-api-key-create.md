@@ -187,9 +187,9 @@ rotate (REQ-APIKEY-011) — there is no recovery path.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/api_key_management/features/key_management/service.go::CreateAPIKey`.
-- `modules/platformkit-business-modules/api_key_management/features/key_management/service.go::GetTenantIDFromContext` — context resolution helper.
-- `platformkit-backend-kit/api/auth/authz` — permission-token normalisation.
+- `pk-modules/api_key_management/features/key_management/service.go::CreateAPIKey`.
+- `pk-modules/api_key_management/features/key_management/service.go::GetTenantIDFromContext` — context resolution helper.
+- `pk-core/api/auth/authz` — permission-token normalisation.
 
 ## Related requirements
 

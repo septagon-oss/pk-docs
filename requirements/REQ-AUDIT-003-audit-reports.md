@@ -64,9 +64,9 @@ rows; buffering would OOM the report process under realistic load.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Inspection | `modules/platformkit-business-modules/audit_management/features/audit_reports/handler.go::ListReports, GetReport, DownloadReport` — the three read paths. The underlying generation path is exercised by `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestGenerateAuditReport_Success`, `TestGenerateAuditReport_QueryError`, `TestGenerateAuditReport_EmptyEvents`, `TestGenerateAuditReport_ActorAndResourceAggregation`. **Verification gap: feature-local handler tests pending.** |
-| AC-2 | Inspection | `modules/platformkit-business-modules/audit_management/features/audit_reports/handler.go::GenerateReport, ScheduleReport`. **Verification gap: dedicated handler tests pending.** |
-| AC-3 | Inspection | `modules/platformkit-business-modules/audit_management/features/audit_reports/permissions.go::featurePermissions` — admin-permission gating list. Discipline enforced by code review; dedicated permission-route test pending. |
+| AC-1 | Inspection | `pk-modules/audit_management/features/audit_reports/handler.go::ListReports, GetReport, DownloadReport` — the three read paths. The underlying generation path is exercised by `pk-modules/audit_management/features/audit_trail/service_test.go::TestGenerateAuditReport_Success`, `TestGenerateAuditReport_QueryError`, `TestGenerateAuditReport_EmptyEvents`, `TestGenerateAuditReport_ActorAndResourceAggregation`. **Verification gap: feature-local handler tests pending.** |
+| AC-2 | Inspection | `pk-modules/audit_management/features/audit_reports/handler.go::GenerateReport, ScheduleReport`. **Verification gap: dedicated handler tests pending.** |
+| AC-3 | Inspection | `pk-modules/audit_management/features/audit_reports/permissions.go::featurePermissions` — admin-permission gating list. Discipline enforced by code review; dedicated permission-route test pending. |
 
 ## Implements (cross-cutting)
 

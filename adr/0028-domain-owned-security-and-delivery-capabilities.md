@@ -45,14 +45,14 @@ packages adapt concrete vendors to the owning module's interface. This means:
 
 - `auth_management` owns login, sessions, MFA, permission
   policy, and authentication failure semantics.
-- `notification_management`, `mail_management`, and `chat_management` own
+- `notification_management`, `mail`, and `chat` own
   delivery channels, templates, inbox/chat state, and delivery telemetry; they
   do not decide whether authentication, authorization, billing, or entitlement
   transitions are valid.
 - `tenant_management` owns tenant identity and tenant lifecycle; tenant
   isolation enforcement remains a cross-cutting invariant that every stateful
   module must respect.
-- `platformkit-apps/*/bootstrap` owns topology, routes, and composition only. It
+- `pk-apps/*/bootstrap` owns topology, routes, and composition only. It
   composes the auth-owned `AuthenticationService`; it does not own an MFA state
   machine or retain authentication credentials between requests.
 - Provider implementations live behind contracts owned by the decision module.
@@ -67,7 +67,7 @@ deleted.
 
 ## What we gave up
 
-- Fast vertical hacks in `platformkit-apps`. A new route can no longer absorb a
+- Fast vertical hacks in `pk-apps`. A new route can no longer absorb a
   domain rule just because it is the fastest place to patch.
 - Standalone "transport modules" for every provider idea. If the lifecycle is an
   auth decision, the provider belongs behind auth, even when the user-visible
@@ -127,7 +127,7 @@ deleted.
 - `pk-modules/auth_management/contracts/v1/authentication.go`.
 - `pk-modules/auth_management/mobileauth/submit.go`.
 - `pk-modules/auth_management/features/authentication/login_2fa.go`.
-- `platformkit-apps/*/internal/bootstrap/mobile_ui_routes.go`.
+- `pk-apps/*/internal/bootstrap/mobile_ui_routes.go`.
 - Thoughtworks, "Lightweight Architecture Decision Records" — keep important
   architectural decisions with context and consequences in source control:
   https://www.thoughtworks.com/en-us/radar/techniques/lightweight-architecture-decision-records

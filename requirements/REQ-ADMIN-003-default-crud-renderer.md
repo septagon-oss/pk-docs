@@ -52,7 +52,7 @@ that without forking the renderer.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/admin_management/features/default_crud_renderer/renderer_test.go::TestRenderOverviewPageUsesLandingSurface`. |
+| AC-1 | Test | `pk-modules/admin_management/features/default_crud_renderer/renderer_test.go::TestRenderOverviewPageUsesLandingSurface`. |
 | AC-2 | Inspection | Code review of the override-resolution path. |
 
 ## Implements (cross-cutting)

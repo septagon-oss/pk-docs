@@ -15,7 +15,7 @@ implements_cross_cutting: [REQ-001]
 type: doc
 tags: [requirement, feature, tenant_management]
 module: tenant_management
-feature: member_management
+feature: member
 ---
 
 # REQ TENANT-002 — Member management
@@ -40,7 +40,7 @@ member-management UI.
 This keeps the data model normalized and avoids two-source-of-truth
 drift (a row in `tenant_members` that does not match the user's
 `TenantID` would be a referential integrity bug). The
-member_management feature exists so that admin sidebars, RBAC
+member feature exists so that admin sidebars, RBAC
 catalogues, and tenant-scoped queries can be reasoned about
 semantically without reaching into the user-management module.
 
@@ -58,8 +58,8 @@ semantically without reaching into the user-management module.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Inspection | `tenant_management/features/member_management/` has 4 files: `feature.go`, `permissions.go`, `routes.go`, `e2e.go`. No `service.go`, no `repository.go`, no `entities/`. |
-| AC-2 | Inspection | Code review of the admin-UI handlers that consume the `member_management` permissions: every list/get/invite/remove path resolves through DTO-only user/tenant contracts; authorization remains a live `authz.Decider` call. |
+| AC-1 | Inspection | `tenant_management/features/member/` has 4 files: `feature.go`, `permissions.go`, `routes.go`, `e2e.go`. No `service.go`, no `repository.go`, no `entities/`. |
+| AC-2 | Inspection | Code review of the admin-UI handlers that consume the `member` permissions: every list/get/invite/remove path resolves through DTO-only user/tenant contracts; authorization remains a live `authz.Decider` call. |
 
 ## Implements (cross-cutting)
 
@@ -68,8 +68,8 @@ semantically without reaching into the user-management module.
 
 ## Satisfied by
 
-- `tenant_management/features/member_management/feature.go`
-- `tenant_management/features/member_management/permissions.go`,
+- `tenant_management/features/member/feature.go`
+- `tenant_management/features/member/permissions.go`,
   `routes.go`, `e2e.go`
 
 ## Related requirements

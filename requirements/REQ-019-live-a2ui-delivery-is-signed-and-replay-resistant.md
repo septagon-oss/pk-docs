@@ -78,14 +78,14 @@ authority explicit and reviewable across Go and TypeScript.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `core/platformkit-shared/presentation/a2ui_runtime_test.go::TestBuildSignedRuntimeEnvelope` |
-| AC-2 | Test | `apps/platformkit-apps/internal/bootstrap/mobile_envelope_signing_contract_test.go::TestNewA2UIEnvelopeSignerFailsClosedWithoutExplicitTrustConfiguration` |
-| AC-3 | Test | `core/platformkit-shared/presentation/a2ui_security_test.go::TestSec_EnvelopeFull_BindsScreenIDAndExtensions` |
-| AC-4 | Test | `apps/platformkit-apps/internal/bootstrap/mobile_envelope_signing_test.go::TestA2UIEnvelopeSignerSeparatesNativeAppFromSelectedClient` |
-| AC-5 | Test | `apps/platformkit-apps/internal/bootstrap/mobile_surface_contract_test.go::TestValidateMobileActionResponseRejectsPrepopulatedReplacementBypass`, route/action tests, and `product/platformkit-mobile/tests/shell-http-transport.test.ts` |
-| AC-6 | Test | `core/platformkit-shared/presentation/a2ui_security_test.go::TestSec_VerifyDelivery`, `product/platformkit-mobile/tests/golden-fixture.test.ts`, and `shell-http-transport.test.ts` |
-| AC-7 | Test | `core/platformkit-shared/presentation/a2ui_security_test.go::TestSec_EnvelopeFull_Replay`, `product/platformkit-mobile/tests/signed-delivery-state.test.ts`, and restart/replay cases in `shell-http-transport.test.ts` |
-| AC-8 | Inspection | `apps/platformkit-apps/monolith/config.local.yaml`, `product/platformkit-mobile/app.config.ts`, and `.env.example` declare explicit development trust and release validation. |
+| AC-1 | Test | `core/pk-shared/presentation/a2ui_runtime_test.go::TestBuildSignedRuntimeEnvelope` |
+| AC-2 | Test | `pk-apps/internal/bootstrap/mobile_envelope_signing_contract_test.go::TestNewA2UIEnvelopeSignerFailsClosedWithoutExplicitTrustConfiguration` |
+| AC-3 | Test | `core/pk-shared/presentation/a2ui_security_test.go::TestSec_EnvelopeFull_BindsScreenIDAndExtensions` |
+| AC-4 | Test | `pk-apps/internal/bootstrap/mobile_envelope_signing_test.go::TestA2UIEnvelopeSignerSeparatesNativeAppFromSelectedClient` |
+| AC-5 | Test | `pk-apps/internal/bootstrap/mobile_surface_contract_test.go::TestValidateMobileActionResponseRejectsPrepopulatedReplacementBypass`, route/action tests, and `product/platformkit-mobile/tests/shell-http-transport.test.ts` |
+| AC-6 | Test | `core/pk-shared/presentation/a2ui_security_test.go::TestSec_VerifyDelivery`, `product/platformkit-mobile/tests/golden-fixture.test.ts`, and `shell-http-transport.test.ts` |
+| AC-7 | Test | `core/pk-shared/presentation/a2ui_security_test.go::TestSec_EnvelopeFull_Replay`, `product/platformkit-mobile/tests/signed-delivery-state.test.ts`, and restart/replay cases in `shell-http-transport.test.ts` |
+| AC-8 | Inspection | `pk-apps/monolith/config.local.yaml`, `product/platformkit-mobile/app.config.ts`, and `.env.example` declare explicit development trust and release validation. |
 
 ## Satisfied by
 

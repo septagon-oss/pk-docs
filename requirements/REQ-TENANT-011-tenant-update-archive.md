@@ -114,12 +114,12 @@ active state and is forbidden once a tenant is fully deleted
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestUpdateTenant_PartialUpdate` and `TestUpdateTenant_Success` — assert unset pointer fields leave columns untouched. |
+| AC-1 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestUpdateTenant_PartialUpdate` and `TestUpdateTenant_Success` — assert unset pointer fields leave columns untouched. |
 | AC-2 | Inspection | `service.go::UpdateTenant` lines 176–178 — `s.metrics.Inc(ctx, "tenant.updated", nil)` is gated on `err == nil`. Dedicated metric-on-failure test pending. |
-| AC-3 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestArchiveTenant_Success` — asserts `Status` flips to `TenantStatusArchived`. |
-| AC-4 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestRestoreTenant_Success` — asserts `Status` flips back to `TenantStatusActive` and `ArchivedAt` is cleared. |
-| AC-5 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestDeleteTenant_Success` and `TestDeleteTenant_Error`. The metric increment is by inspection at `service.go::DeleteTenant` lines 187–189. |
-| AC-6 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestUpdateTenant_NotFound` and `TestArchiveTenant_NotFound` — wrapped not-found propagation. The remaining mutations (Restore, Delete) propagate via the same wrap-on-`GetByID`-error pattern (inspection of `service.go`). |
+| AC-3 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestArchiveTenant_Success` — asserts `Status` flips to `TenantStatusArchived`. |
+| AC-4 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestRestoreTenant_Success` — asserts `Status` flips back to `TenantStatusActive` and `ArchivedAt` is cleared. |
+| AC-5 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestDeleteTenant_Success` and `TestDeleteTenant_Error`. The metric increment is by inspection at `service.go::DeleteTenant` lines 187–189. |
+| AC-6 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/service_test.go::TestUpdateTenant_NotFound` and `TestArchiveTenant_NotFound` — wrapped not-found propagation. The remaining mutations (Restore, Delete) propagate via the same wrap-on-`GetByID`-error pattern (inspection of `service.go`). |
 
 ## Edge cases & unhappy paths
 
@@ -175,7 +175,7 @@ active state and is forbidden once a tenant is fully deleted
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service.go::UpdateTenant, ArchiveTenant, RestoreTenant, DeleteTenant`.
+- `pk-modules/tenant_management/features/tenant_lifecycle/service.go::UpdateTenant, ArchiveTenant, RestoreTenant, DeleteTenant`.
 
 ## Related requirements
 

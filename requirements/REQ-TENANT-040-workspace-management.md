@@ -21,8 +21,8 @@ refines: REQ-TENANT-004
 type: doc
 tags: [requirement, capability, tenant_management, workspace, lifecycle]
 module: tenant_management
-feature: workspace_management
-capability: workspace_management
+feature: workspace
+capability: workspace
 capability_kind: state_machine
 stakeholders:
   - tenant administrator (creates workspaces)
@@ -36,7 +36,7 @@ Status: **Proposed** (2026-05-08)
 
 ## Statement
 
-The workspace_management feature **shall** expose:
+The workspace feature **shall** expose:
 
 1. **`CreateWorkspace(req)`** — refuse a request whose
    `TenantID` body field does not match the tenant
@@ -134,20 +134,20 @@ Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/tenant_management/features/workspace_management/service_test.go::TestService_CreateWorkspace_DefaultVisibilityPrivate`. |
-| AC-2 | Test | `modules/platformkit-business-modules/tenant_management/features/workspace_management/service_test.go::TestService_CreateWorkspace_ExplicitVisibility`. |
-| AC-3 | Test | `modules/platformkit-business-modules/tenant_management/features/workspace_management/service_test.go::TestService_CreateWorkspace_RejectsCrossTenantBodyOverride`. |
-| AC-4 | Test | `modules/platformkit-business-modules/tenant_management/features/workspace_management/service_test.go::TestService_CreateWorkspace_FillsTenantFromContextWhenBodyEmpty`. |
-| AC-5 | Test | `modules/platformkit-business-modules/tenant_management/features/workspace_management/service_test.go::TestService_UpdateWorkspace_NilFieldsIgnored`. |
-| AC-6 | Test | `modules/platformkit-business-modules/tenant_management/features/workspace_management/service_test.go::TestService_UpdateWorkspace_OnlyNameUpdated`. |
-| AC-7 | Test | `modules/platformkit-business-modules/tenant_management/features/workspace_management/service_test.go::TestService_UpdateWorkspace_VisibilityChanged`. |
-| AC-8 | Test | `modules/platformkit-business-modules/tenant_management/features/workspace_management/service_test.go::TestService_UpdateWorkspace_MetadataReplaced`. |
-| AC-9 | Test | `modules/platformkit-business-modules/tenant_management/features/workspace_management/service_test.go::TestService_ArchiveWorkspace_SetsArchivedStatus` and `TestService_ArchiveWorkspace_SetsArchivedAt`. |
-| AC-10 | Test | `modules/platformkit-business-modules/tenant_management/features/workspace_management/service_test.go::TestService_RestoreWorkspace_SetsActiveStatus`. |
-| AC-11 | Test | `modules/platformkit-business-modules/tenant_management/features/workspace_management/service_test.go::TestService_CreateWorkspace_IncrementsMetric`, `TestService_ArchiveWorkspace_IncrementsMetric`, `TestService_RestoreWorkspace_IncrementsMetric`, `TestService_DeleteWorkspace_IncrementsMetric`. |
-| AC-12 | Test | `modules/platformkit-business-modules/tenant_management/features/workspace_management/service_test.go::TestToWorkspaceDTO_AllFieldsMapped`. |
-| AC-13 | Test | `modules/platformkit-business-modules/tenant_management/features/workspace_management/service_test.go::TestService_CreateWorkspace_ErrorPropagation`. |
-| AC-14 | Test | `modules/platformkit-business-modules/tenant_management/features/workspace_management/service_test.go::TestService_GetWorkspace_ErrorPropagation`. |
+| AC-1 | Test | `pk-modules/tenant_management/features/workspace/service_test.go::TestService_CreateWorkspace_DefaultVisibilityPrivate`. |
+| AC-2 | Test | `pk-modules/tenant_management/features/workspace/service_test.go::TestService_CreateWorkspace_ExplicitVisibility`. |
+| AC-3 | Test | `pk-modules/tenant_management/features/workspace/service_test.go::TestService_CreateWorkspace_RejectsCrossTenantBodyOverride`. |
+| AC-4 | Test | `pk-modules/tenant_management/features/workspace/service_test.go::TestService_CreateWorkspace_FillsTenantFromContextWhenBodyEmpty`. |
+| AC-5 | Test | `pk-modules/tenant_management/features/workspace/service_test.go::TestService_UpdateWorkspace_NilFieldsIgnored`. |
+| AC-6 | Test | `pk-modules/tenant_management/features/workspace/service_test.go::TestService_UpdateWorkspace_OnlyNameUpdated`. |
+| AC-7 | Test | `pk-modules/tenant_management/features/workspace/service_test.go::TestService_UpdateWorkspace_VisibilityChanged`. |
+| AC-8 | Test | `pk-modules/tenant_management/features/workspace/service_test.go::TestService_UpdateWorkspace_MetadataReplaced`. |
+| AC-9 | Test | `pk-modules/tenant_management/features/workspace/service_test.go::TestService_ArchiveWorkspace_SetsArchivedStatus` and `TestService_ArchiveWorkspace_SetsArchivedAt`. |
+| AC-10 | Test | `pk-modules/tenant_management/features/workspace/service_test.go::TestService_RestoreWorkspace_SetsActiveStatus`. |
+| AC-11 | Test | `pk-modules/tenant_management/features/workspace/service_test.go::TestService_CreateWorkspace_IncrementsMetric`, `TestService_ArchiveWorkspace_IncrementsMetric`, `TestService_RestoreWorkspace_IncrementsMetric`, `TestService_DeleteWorkspace_IncrementsMetric`. |
+| AC-12 | Test | `pk-modules/tenant_management/features/workspace/service_test.go::TestToWorkspaceDTO_AllFieldsMapped`. |
+| AC-13 | Test | `pk-modules/tenant_management/features/workspace/service_test.go::TestService_CreateWorkspace_ErrorPropagation`. |
+| AC-14 | Test | `pk-modules/tenant_management/features/workspace/service_test.go::TestService_GetWorkspace_ErrorPropagation`. |
 
 ## Edge cases & unhappy paths
 
@@ -190,7 +190,7 @@ Three properties:
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/tenant_management/features/workspace_management/service.go::CreateWorkspace, UpdateWorkspace, ArchiveWorkspace, RestoreWorkspace, DeleteWorkspace, ListWorkspaces, toWorkspaceDTO, ErrWorkspaceTenantMismatch`.
+- `pk-modules/tenant_management/features/workspace/service.go::CreateWorkspace, UpdateWorkspace, ArchiveWorkspace, RestoreWorkspace, DeleteWorkspace, ListWorkspaces, toWorkspaceDTO, ErrWorkspaceTenantMismatch`.
 
 ## Related requirements
 

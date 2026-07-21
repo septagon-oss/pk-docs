@@ -13,8 +13,8 @@ satisfied_by:
   conventions: [C-04, C-14]
 implements_cross_cutting: [REQ-001, REQ-004, REQ-013]
 type: doc
-tags: [requirement, feature, billing_management]
-module: billing_management
+tags: [requirement, feature, billing]
+module: billing
 feature: subscriptions
 ---
 
@@ -67,9 +67,9 @@ tenant allowed to use feature X?".
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/subscription_fsm_test.go::TestValidateTransition_UnknownStatus` covers the state-machine invariants. |
-| AC-2 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestParseUsageValue` covers event emission and audit trail. |
-| AC-3 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/entitlements_test.go::TestListEntitlements_UsesStructuredSubscriptionItems` covers propagation to entitlement. |
+| AC-1 | Test | `pk-modules/billing/features/subscriptions/subscription_fsm_test.go::TestValidateTransition_UnknownStatus` covers the state-machine invariants. |
+| AC-2 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestParseUsageValue` covers event emission and audit trail. |
+| AC-3 | Test | `pk-modules/billing/features/subscriptions/entitlements_test.go::TestListEntitlements_UsesStructuredSubscriptionItems` covers propagation to entitlement. |
 
 ## Implements (cross-cutting)
 
@@ -79,13 +79,13 @@ tenant allowed to use feature X?".
 
 ## Satisfied by
 
-- `billing_management/features/subscriptions/feature.go`
-- `billing_management/features/subscriptions/service.go`,
+- `billing/features/subscriptions/feature.go`
+- `billing/features/subscriptions/service.go`,
   `service_test.go`
-- `modules/platformkit-business-modules/billing_management/features/subscriptions/subscription_fsm_test.go`
-- `billing_management/features/subscriptions/entitlements.go`,
+- `pk-modules/billing/features/subscriptions/subscription_fsm_test.go`
+- `billing/features/subscriptions/entitlements.go`,
   `entitlements_test.go`
-- `billing_management/features/subscriptions/context_helpers.go`
+- `billing/features/subscriptions/context_helpers.go`
 
 ## Related requirements
 

@@ -114,10 +114,10 @@ cohort fail closed.
   defines the cross-layer acceptance criteria.
 - [Convention C-23](../conventions.md#c-23-live-a2ui-delivery-has-one-app-owned-signed-boundary)
   defines the implementation and rotation checklist.
-- `platformkit-shared/presentation` has retirement ratchets for unsigned
+- `pk-shared/presentation` has retirement ratchets for unsigned
   constructors, sign-later helpers, and patch types, plus Go/TypeScript golden
   delivery-chain fixtures.
-- `platformkit-apps/internal/bootstrap` requires explicit signer configuration,
+- `pk-apps/internal/bootstrap` requires explicit signer configuration,
   a PostgreSQL revision provider, exact native-app/client/origin policy, and an
   app finalizer for action replacement intents.
 - `platformkit-mobile` verifies keysets and envelopes before decoding, persists

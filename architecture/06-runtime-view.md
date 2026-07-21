@@ -33,7 +33,7 @@ flowchart TB
 
 **What happens step by step.**
 
-1. `platformkit-apps/complete-saas-monolith/cmd/server/main.go`
+1. `pk-apps/complete-saas-monolith/cmd/server/main.go`
    resolves the selected preset — `flagship-coworking` by default —
    and calls `catalog.Options(preset)`. This returns an
    `fx.Options(...)` aggregate that pulls in every participating

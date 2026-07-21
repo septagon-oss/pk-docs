@@ -135,10 +135,10 @@ balances three concerns:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/registration/req_auth_002_test.go::TestRegister_NovelEmail_CreatesPendingUserAndDispatchesVerification`. |
-| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/registration/req_auth_002_test.go::TestRegister_DuplicateEmail_NoEnumeration`. |
-| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/registration/req_auth_002_test.go::TestRegister_DuplicateUsername_NoEnumeration`. |
-| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/registration/req_auth_002_test.go::TestRegister_PasswordPolicy_EnforcedAndOpaque`. |
+| AC-1 | Test | `pk-modules/auth_management/features/registration/req_auth_002_test.go::TestRegister_NovelEmail_CreatesPendingUserAndDispatchesVerification`. |
+| AC-2 | Test | `pk-modules/auth_management/features/registration/req_auth_002_test.go::TestRegister_DuplicateEmail_NoEnumeration`. |
+| AC-3 | Test | `pk-modules/auth_management/features/registration/req_auth_002_test.go::TestRegister_DuplicateUsername_NoEnumeration`. |
+| AC-4 | Test | `pk-modules/auth_management/features/registration/req_auth_002_test.go::TestRegister_PasswordPolicy_EnforcedAndOpaque`. |
 | AC-5 | Inspection | `register_user_rate_limit.go` mirrors the login-bucket pattern; reviewers verify the bucket key build. |
 | AC-6 | Inspection | `register_user_service.go::CreateAccount` (the activation branch comment block) — failure propagates to the caller. |
 | AC-7 | Inspection | `register_user_service.go::sendVerificationEmail` — when `notificationSvc` is nil the function returns nil with a Warn log; the user has already been persisted. |
@@ -193,13 +193,13 @@ balances three concerns:
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/auth_management/features/registration/register_user_service.go` —
+- `pk-modules/auth_management/features/registration/register_user_service.go` —
   the orchestration entry point.
-- `modules/platformkit-business-modules/auth_management/features/registration/register_user.go` —
+- `pk-modules/auth_management/features/registration/register_user.go` —
   the JSON HTTP handler.
-- `modules/platformkit-business-modules/auth_management/features/registration/register_user_form.go` —
+- `pk-modules/auth_management/features/registration/register_user_form.go` —
   the HTML form handler.
-- `modules/platformkit-business-modules/auth_management/features/registration/register_user_rate_limit.go` —
+- `pk-modules/auth_management/features/registration/register_user_rate_limit.go` —
   the per-email throttle.
 
 ## Related requirements

@@ -13,8 +13,8 @@ satisfied_by:
   conventions: [C-04, C-14]
 implements_cross_cutting: [REQ-005, REQ-014]
 type: doc
-tags: [requirement, feature, site_management]
-module: site_management
+tags: [requirement, feature, site]
+module: site
 feature: demo
 ---
 
@@ -49,7 +49,7 @@ platform with traffic that incurs real cost.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Inspection | Coverage gap — no `*_test.go` exists for `site_management/features/demo`; reviewers verify `rate_limiter.go` and the handler chain. |
+| AC-1 | Inspection | Coverage gap — no `*_test.go` exists for `site/features/demo`; reviewers verify `rate_limiter.go` and the handler chain. |
 | AC-2 | Inspection | Coverage gap; reviewers verify the synthetic-data fixture seed. |
 
 ## Implements (cross-cutting)
@@ -59,10 +59,10 @@ platform with traffic that incurs real cost.
 
 ## Satisfied by
 
-- `site_management/features/demo/feature.go`
-- `site_management/features/demo/handler.go`
-- `site_management/features/demo/rate_limiter.go`
-- `site_management/features/demo/permissions.go`
+- `site/features/demo/feature.go`
+- `site/features/demo/handler.go`
+- `site/features/demo/rate_limiter.go`
+- `site/features/demo/permissions.go`
 
 ## Related requirements
 

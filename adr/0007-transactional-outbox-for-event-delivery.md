@@ -16,7 +16,7 @@ Status: **Accepted** (2026-04-19)
 
 Every core-certified module that emits domain events
 (`auth_management/permissions`, `audit_management`,
-`booking_management`, `notification_management`, …) does roughly
+`content_management`, `notification_management`, …) does roughly
 this:
 
 ```go
@@ -180,7 +180,7 @@ before the worker starts.
 - **Gap — subscriber idempotency.** Subscribers MUST be idempotent
   per the at-least-once contract, but no automated check proves
   it. Pre-adoption audit per subscriber is the guard today; a
-  contract-test helper in `platformkit-tests` would be the right
+  contract-test helper in `pk-testkit` would be the right
   answer.
 
 ## Alternatives we rejected

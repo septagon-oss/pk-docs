@@ -26,10 +26,10 @@ consumable by someone who never cloned the workspace.
 - **Version namespaces.** The release is the git tag **`v0.1.0`**. The per-module
   `ModuleVersion` (port-contract value) stays **`0.0.0`** and is **not** bumped —
   bumping it breaks module-dependency compose, which pins `Version: "0.0.0"`.
-- **Repo set.** 11 Go-module repos get a `v0.1.0` tag (below). The front-door
+- **Repo set.** 9 Go-module repos get a `v0.1.0` tag (below). The front-door
   repo `platformkit` is a new repo, also tagged `v0.1.0`. `pk-docs` is a docs
   repo (this repo) — published, but **not** a Go module and **not** on the build
-  train. `pk-deploy` and internal-only repos are excluded.
+  train. `pk-deploy` releases independently; internal-only repos are excluded.
 
 ## Local Verification
 
@@ -68,8 +68,7 @@ npm audit --audit-level=moderate
 Tag and push in this layered order so each repo's dependencies already exist by
 version when it is tagged:
 
-1. **Layer 0 (leaves):** `pk-shared`, `pk-core`, `pk-design`, `pk-client`,
-   `pk-registry`, `platformkit-ui`
+1. **Layer 0 (leaves):** `pk-shared`, `pk-core`, `pk-design`, `pk-client`
 2. **Layer 1:** `pk-runtime`, `pk-modules`, `pk-testkit`
 3. **Layer 2:** `pk-tools`
 4. **Layer 3:** `pk-apps`

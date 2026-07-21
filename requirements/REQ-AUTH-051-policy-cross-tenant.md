@@ -88,9 +88,9 @@ surface.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/policy/policy_scope_test.go::TestValidatePolicyForTenantRequiresExplicitNamespaceAndTenant`. |
-| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/policy/policy_scope_test.go::TestValidateChangeItemPoliciesRejectsCrossTenantPolicy`. |
-| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/policy/policy_scope_test.go::TestValidatePolicyForTenantRequiresExplicitNamespaceAndTenant` asserts the namespaces. |
+| AC-1 | Test | `pk-modules/auth_management/features/policy/policy_scope_test.go::TestValidatePolicyForTenantRequiresExplicitNamespaceAndTenant`. |
+| AC-2 | Test | `pk-modules/auth_management/features/policy/policy_scope_test.go::TestValidateChangeItemPoliciesRejectsCrossTenantPolicy`. |
+| AC-3 | Test | `pk-modules/auth_management/features/policy/policy_scope_test.go::TestValidatePolicyForTenantRequiresExplicitNamespaceAndTenant` asserts the namespaces. |
 | AC-4 | Inspection | The operator code path lives outside this REQ; reviewers verify `service.go` does not mix the two surfaces. |
 
 ## Edge cases & unhappy paths
@@ -135,9 +135,9 @@ surface.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/auth_management/features/policy/service_policy_codec.go::normalizePolicyForTenant` —
+- `pk-modules/auth_management/features/policy/service_policy_codec.go::normalizePolicyForTenant` —
   the normalisation primitive.
-- `modules/platformkit-business-modules/auth_management/features/policy/service_policy_codec.go::normalizeChangeItemPolicies` —
+- `pk-modules/auth_management/features/policy/service_policy_codec.go::normalizeChangeItemPolicies` —
   the per-item caller.
 
 ## Related requirements

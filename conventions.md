@@ -74,12 +74,12 @@ work doesn't collide with itself.
 
 **How it's enforced.**
 
-- `check-migrations-append-only`
-  (`platformkit-business-modules/scripts/check_migrations_append_only.sh`)
-  compares the branch against its merge base and rejects modified, deleted,
-  or renamed migration files. It runs in `verify-modules` / `precommit`.
-- Workspace write guards (`.claude/hooks/guard_migrations.py` and the tracked
-  pre-commit guard) reject the same operations before CI.
+- The module workspace's `check-migrations-append-only` gate compares the
+  branch against its merge base and rejects modified, deleted, or renamed
+  migration files as part of pre-merge verification.
+- Workspace write guards and the tracked pre-commit guard reject the same
+  operations before CI; in the public repos the rule is enforced in review
+  and by per-repo CI checks.
 - `platformkit scaffold` emits fresh sequence numbers so the normal authoring
   path starts compliant.
 
@@ -123,9 +123,8 @@ innocent.
 
 **How it's enforced.**
 
-- `check-structure`
-  (`platformkit-devtools/internal/modulechecks/structure.go`,
-   invoked via `platformkit verify module structure`, wired as
+- The module workspace's `check-structure` gate (invoked via
+  `platformkit verify module structure`, wired as
   `make check-structure`) verifies every module declares
   top-level `NewModule`, `GetModule`, and `GetFeatures` in
   `module.go`.
@@ -147,9 +146,9 @@ innocent.
 ## C-03 Features own their routes
 
 Route registration inside a module uses the `FeatureBuilder` +
-`RouteHandler[H]` helper pair from
-`platformkit-backend-kit/app/module/helpers/`, scoped to the
-feature package that owns the handler:
+`RouteHandler[H]` helper pair from the module kit's `helpers`
+package in `pk-core`, scoped to the feature package that owns the
+handler:
 
 ```go
 // <module>/features/<feature>/feature.go
@@ -255,13 +254,11 @@ boundary.
 - `check-structure` — requires every module to have a
   `contracts/provides/` directory and a `contracts/providers.go`
   file. Missing either fails CI.
-- `contractvar` pkvet analyzer
-  (`platformkit-backend-kit/analysis/contractvar`) — flags
+- The `contractvar` pkvet analyzer (workspace tooling) — flags
   cross-module exported interface variables that live outside
   `contracts/provides/`, enforcing that *contents* match the
   intended shape, not just the directory name.
-- `interopimport` pkvet analyzer
-  (`platformkit-backend-kit/analysis/interopimport`, wired through
+- The `interopimport` pkvet analyzer (wired through
   `check-pkvet`) — rejects cross-module imports that reach into a
   module's non-contract packages.
 - `accesscontract` pkvet analyzer — audits cross-module calls for
@@ -282,13 +279,12 @@ boundary.
 `go-rod`, `docker/docker`, and any similar "runs the outside
 world" SDK may appear ONLY in:
 
-- `platformkit-devtools/` — the CLI and build tooling.
-- `platformkit-tests/` — cross-repo integration tests (browser
+- `pk-tools/` — the CLI and build tooling.
+- `pk-testkit/` — cross-repo integration tests (browser
   E2E).
 
-Any import of these packages from `platformkit-backend-kit`,
-`pk-modules`, `platformkit-apps`,
-`platformkit-agent-runtime`, `platformkit-shared`, or any other
+Any import of these packages from `pk-core`, `pk-modules`,
+`pk-apps`, `pk-shared`, the agent runtime, or any other
 repo that produces server binaries is a build failure.
 
 Non-test files that need browser-like behaviour (HTML parsing,
@@ -311,34 +307,34 @@ the expected size before anyone noticed. The transitive case is
 exactly what human review can't catch fast enough.
 
 **When you're writing dev tooling.** Put it in
-`platformkit-devtools/`. Tests that need browsers or containers
-live in `platformkit-tests/`, not beside the module they test.
-Mild inconvenience; mitigated by the `platformkit-tests/flow/`
-harness's per-module entry points.
+`pk-tools/`. Tests that need browsers or containers
+live in `pk-testkit/`, not beside the module they test.
+Mild inconvenience; mitigated by the flow harness's per-module
+entry points in `pk-testkit`.
 
 **How it's enforced.**
 
-- `platformkit-backend-kit/analysis/buildtags` (pkvet analyzer) —
+- The `buildtags` pkvet analyzer (workspace tooling) —
   enforces that every test file under `tests/e2e/` or
   `tests/bdd/`, plus any file named `e2e.go`, carries a
   `//go:build e2e` constraint. This is the *necessary* condition
   for go-rod / chromedp to be excluded from default server
   builds. It does *not* by itself ban the imports in non-test
   files; that's the next guard.
-- `platformkit-backend-kit/cmd/repo-split-importcheck` —
+- `repo-split-importcheck` (workspace tooling) —
   parameterised tool that rejects imports matching a
   caller-supplied `--forbid-prefix` inside caller-supplied
   `--roots`. Server-producing repos wire it with
   `--forbid-prefix=github.com/go-rod` and
   `--forbid-prefix=github.com/docker/docker` in CI.
-- Repo-split topology — `platformkit-devtools` and
-  `platformkit-tests` are separate Go modules. Server repos
+- Repo-split topology — `pk-tools` and
+  `pk-testkit` are separate Go modules. Server repos
   don't list them as dependencies; `go mod tidy` in a server repo
   rejects an accidental cross-repo import at resolve time. The
   coarsest but strongest line of defence.
 - Not a guard here — `runtime-boundary-check` enforces an
   *internal* tier-layering policy inside
-  `platformkit-backend-kit`; it doesn't scan for go-rod / Docker
+  `pk-core`; it doesn't scan for go-rod / Docker
   imports.
 - Gap — no single CI target prints the guard wiring for each
   server repo. Each repo's `make precommit` wires its own
@@ -362,8 +358,8 @@ The intent is joined from three typed authorities and their audits:
 - `check-module-maturity` and `check-module-assurance-evidence` compare those
   claims with live repository evidence.
 
-These authorities and targets describe the full
-`modules/platformkit-business-modules` distribution. The public
+These authorities and targets describe the full PlatformKit
+module distribution. The public
 `github.com/septagon-oss/pk-modules/pkg` reference pack has no parallel tier
 catalog; its packages keep their tests beside the implementation and are
 verified by that repository's own `make verify`.
@@ -395,10 +391,8 @@ catalog edit through. Demote the claim or add the tests.
 
 **How it's enforced.**
 
-- `check-tests-floor` —
-  `platformkit-business-modules/Makefile` target →
-  `platformkit verify module test-floor` →
-  `platformkit-devtools/internal/modulechecks/test_floor.go`.
+- `check-tests-floor` — a module-workspace make target backed by
+  `platformkit verify module test-floor`.
   Current enforcement is a flat floor: every module must ship ≥1
   `*_test.go` file. Exceptions live in
   `scripts/test_floor_allowlist.txt` with an `owner=` and
@@ -488,7 +482,7 @@ raw colors through render code.
 Every PlatformKit guard emits findings in a single, interoperable
 shape so editor quickfix lists, GitHub Code Scanning, and ad-hoc
 `grep` pipelines can consume the same stream. New guards must use
-`platformkit-shared/lintreport` as the canonical implementation
+`pk-shared/lintreport` as the canonical implementation
 rather than formatting their own output.
 
 **Why we do it this way.** Static-analysis output is public
@@ -507,7 +501,7 @@ JSON-Lines, and `sarif` is SARIF 2.1.0 for Code Scanning. Implement
 rule in `lintreport.Tool.Rules`.
 
 ```
-booking_management/portal_handler.go:461:58: error: [design-tokens/tailwind-palette-color] raw Tailwind palette utility "border-red-300"; use border-border-* (ref: C-07)
+content_management/portal_handler.go:461:58: error: [design-tokens/tailwind-palette-color] raw Tailwind palette utility "border-red-300"; use border-border-* (ref: C-07)
 ```
 
 Use the package's typed enums for shared severity, category, and
@@ -518,7 +512,7 @@ on it.
 
 **How it's enforced.**
 
-- `platformkit-shared/lintreport` owns the standard renderers:
+- `pk-shared/lintreport` owns the standard renderers:
   `default` (GCC-style), `github` (Actions), `json` (JSON-Lines),
   and `sarif` (Code Scanning).
 - `lintreport.Tool.Rules` is the rule catalog used by `--list-rules`
@@ -588,7 +582,7 @@ runtime failures to logs/observers and return them from `run`.
   `log.Fatal`) below it.
 - Gap — no static analyzer enforces this repo-wide yet. The follow-up is
   to add one `runtime-startup-boundary` check in
-  `platformkit-backend-kit` for `go vet`-style static enforcement.
+  `pk-core` for `go vet`-style static enforcement.
 
 ---
 
@@ -626,8 +620,8 @@ return first, then bubble failures to the closest orchestration point.
 - Review gate for core generators and CLI tools: avoid panic-on-formatting
   failures in common-path helper functions.
 
-**Current examples.** `platformkit-backend-kit/core/scaffold/compose.go` now
-returns errors for `BuildProject` and `GenerateProjectManifest`.
+**Current examples.** `pk-core`'s scaffold composer (`core/scaffold/compose.go`)
+now returns errors for `BuildProject` and `GenerateProjectManifest`.
 
 ---
 
@@ -1196,26 +1190,23 @@ rather than inventing an ID. Hand-authored tests, migration embed wrappers,
 commands, and generator implementations are governed. Generated-looking
 filenames are not exclusions; only Go's canonical pre-package
 `// Code generated ... DO NOT EDIT.` marker proves generated provenance.
-Adding a non-source directory to `.claude/check-file-purpose.yaml` is a
-deliberate reviewed diff; inline suppression is unsupported.
+Adding a non-source directory to the checker's reviewed exclusion
+configuration is a deliberate diff; inline suppression is unsupported.
 
 **How it's enforced.**
 
-- `check-file-purpose`
-  (`platformkit-devtools/cmd/check-file-purpose/main.go`,
-  invoked via `make check-file-purpose` at the workspace root and
-  per repo where exposed). Walks every `.go` file under configured roots,
-  verifies those roots cover every root `go.work` member and every discovered
-  standalone owned `go.mod` module, applies explicit exclusions, and fails for
-  incomplete roles, unknown IDs, or stale debt acknowledgements. The
-  workspace-root target is canonical.
+- `check-file-purpose` (workspace tooling, invoked via
+  `make check-file-purpose` at the workspace root and per repo where
+  exposed). Walks every `.go` file under configured roots, verifies those
+  roots cover every root `go.work` member and every discovered standalone
+  owned `go.mod` module, applies explicit exclusions, and fails for
+  incomplete roles or unknown IDs. The workspace-root target is canonical.
 - The exclusion allowlist is a deliberate inventory, not a wildcard
   list. New entries require a one-line diff that reviewers can
   reject.
-- Historical debt is an exact path-and-SHA-256 snapshot of unchanged committed
-  violations. New and untracked files are never eligible; editing, deleting,
-  or conforming an acknowledged file invalidates the entry and blocks until
-  source and inventory are reconciled.
+- C-14 adoption debt is zero. The checker has no baseline file or
+  compatibility path; every regression is corrected at the source
+  (see [ADR 0064](./adr/0064-file-purpose-traceability-is-a-blocking-workspace-invariant.md)).
 - Gap — a sibling check that inverts the question (every `C-NN`
   and `ADR-NNNN` must have at least one file referencing it) is
   tracked as a follow-up. Conventions with zero references are
@@ -1230,7 +1221,7 @@ deliberate reviewed diff; inline suppression is unsupported.
 
 - [ADR 0000 — template](./adr/0000-template.md) — the authoring
   shape new ADRs follow.
-- [CLAUDE.md](../../../CLAUDE.md) — the agent guide. The invariants
-  listed there are the same rules codified in this document.
+- The workspace agent guide carries the same invariants codified in
+  this document, phrased for AI coding agents.
 - `pk-docs/architecture/overview.md` — cross-references
   each convention to the analyzer that enforces it.

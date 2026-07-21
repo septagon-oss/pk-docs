@@ -77,16 +77,16 @@ warning.
 | AC | Method | Evidence |
 |---|---|---|
 | AC-1 | Inspection | Code review of every external-call site for the resilience wrapper. _Verification gap: a `pkvet`-style analyzer that mechanically flags raw external calls is planned but not yet implemented._ |
-| AC-2 | Inspection | `platformkit-backend-kit/resilience/providers/circuitbreaker/*_test.go` — breaker error-type coverage. _Verification gap: cited resource is not a Go test (pattern / non-Go); downgraded to inspection._ |
-| AC-3 | Test | Service-level tests (e.g. `modules/platformkit-business-modules/notification_management/features/email_notifications/service_test.go::TestIsValidEmail`) that assert the failure-counter increments on a simulated provider error. |
-| AC-4 | Inspection | `platformkit-backend-kit/resilience/providers/circuitbreaker/circuitbreaker_test.go` — open / half-open / closed transitions. _Verification gap: pending — cited evidence is prose / pattern / non-Go and cannot be auto-resolved._ |
+| AC-2 | Inspection | `pk-core/resilience/providers/circuitbreaker/*_test.go` — breaker error-type coverage. _Verification gap: cited resource is not a Go test (pattern / non-Go); downgraded to inspection._ |
+| AC-3 | Test | Service-level tests (e.g. `pk-modules/notification_management/features/email_notifications/service_test.go::TestIsValidEmail`) that assert the failure-counter increments on a simulated provider error. |
+| AC-4 | Inspection | `pk-core/resilience/providers/circuitbreaker/circuitbreaker_test.go` — open / half-open / closed transitions. _Verification gap: pending — cited evidence is prose / pattern / non-Go and cannot be auto-resolved._ |
 
 ## Satisfied by
 
 - [ADR 0005 — Error-handling discipline](../adr/0005-error-handling-discipline.md) —
   the broader "no silent failures" posture this REQ specialises for
   external boundaries.
-- `platformkit-backend-kit/resilience/providers/circuitbreaker/`,
+- `pk-core/resilience/providers/circuitbreaker/`,
   `resilience/providers/retry/`, `resilience/providers/ratelimiter/`,
   `resilience/providers/bulkhead/` — the composable wrappers.
 
@@ -102,6 +102,6 @@ warning.
 
 ## References
 
-- `platformkit-backend-kit/resilience/` — provider implementations.
-- `platformkit-backend-kit/app/errors/` — typed error definitions with
+- `pk-core/resilience/` — provider implementations.
+- `pk-core/app/errors/` — typed error definitions with
   the discriminator predicates.

@@ -18,8 +18,8 @@ implements_cross_cutting: [REQ-001, REQ-009, REQ-014]
 refines: REQ-CHAT-001
 depends_on: [REQ-CHAT-010]
 type: doc
-tags: [requirement, capability, chat_management, messaging, outbox]
-module: chat_management
+tags: [requirement, capability, chat, messaging, outbox]
+module: chat
 feature: messaging
 capability: durable_chat_events
 capability_kind: data_invariant
@@ -59,8 +59,8 @@ Bot replies posted by the command dispatcher **shall** route
 through the same persist-plus-enqueue path, so all chat traffic
 shares one durability guarantee. The `chatoutbox` package
 **shall** provide the outbox repository and service as **named**
-fx providers (`chat_management_outbox_repo`,
-`chat_management_outbox_service`) so chat-only compositions
+fx providers (`chat_outbox_repo`,
+`chat_outbox_service`) so chat-only compositions
 construct an outbox without colliding with admin_management's
 unnamed shared provider.
 
@@ -99,7 +99,7 @@ outboxes must not have their providers collide.
   (cross-tenant fan-out is the subscriber's concern).
 - **AC-4 — Named chat-owned providers.** The outbox repository
   and service are provided under the
-  `chat_management_outbox_repo` / `chat_management_outbox_service`
+  `chat_outbox_repo` / `chat_outbox_service`
   names, constructed from the shared `internal/outbox` service
   over the platform table factory and event bus.
 - **AC-5 — Bot replies inherit durability.** Command-dispatch
@@ -110,11 +110,11 @@ outboxes must not have their providers collide.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_outbox_test.go::TestSendMessage_OutboxPath_PersistsBothRowsAtomically`. |
-| AC-2 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_outbox_test.go::TestSendMessage_OutboxPath_RollbackDropsChatMessageOnEnqueueFailure`. |
-| AC-3 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_outbox_test.go::TestSendMessage_OutboxPath_TenantFromContextStampedOnOutboxRow` (empty-context branch). |
-| AC-4 | Inspection | `modules/platformkit-business-modules/chat_management/internal/chatoutbox/provider.go::Providers` — fx annotations with the two result/param name tags. |
-| AC-5 | Inspection | `modules/platformkit-business-modules/chat_management/features/messaging/message_service.go::postCommandReply` — routes replies through `persistMessage`, the same transactional path. Covered indirectly by the AC-1 pipeline plus REQ-CHAT-014 AC-1. |
+| AC-1 | Test | `pk-modules/chat/features/messaging/service_outbox_test.go::TestSendMessage_OutboxPath_PersistsBothRowsAtomically`. |
+| AC-2 | Test | `pk-modules/chat/features/messaging/service_outbox_test.go::TestSendMessage_OutboxPath_RollbackDropsChatMessageOnEnqueueFailure`. |
+| AC-3 | Test | `pk-modules/chat/features/messaging/service_outbox_test.go::TestSendMessage_OutboxPath_TenantFromContextStampedOnOutboxRow` (empty-context branch). |
+| AC-4 | Inspection | `pk-modules/chat/internal/chatoutbox/provider.go::Providers` — fx annotations with the two result/param name tags. |
+| AC-5 | Inspection | `pk-modules/chat/features/messaging/message_service.go::postCommandReply` — routes replies through `persistMessage`, the same transactional path. Covered indirectly by the AC-1 pipeline plus REQ-CHAT-014 AC-1. |
 
 ## Edge cases & unhappy paths
 
@@ -155,9 +155,9 @@ outboxes must not have their providers collide.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/chat_management/internal/chatoutbox/provider.go::Providers, provideRepository, provideService` —
+- `pk-modules/chat/internal/chatoutbox/provider.go::Providers, provideRepository, provideService` —
   the chat-owned named DI providers.
-- `modules/platformkit-business-modules/chat_management/features/messaging/message_service.go::persistMessage` —
+- `pk-modules/chat/features/messaging/message_service.go::persistMessage` —
   the single-transaction write + enqueue.
 - [ADR 0007 — Transactional outbox for event delivery](../adr/0007-transactional-outbox-for-event-delivery.md) —
   the pattern this capability instantiates for chat.

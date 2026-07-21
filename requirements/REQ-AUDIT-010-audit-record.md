@@ -150,13 +150,13 @@ double-degrade the operator's experience.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestRecordAuditEvent_EnrichesFromRequestContext` and `TestRecordAuditEvent_EnrichmentNeverOverwritesCallerValues`. |
+| AC-1 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestRecordAuditEvent_EnrichesFromRequestContext` and `TestRecordAuditEvent_EnrichmentNeverOverwritesCallerValues`. |
 | AC-2 | Inspection | `service.go::normalizeAuditEvent` — applies severity / outcome / category defaults when blank. The path is exercised through `TestRecordAuditEvent_Success`; dedicated defaults-only test pending. |
-| AC-3 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestSigningKey_SignsAndVerifies` (signed-when-keyed branch) and `TestSigningKey_NoKeySkipsVerification` (unsigned branch). |
+| AC-3 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestSigningKey_SignsAndVerifies` (signed-when-keyed branch) and `TestSigningKey_NoKeySkipsVerification` (unsigned branch). |
 | AC-4 | Inspection | `service.go::RecordAuditEvent` lines 117–119 — `context.WithoutCancel` + 10-second timeout on the persist context. Dedicated request-cancel-survives test pending. |
 | AC-5 | Inspection | `service.go::RecordAuditEvent` lines 122–129 + `isContextRelatedAuditWriteError` lines 150–161 — Warn-and-return-nil for context.Canceled / DeadlineExceeded / "transaction has already been committed". Dedicated test pending. |
-| AC-6 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestRecordAuditEvent_RepositoryError` — non-context errors propagate wrapped. |
-| AC-7 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestRecordAuditEvent_Success` (counter increments) and `TestRecordAuditEvent_NilMetrics` (nil-metrics safety). The counter-on-success-only branch is at `service.go::RecordAuditEvent` lines 137–139. |
+| AC-6 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestRecordAuditEvent_RepositoryError` — non-context errors propagate wrapped. |
+| AC-7 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestRecordAuditEvent_Success` (counter increments) and `TestRecordAuditEvent_NilMetrics` (nil-metrics safety). The counter-on-success-only branch is at `service.go::RecordAuditEvent` lines 137–139. |
 | AC-8 | Inspection | `service.go::RecordDomainEvent` lines 164–250 — type-prefix-based inference of `EventCategory`, `Action`, `Operation`, `ResourceType`, etc. Dedicated end-to-end inference test pending. |
 
 ## Edge cases & unhappy paths
@@ -208,7 +208,7 @@ double-degrade the operator's experience.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/audit_management/features/audit_trail/service.go::RecordAuditEvent, RecordDomainEvent, signEvent, enrichAuditEventFromContext, normalizeAuditEvent, isContextRelatedAuditWriteError`.
+- `pk-modules/audit_management/features/audit_trail/service.go::RecordAuditEvent, RecordDomainEvent, signEvent, enrichAuditEventFromContext, normalizeAuditEvent, isContextRelatedAuditWriteError`.
 
 ## Related requirements
 

@@ -46,7 +46,7 @@ opinionated about what belongs together.
 
 The catalog exposes two levels of abstraction above individual modules. Both
 are typed Go values under
-`modules/platformkit-business-modules/catalog/modulecontracts/`:
+`pk-modules/catalog/modulecontracts/`:
 
 - **Presets** are typed labels that modules opt into through
   `ModuleContract.Compatibility.Presets`. A module declaring
@@ -133,11 +133,11 @@ bundles.
 
 ## References
 
-- `modules/platformkit-business-modules/catalog/modulecontracts/authored_catalog.go`
+- `pk-modules/catalog/modulecontracts/authored_catalog.go`
   — full-distribution module tier and preset membership.
-- `modules/platformkit-business-modules/catalog/modulecontracts/authored_module_sets.go`
+- `pk-modules/catalog/modulecontracts/authored_module_sets.go`
   — set definitions.
-- `modules/platformkit-business-modules/cmd/module-contract-check` /
+- `pk-modules/cmd/module-contract-check` /
   `cmd/module-set-check` — CLI tools bundled in `make precommit`.
 - `.claude/generated/module-sets.md` — human-readable rendering of
   the current sets.

@@ -106,12 +106,12 @@ because:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_TwoFactorRequiredWhenEnabled`. |
-| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_TwoFactorCodeSucceeds`. |
-| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_TwoFactorRecoverySucceeds`. |
+| AC-1 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_TwoFactorRequiredWhenEnabled`. |
+| AC-2 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_TwoFactorCodeSucceeds`. |
+| AC-3 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_TwoFactorRecoverySucceeds`. |
 | AC-4 | Inspection | `login.go` MFA branch returns the same typed `ErrInvalidCredentials` shape on a wrong code; the HTTP mapper collapse from REQ-AUTH-001 AC-2 produces the uniform 401. |
-| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/twofactor/req_auth_003_test.go::TestTOTP_RejectsReplay_WithinDriftWindow` exercises the optional replay-guarded store; the flow path is the same one this REQ traverses. |
-| AC-6 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_TwoFactorChallengeRestoresTenantWithoutHostScopedContext`. |
+| AC-5 | Test | `pk-modules/auth_management/features/twofactor/req_auth_003_test.go::TestTOTP_RejectsReplay_WithinDriftWindow` exercises the optional replay-guarded store; the flow path is the same one this REQ traverses. |
+| AC-6 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestAuthenticate_TwoFactorChallengeRestoresTenantWithoutHostScopedContext`. |
 
 ## Edge cases & unhappy paths
 
@@ -165,11 +165,11 @@ because:
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/auth_management/features/authentication/login_2fa.go` — the
+- `pk-modules/auth_management/features/authentication/login_2fa.go` — the
   challenge integration point.
-- `modules/platformkit-business-modules/auth_management/features/authentication/twofactor_store.go` —
+- `pk-modules/auth_management/features/authentication/twofactor_store.go` —
   the bridge to the `twofactor` feature's secret store.
-- `modules/platformkit-business-modules/auth_management/features/twofactor/service.go` — the
+- `pk-modules/auth_management/features/twofactor/service.go` — the
   underlying TOTP + backup-code primitives.
 
 ## Related requirements

@@ -26,9 +26,9 @@ Status: **Active** (2026-05-06)
 Every third-party API integration (Twilio, Stripe, LiveKit, Tile38,
 Novu, LibreTranslate, Meta WhatsApp, Instagram / Facebook / X
 publishers, Toconline invoicing, etc.) **shall** live under
-`platformkit-integrations/<domain>/<provider>/` and **shall** satisfy a
+the integrations layer's `<domain>/<provider>/` and **shall** satisfy a
 domain-level provider interface declared at
-`platformkit-integrations/<domain>/provider.go`. Business modules
+the integrations layer's `<domain>/provider.go`. Business modules
 **shall** import and consume the domain interface, never the concrete
 provider package.
 
@@ -51,34 +51,34 @@ mechanism that makes this physically possible.
 Finally, blast-radius containment. When a vendor breaks (auth-token
 revoked, schema change, rate-limit retroactively tightened), the
 failure surface is exactly one adapter package; the noop fallback
-under `chat_management/providers/noop/` and similar paths keep the
+under `chat/providers/noop/` and similar paths keep the
 platform booting even when an optional integration is unreachable.
 
 ## Acceptance criteria
 
-- **AC-1** Every `platformkit-integrations/<domain>/` directory
+- **AC-1** Every the integrations layer's `<domain>/` directory
   declares the domain's contract in `provider.go` (or a
   similarly-named interface file). Concrete adapters do not declare
   the contract themselves; they implement an externally-defined one.
 - **AC-2** Concrete provider code lives at
-  `platformkit-integrations/<domain>/<provider>/`. The directory name
+  the integrations layer's `<domain>/<provider>/`. The directory name
   is the provider's slug (e.g. `twilio/`, `stripe/`, `tile38/`).
-- **AC-3** No business-module package under `modules/platformkit-business-modules/`
+- **AC-3** No business-module package under `pk-modules/`
   imports a concrete adapter package; imports go to the domain
   interface package only.
 - **AC-4** Optional integrations have a noop fallback (e.g.
-  `chat_management/providers/noop/`,
+  `chat/providers/noop/`,
   `notification_management/providers/`,
-  `translation_management/providers/noop/`) so a deployment without
+  `translation/providers/noop/`) so a deployment without
   the integration still boots.
 
 ## Verification
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Inspection | Directory walk: every `platformkit-integrations/<domain>/` has at least one `provider.go` or interface-declaring file. |
+| AC-1 | Inspection | Directory walk: every the integrations layer's `<domain>/` has at least one `provider.go` or interface-declaring file. |
 | AC-2 | Inspection | Same walk: every leaf directory is a single provider's adapter. |
-| AC-3 | Analysis | `core/platformkit-backend-kit/analysis/importboundary` rejects business-module imports of concrete adapter packages. |
+| AC-3 | Analysis | `pk-core/analysis/importboundary` rejects business-module imports of concrete adapter packages. |
 | AC-4 | Inspection | Each optional integration lists its `providers/noop/` peer in its module's `dependencies.go` declarations. |
 
 ## Satisfied by
@@ -97,6 +97,6 @@ platform booting even when an optional integration is unreachable.
 
 ## References
 
-- `platformkit-integrations/messaging/{provider.go, twilio/, webhook/, meta/}` — canonical example.
-- `platformkit-integrations/payments/stripe/` — payments adapter.
-- `platformkit-integrations/geo/{provider.go, tile38/, inmemory/}` — geo provider with noop sibling.
+- the integrations layer's `messaging/{provider.go, twilio/, webhook/, meta/}` — canonical example.
+- the integrations layer's `payments/stripe/` — payments adapter.
+- the integrations layer's `geo/{provider.go, tile38/, inmemory/}` — geo provider with noop sibling.

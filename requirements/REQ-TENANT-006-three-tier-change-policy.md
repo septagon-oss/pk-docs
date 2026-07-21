@@ -26,13 +26,13 @@ Status: **Active** (2026-05-10)
 
 Every write operation exposed by `tenant_management` **shall** be
 classified into one of three tiers and routed through the
-`change_management` gate accordingly:
+`change` gate accordingly:
 
 | Tier   | Examples                                              | Behaviour |
 |--------|-------------------------------------------------------|-----------|
 | Tier 1 | DeleteTenant, RemoveOwner, UpdateSecuritySettings, RaiseTenantLimits | `AutoApprove=false`; returns the typed pending-approval error until approval; persists the gate decision in a `ChangeRecord` |
 | Tier 2 | UpdateTenant (display), AddMember (non-owner), UpdateLimits (lower), CreateTenant, ArchiveTenant, RestoreTenant, workspace ops | `AutoApprove=true`; applies inline and persists an applied `ChangeRecord` |
-| Tier 3 | ReconcileHostAliases, all reads | bypasses `change_management`; producer-owned metrics/events remain responsible for observable mutations |
+| Tier 3 | ReconcileHostAliases, all reads | bypasses `change`; producer-owned metrics/events remain responsible for observable mutations |
 
 The classification **shall** be enforced by `tenantChangeProvider`'s
 `GetChangeWorkflow(changeType)` returning the appropriate
@@ -69,16 +69,16 @@ remove its last owner without approval (Tier 1).
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/tenant_management/change_provider_test.go::TestProviderClaimsTenantEntityTypes`. |
-| AC-2 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_change_routing_test.go::TestDeleteTenantTier1ReturnsPendingApprovalError`. |
-| AC-3 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_change_routing_test.go::TestArchiveTenantStampsTier2ChangeType`. |
-| AC-4 | Test | `modules/platformkit-business-modules/tenant_management/change_provider_test.go::TestTier1ClassificationRequiresApproval` and `modules/platformkit-business-modules/tenant_management/change_provider_test.go::TestTier2ClassificationAutoApproves`. |
-| AC-5 | Test | `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/service_change_routing_test.go::TestGovernedTenantMutationsFailClosedWithoutChangeService` proves missing gate wiring never falls through to a direct mutation. |
+| AC-1 | Test | `pk-modules/tenant_management/change_provider_test.go::TestProviderClaimsTenantEntityTypes`. |
+| AC-2 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/service_change_routing_test.go::TestDeleteTenantTier1ReturnsPendingApprovalError`. |
+| AC-3 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/service_change_routing_test.go::TestArchiveTenantStampsTier2ChangeType`. |
+| AC-4 | Test | `pk-modules/tenant_management/change_provider_test.go::TestTier1ClassificationRequiresApproval` and `pk-modules/tenant_management/change_provider_test.go::TestTier2ClassificationAutoApproves`. |
+| AC-5 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/service_change_routing_test.go::TestGovernedTenantMutationsFailClosedWithoutChangeService` proves missing gate wiring never falls through to a direct mutation. |
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/tenant_management/change_provider.go`
-- `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/`
+- `pk-modules/tenant_management/change_provider.go`
+- `pk-modules/tenant_management/features/tenant_lifecycle/`
 
 ## Related requirements
 

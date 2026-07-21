@@ -59,10 +59,10 @@ entitlements, or delete tenant records before an export is captured.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Inspection | `modules/platformkit-business-modules/ports/saas_lifecycle.go::SaaSLifecycleState` defines the canonical state vocabulary. |
-| AC-2 | Test | `modules/platformkit-business-modules/ports/saas_lifecycle_test.go::TestSaaSLifecycleTransitionPolicy` |
-| AC-3 | Test | `modules/platformkit-business-modules/ports/saas_lifecycle_test.go::TestSaaSLifecycleTransitionPolicy` |
-| AC-4 | Test | `modules/platformkit-business-modules/ports/saas_lifecycle_test.go::TestSaaSLifecycleRunnerRejectsMissingComposedStep` |
+| AC-1 | Inspection | `pk-modules/ports/saas_lifecycle.go::SaaSLifecycleState` defines the canonical state vocabulary. |
+| AC-2 | Test | `pk-modules/ports/saas_lifecycle_test.go::TestSaaSLifecycleTransitionPolicy` |
+| AC-3 | Test | `pk-modules/ports/saas_lifecycle_test.go::TestSaaSLifecycleTransitionPolicy` |
+| AC-4 | Test | `pk-modules/ports/saas_lifecycle_test.go::TestSaaSLifecycleRunnerRejectsMissingComposedStep` |
 
 ## Implements (cross-cutting)
 
@@ -73,10 +73,10 @@ entitlements, or delete tenant records before an export is captured.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/ports/saas_lifecycle.go` — canonical
+- `pk-modules/ports/saas_lifecycle.go` — canonical
   states, transitions, ordered steps, and composition validation.
-- `modules/platformkit-business-modules/tenant_management/features/tenant_lifecycle/saas_lifecycle_handlers.go` — tenant-owned step adapters.
-- `modules/platformkit-business-modules/billing_management/features/subscriptions/saas_lifecycle_handlers.go` — billing-owned lifecycle projection.
+- `pk-modules/tenant_management/features/tenant_lifecycle/saas_lifecycle_handlers.go` — tenant-owned step adapters.
+- `pk-modules/billing/features/subscriptions/saas_lifecycle_handlers.go` — billing-owned lifecycle projection.
 
 ## Related requirements
 

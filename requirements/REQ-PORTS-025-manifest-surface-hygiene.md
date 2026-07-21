@@ -29,7 +29,7 @@ Status: **Proposed** (2026-07-02)
 ## Statement
 
 **If** a `module.manifest.yaml` under
-`modules/platformkit-business-modules/*/` declares the retired
+`pk-modules/*/` declares the retired
 registrar surface (mentions `AdminRegistrar` or
 `SettingsRegistrar`) and the module is not on the retired-surface
 allowlist, **then** the manifest-hygiene gate **shall** fail the
@@ -79,9 +79,9 @@ hard prohibition.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/ports/manifest_hygiene_test.go::TestNoRetiredRegistrarManifestEntries` — the dirty-manifest branch. |
-| AC-2 | Test | `modules/platformkit-business-modules/ports/manifest_hygiene_test.go::TestNoRetiredRegistrarManifestEntries` — the stale-allowlist branch of the same test. |
-| AC-3 | Test | `modules/platformkit-business-modules/ports/manifest_hygiene_test.go::TestNoRetiredRegistrarManifestEntries` — `retiredRegistrarManifestAllowlist` is empty in source; the test enforces the resulting hard prohibition on every `*/module.manifest.yaml`. |
+| AC-1 | Test | `pk-modules/ports/manifest_hygiene_test.go::TestNoRetiredRegistrarManifestEntries` — the dirty-manifest branch. |
+| AC-2 | Test | `pk-modules/ports/manifest_hygiene_test.go::TestNoRetiredRegistrarManifestEntries` — the stale-allowlist branch of the same test. |
+| AC-3 | Test | `pk-modules/ports/manifest_hygiene_test.go::TestNoRetiredRegistrarManifestEntries` — `retiredRegistrarManifestAllowlist` is empty in source; the test enforces the resulting hard prohibition on every `*/module.manifest.yaml`. |
 
 ## Satisfied by
 
@@ -91,7 +91,7 @@ hard prohibition.
 - ADR-0048 — Go-authored catalog and generated exports: manifests
   are projections of code, never independently authored truth
   (the decision the gate's error message cites).
-- `modules/platformkit-business-modules/ports/manifest_hygiene_test.go` —
+- `pk-modules/ports/manifest_hygiene_test.go` —
   the gate itself.
 
 ## Related requirements

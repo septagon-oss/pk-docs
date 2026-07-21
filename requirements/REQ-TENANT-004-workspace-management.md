@@ -15,7 +15,7 @@ implements_cross_cutting: [REQ-001, REQ-004]
 type: doc
 tags: [requirement, feature, tenant_management]
 module: tenant_management
-feature: workspace_management
+feature: workspace
 ---
 
 # REQ TENANT-004 — Workspace management
@@ -68,9 +68,9 @@ tenant deletion cascades to its workspaces.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/tenant_management/features/workspace_management/service_test.go::TestToWorkspaceDTO_AllFieldsMapped` covers tenant-context enforcement on create. |
-| AC-2 | Test | `modules/platformkit-business-modules/tenant_management/features/workspace_management/service_test.go::TestToWorkspaceDTO_AllFieldsMapped` covers cross-tenant visibility paths. |
-| AC-3 | Test | `modules/platformkit-business-modules/tenant_management/features/workspace_management/service_test.go::TestToWorkspaceDTO_AllFieldsMapped` covers the lifecycle event emission. |
+| AC-1 | Test | `pk-modules/tenant_management/features/workspace/service_test.go::TestToWorkspaceDTO_AllFieldsMapped` covers tenant-context enforcement on create. |
+| AC-2 | Test | `pk-modules/tenant_management/features/workspace/service_test.go::TestToWorkspaceDTO_AllFieldsMapped` covers cross-tenant visibility paths. |
+| AC-3 | Test | `pk-modules/tenant_management/features/workspace/service_test.go::TestToWorkspaceDTO_AllFieldsMapped` covers the lifecycle event emission. |
 
 ## Implements (cross-cutting)
 
@@ -79,10 +79,10 @@ tenant deletion cascades to its workspaces.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/tenant_management/features/workspace_management/feature.go`
-- `modules/platformkit-business-modules/tenant_management/features/workspace_management/service.go`,
+- `pk-modules/tenant_management/features/workspace/feature.go`
+- `pk-modules/tenant_management/features/workspace/service.go`,
   `service_test.go`
-- `modules/platformkit-business-modules/tenant_management/features/workspace_management/handler.go`,
+- `pk-modules/tenant_management/features/workspace/handler.go`,
   `routes.go`, `permissions.go`
 
 ## Related requirements

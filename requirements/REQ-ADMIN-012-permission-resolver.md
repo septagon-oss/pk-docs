@@ -101,10 +101,10 @@ guarantee. Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/admin_management/permission_wiring_test.go::TestPermissionResolverWiringComposesAcrossModules`. |
-| AC-2 | Test | `modules/platformkit-business-modules/admin_management/permission_wiring_test.go::TestPermissionResolverWiringRejectsDuplicateOwnership`. |
-| AC-3 | Test | `modules/platformkit-business-modules/admin_management/permission_wiring_test.go::TestPermissionCoverageValidatorPassesWhenComplete`. |
-| AC-4 | Test | `modules/platformkit-business-modules/admin_management/permission_wiring_test.go::TestPermissionCoverageValidatorFailsClosedOnGap`. |
+| AC-1 | Test | `pk-modules/admin_management/permission_wiring_test.go::TestPermissionResolverWiringComposesAcrossModules`. |
+| AC-2 | Test | `pk-modules/admin_management/permission_wiring_test.go::TestPermissionResolverWiringRejectsDuplicateOwnership`. |
+| AC-3 | Test | `pk-modules/admin_management/permission_wiring_test.go::TestPermissionCoverageValidatorPassesWhenComplete`. |
+| AC-4 | Test | `pk-modules/admin_management/permission_wiring_test.go::TestPermissionCoverageValidatorFailsClosedOnGap`. |
 
 ## Edge cases & unhappy paths
 
@@ -145,8 +145,8 @@ guarantee. Three properties:
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/admin_management/surface_renderer_provider.go::newPlatformPermissionResolver, validatePlatformPermissionCoverage`.
-- `modules/platformkit-business-modules/ports/permissions.go::EntityReadPermissions, NewAggregatePermissionResolver, ValidatePermissionCoverage`.
+- `pk-modules/admin_management/surface_renderer_provider.go::newPlatformPermissionResolver, validatePlatformPermissionCoverage`.
+- `pk-modules/ports/permissions.go::EntityReadPermissions, NewAggregatePermissionResolver, ValidatePermissionCoverage`.
 
 ## Related requirements
 

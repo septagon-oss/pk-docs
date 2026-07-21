@@ -68,12 +68,12 @@ even in callers that inspect the boolean first.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/permissions/service_crosstenant_test.go::TestCheckPermissionDelegatesExactPrincipalAndTenantToGovernedProvider`. |
-| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/permissions/service_test.go::TestService_GetUserRolesRequiresConcreteTenant`, permission-token tests in `core/platformkit-backend-kit/security/authz/permission_tokens_test.go`, and Topaz canonical-input tests. |
-| AC-3 | Test | `modules/platformkit-business-modules/auth_management/features/permissions/service_test.go::TestService_CheckPermission_APIKeyPrincipalUsesGovernedDecisionPlane`. |
-| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/permissions/session_evaluator_topaz_test.go::TestSessionPermissionEvaluatorDeciderErrorsFailClosed`. |
-| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/permissions/service_crosstenant_test.go::TestCheckPermissionGuestCeilingSkipsPrivilegedBindings`. |
-| AC-6 | Test | `modules/platformkit-business-modules/auth_management/features/permissions/req_auth_004_test.go::TestCheckPermissionIsDeterministic`. |
+| AC-1 | Test | `pk-modules/auth_management/features/permissions/service_crosstenant_test.go::TestCheckPermissionDelegatesExactPrincipalAndTenantToGovernedProvider`. |
+| AC-2 | Test | `pk-modules/auth_management/features/permissions/service_test.go::TestService_GetUserRolesRequiresConcreteTenant`, permission-token tests in `pk-core/security/authz/permission_tokens_test.go`, and Topaz canonical-input tests. |
+| AC-3 | Test | `pk-modules/auth_management/features/permissions/service_test.go::TestService_CheckPermission_APIKeyPrincipalUsesGovernedDecisionPlane`. |
+| AC-4 | Test | `pk-modules/auth_management/features/permissions/session_evaluator_topaz_test.go::TestSessionPermissionEvaluatorDeciderErrorsFailClosed`. |
+| AC-5 | Test | `pk-modules/auth_management/features/permissions/service_crosstenant_test.go::TestCheckPermissionGuestCeilingSkipsPrivilegedBindings`. |
+| AC-6 | Test | `pk-modules/auth_management/features/permissions/req_auth_004_test.go::TestCheckPermissionIsDeterministic`. |
 
 ## Edge cases & unhappy paths
 
@@ -95,9 +95,9 @@ even in callers that inspect the boolean first.
 ## Satisfied by
 
 - `core/platformkit-ports/authz.Decider`
-- `core/platformkit-integrations/topaz`
-- `modules/platformkit-business-modules/auth_management/features/permissions/service.go`
-- `modules/platformkit-business-modules/auth_management/features/permissions/session_evaluator.go`
+- the integrations layer's `topaz`
+- `pk-modules/auth_management/features/permissions/service.go`
+- `pk-modules/auth_management/features/permissions/session_evaluator.go`
 
 ## Related requirements
 

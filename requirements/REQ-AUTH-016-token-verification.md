@@ -105,11 +105,11 @@ result of a long line of CVE-class mistakes:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestVerifyToken_BlacklistedToken`. |
+| AC-1 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestVerifyToken_BlacklistedToken`. |
 | AC-2 | Inspection | `refresh_token.go::validateRefreshToken` (lines 285-289) pins `*jwt.SigningMethodHMAC` and rejects everything else; the access-token validator uses the same primitive. |
 | AC-3 | Inspection | The claim-presence checks in `validateRefreshToken` apply to the access-token validator too; reviewers verify both paths. |
-| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestVerifyToken_RejectsUnknownTokenType`. |
-| AC-5 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/service_test.go::TestVerifyToken_RequiresExplicitTokenType`. |
+| AC-4 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestVerifyToken_RejectsUnknownTokenType`. |
+| AC-5 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestVerifyToken_RequiresExplicitTokenType`. |
 | AC-6 | Inspection | The JWT library's `Valid` flag captures expiry; reviewers confirm the typed error path. |
 
 ## Edge cases & unhappy paths
@@ -160,12 +160,12 @@ result of a long line of CVE-class mistakes:
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/auth_management/features/authentication/verify_token.go` —
+- `pk-modules/auth_management/features/authentication/verify_token.go` —
   the verifier surface.
-- `modules/platformkit-business-modules/auth_management/features/authentication/refresh_token.go::validateRefreshToken` —
+- `pk-modules/auth_management/features/authentication/refresh_token.go::validateRefreshToken` —
   the underlying signature + claim check the access-token path
   shares.
-- `modules/platformkit-business-modules/auth_management/features/authentication/login_session.go::generateAccessToken` —
+- `pk-modules/auth_management/features/authentication/login_session.go::generateAccessToken` —
   the producer side that the verifier round-trips.
 
 ## Related requirements

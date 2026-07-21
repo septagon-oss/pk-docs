@@ -13,8 +13,8 @@ satisfied_by:
   conventions: [C-04, C-14]
 implements_cross_cutting: []
 type: doc
-tags: [requirement, feature, translation_management]
-module: translation_management
+tags: [requirement, feature, translation]
+module: translation
 feature: translations
 ---
 
@@ -69,7 +69,7 @@ locales and applies overrides on top.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/translation_management/features/translations/service_test.go::TestNamespaceFromKey` covers `GetByLocaleAndKey` hits and misses. |
+| AC-1 | Test | `pk-modules/translation/features/translations/service_test.go::TestNamespaceFromKey` covers `GetByLocaleAndKey` hits and misses. |
 | AC-2 | Inspection | `service_extended_test.go` covers `ListMerged` (DB + file-backed deduplication). _Verification gap: pending — cited evidence is prose / pattern / non-Go and cannot be auto-resolved._ |
 
 ## Implements (cross-cutting)
@@ -79,12 +79,12 @@ locales and applies overrides on top.
 
 ## Satisfied by
 
-- `translation_management/features/translations/feature.go`
-- `translation_management/features/translations/service.go`,
+- `translation/features/translations/feature.go`
+- `translation/features/translations/service.go`,
   `service_test.go`, `service_extended_test.go`
-- `translation_management/features/translations/handler.go`,
+- `translation/features/translations/handler.go`,
   `route_registration.go`, `permissions.go`
-- `modules/platformkit-business-modules/translation_management/features/translations/section_renderer_test.go`
+- `pk-modules/translation/features/translations/section_renderer_test.go`
 
 ## Related requirements
 

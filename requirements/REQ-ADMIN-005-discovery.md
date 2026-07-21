@@ -51,8 +51,8 @@ load-bearing property: a stale discovery view defeats the point.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/admin_management/features/discovery/service_test.go::TestBuildRoutePlanUsesCanonicalEntityRoute` covers live-derived catalog reads. |
-| AC-2 | Test | `modules/platformkit-business-modules/admin_management/features/discovery/service_test.go::TestBuildRoutePlanUsesCanonicalEntityRoute` covers the per-module output shape. |
+| AC-1 | Test | `pk-modules/admin_management/features/discovery/service_test.go::TestBuildRoutePlanUsesCanonicalEntityRoute` covers live-derived catalog reads. |
+| AC-2 | Test | `pk-modules/admin_management/features/discovery/service_test.go::TestBuildRoutePlanUsesCanonicalEntityRoute` covers the per-module output shape. |
 
 ## Implements (cross-cutting)
 

@@ -73,13 +73,13 @@ replica loaded.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/auth_management/features/policy/repository_guard_test.go::TestGovernedPolicyStoreBlocksEveryDirectWrite` and `feature_exposure_test.go::TestGovernedPolicyEntitiesExposeNoGenericWriteSurface`. |
-| AC-2 | Test | `modules/platformkit-business-modules/auth_management/features/policy/policy_scope_test.go::TestValidatePolicyForTenantRequiresExplicitNamespaceAndTenant`, `projection_source_test.go`, and `service_release_commit_test.go::TestPolicyReleaseTransitionValidatorLocksAndChecksExactPendingRows`. |
-| AC-3 | Test | `core/platformkit-integrations/topaz/policy_compiler_test.go::TestPolicyCompilerIsDeterministic` plus its cross-tenant, duplicate, userset, and canonical-envelope rejection cases. |
-| AC-4 | Test | `modules/platformkit-business-modules/auth_management/features/policy/release_store_test.go::TestPolicyReleaseStoreSeparatesPublishedFromInspectedActive` and `core/platformkit-ports/authz/policy_release_test.go::TestPolicyActivationMatchesDesiredRelease`. |
-| AC-5 | Test | `core/platformkit-integrations/platformkit/authz/register_test.go::TestStartupReconcileResumesPublishedReleaseWithoutRepublishing`, `TestPeriodicReconcileRepairsDriftFromActiveRelease`, and release-store CAS tests. |
-| AC-6 | Test | `core/platformkit-integrations/topaz/policy_decision_gate_test.go::TestEngineRejectsPreexistingAllowUntilExactFreshActivation` and `TestEngineRejectsAllowWhenAttestedReleaseChangesDuringDecision`. |
-| AC-7 | Test | `modules/platformkit-business-modules/auth_management/features/policy/release_store_test.go::TestPolicyReleaseStoreRollsBackActiveTransitionWhenOutboxEnqueueFails` and reconciler activation-event tests. |
+| AC-1 | Test | `pk-modules/auth_management/features/policy/repository_guard_test.go::TestGovernedPolicyStoreBlocksEveryDirectWrite` and `feature_exposure_test.go::TestGovernedPolicyEntitiesExposeNoGenericWriteSurface`. |
+| AC-2 | Test | `pk-modules/auth_management/features/policy/policy_scope_test.go::TestValidatePolicyForTenantRequiresExplicitNamespaceAndTenant`, `projection_source_test.go`, and `service_release_commit_test.go::TestPolicyReleaseTransitionValidatorLocksAndChecksExactPendingRows`. |
+| AC-3 | Test | the integrations layer's `topaz/policy_compiler_test.go::TestPolicyCompilerBuildsDeterministicAggregateV4Projection` plus its cross-tenant, duplicate, userset, and canonical-envelope rejection cases. |
+| AC-4 | Test | `pk-modules/auth_management/features/policy/aggregate_release_store_test.go::TestPolicyAggregateReleaseStoreDecoderEnforcesPhaseEvidenceMatrix` and `core/platformkit-ports/authz/policy_aggregate_release_test.go::TestPolicyAggregateActivationMatchesEveryMemberAndDigest`. |
+| AC-5 | Test | the integrations layer's `platformkit/authz/register_test.go::TestStartupReconcileResumesPublishedAggregateReleaseWithoutRepublishing`, `TestPeriodicReconcileRepairsDriftFromActiveAggregateRelease`, `pk-modules/auth_management/features/policy/aggregate_release_store_test.go::TestPolicyAggregateReleaseStorePendingGenerationBlocksLostUpdate`, and `TestPolicyAggregateReleaseStoreActiveRecordCannotBeDowngraded`. |
+| AC-6 | Test | the integrations layer's `topaz/policy_decision_gate_test.go::TestEngineRejectsPreexistingAllowUntilExactFreshActivation` and `TestEngineRejectsAllowWhenAttestedReleaseChangesDuringDecision`. |
+| AC-7 | Test | `pk-modules/auth_management/features/policy/aggregate_release_store_test.go::TestPolicyAggregateReleaseStoreRollsBackActivationWithOutboxFailure` and reconciler activation-event tests. |
 
 ## Implements (cross-cutting)
 
@@ -90,10 +90,10 @@ replica loaded.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/auth_management/features/policy`
+- `pk-modules/auth_management/features/policy`
 - `core/platformkit-ports/authz`
-- `core/platformkit-integrations/topaz`
-- `core/platformkit-integrations/platformkit/authz`
+- the integrations layer's `topaz`
+- the integrations layer's `platformkit/authz`
 
 ## Related requirements
 

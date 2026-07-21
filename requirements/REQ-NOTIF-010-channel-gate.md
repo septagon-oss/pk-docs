@@ -129,7 +129,7 @@ turn on a default-off channel either.
 - **AC-7 — Defaults match the registered values.** The
   five entries in `channelDefaults` match the
   `SurfaceSetting.Default` values in
-  `modules/platformkit-business-modules/notification_management/surfaces.go`
+  `pk-modules/notification_management/surfaces.go`
   (verified by
   `settings_provider_test.go::TestChannelDefaults_AgreeWithSurfaceContribution`).
 
@@ -137,13 +137,13 @@ turn on a default-off channel either.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_UnknownKeyClosesFailClosed`. |
-| AC-2 | Test | `modules/platformkit-business-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_NilSettingsReturnsRegisteredDefault`. |
-| AC-3 | Test | `modules/platformkit-business-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_TenantOverrideWins`. |
-| AC-4 | Test | `modules/platformkit-business-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_NilOverrideFallsBackToDefault`. |
-| AC-5 | Test | `modules/platformkit-business-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_UnderlyingErrorFallsBackToDefault`. |
-| AC-6 | Test | `modules/platformkit-business-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_NonBoolFallsBackToDefault`. |
-| AC-7 | Test | `modules/platformkit-business-modules/notification_management/settings_provider_test.go::TestChannelDefaults_AgreeWithSurfaceContribution` compares the channel defaults in `surfaces.go::notificationSurfaceContribution` with `internal/channelgate/channelgate.go::channelDefaults`. |
+| AC-1 | Test | `pk-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_UnknownKeyClosesFailClosed`. |
+| AC-2 | Test | `pk-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_NilSettingsReturnsRegisteredDefault`. |
+| AC-3 | Test | `pk-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_TenantOverrideWins`. |
+| AC-4 | Test | `pk-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_NilOverrideFallsBackToDefault`. |
+| AC-5 | Test | `pk-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_UnderlyingErrorFallsBackToDefault`. |
+| AC-6 | Test | `pk-modules/notification_management/internal/channelgate/channelgate_test.go::TestEnabled_NonBoolFallsBackToDefault`. |
+| AC-7 | Test | `pk-modules/notification_management/settings_provider_test.go::TestChannelDefaults_AgreeWithSurfaceContribution` compares the channel defaults in `surfaces.go::notificationSurfaceContribution` with `internal/channelgate/channelgate.go::channelDefaults`. |
 
 ## Edge cases & unhappy paths
 
@@ -197,11 +197,11 @@ turn on a default-off channel either.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/notification_management/internal/channelgate/channelgate.go::Enabled`.
-- `modules/platformkit-business-modules/notification_management/internal/channelgate/channelgate.go::channelDefaults` — the registered-default table.
-- `modules/platformkit-business-modules/notification_management/surfaces.go::notificationSurfaceContribution`
+- `pk-modules/notification_management/internal/channelgate/channelgate.go::Enabled`.
+- `pk-modules/notification_management/internal/channelgate/channelgate.go::channelDefaults` — the registered-default table.
+- `pk-modules/notification_management/surfaces.go::notificationSurfaceContribution`
   — the structural settings source consumed by the admin bridge.
-- `modules/platformkit-business-modules/notification_management/settings_provider_test.go::TestChannelDefaults_AgreeWithSurfaceContribution`
+- `pk-modules/notification_management/settings_provider_test.go::TestChannelDefaults_AgreeWithSurfaceContribution`
   — the executable lock between structural settings and runtime fallbacks.
 
 ## Related requirements

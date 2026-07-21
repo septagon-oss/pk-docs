@@ -90,15 +90,15 @@ evidence from authorizing a release.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `core/platformkit-backend-kit/observability/latency/policy_test.go::TestBoundedRequestObjectivesStayAtThePlatformLatencyFloor` |
-| AC-2 | Test | `tooling/platformkit-tests/latency/gate_test.go::TestRunRequiresEnoughSamplesForP99Evidence` |
-| AC-2 | Analysis | `tooling/platformkit-tests/latency/gate.go`, `apps/platformkit-apps/config/latency-release.json` |
-| AC-3 | Analysis | `tooling/platformkit-tests/latency/gate.go`, `apps/platformkit-apps/config/latency-release.json`, `modules/platformkit-business-modules/collectibles_management/features/upload/pdf_import.go` |
-| AC-4 | Test | `core/platformkit-backend-kit/observability/metrics/providers/otel/metrics_latency_test.go::TestHTTPRequestHistogramHasExactLatencyObjectiveBoundaries` |
-| AC-5 | Inspection | `core/platformkit-backend-kit/docs/architecture/runtime_latency_slo.md`, `modules/platformkit-business-modules/collectibles_management/features/upload/pdf_import.go` |
-| AC-6 | Analysis | `frontend/platformkit-frontend-kit/assets/js/controllers/core/async_action_controller.test.mjs`, `product/platformkit-mobile/tests/mobile-runtime-source-contract.test.mjs`, `product/platformkit-mobile/tests/local-interaction-feedback.rntl.test.tsx` |
-| AC-7 | Analysis | `apps/platformkit-apps/.github/workflows/release.yml`, `apps/platformkit-apps/scripts/tests/materialize-release-workspace.sh`, `apps/platformkit-apps/config/latency-release.json` |
-| AC-8 | Inspection | `product/platformkit-docs/adr/0074-warm-platform-owned-latency-is-a-release-gated-percentile-contract.md`, `product/platformkit-docs/conventions.md`, `core/platformkit-backend-kit/docs/architecture/runtime_latency_slo.md` |
+| AC-1 | Test | `pk-core/observability/latency/policy_test.go::TestBoundedRequestObjectivesStayAtThePlatformLatencyFloor` |
+| AC-2 | Test | `tooling/pk-testkit/latency/gate_test.go::TestRunRequiresEnoughSamplesForP99Evidence` |
+| AC-2 | Analysis | `tooling/pk-testkit/latency/gate.go`, `pk-apps/config/latency-release.json` |
+| AC-3 | Analysis | `tooling/pk-testkit/latency/gate.go`, `pk-apps/config/latency-release.json`, `pk-modules/collectibles/features/upload/pdf_import.go` |
+| AC-4 | Test | `pk-core/observability/metrics/providers/otel/metrics_latency_test.go::TestHTTPRequestHistogramHasExactLatencyObjectiveBoundaries` |
+| AC-5 | Inspection | `pk-core/docs/architecture/runtime_latency_slo.md`, `pk-modules/collectibles/features/upload/pdf_import.go` |
+| AC-6 | Analysis | the frontend kit's `assets/js/controllers/core/async_action_controller.test.mjs`, `product/platformkit-mobile/tests/mobile-runtime-source-contract.test.mjs`, `product/platformkit-mobile/tests/local-interaction-feedback.rntl.test.tsx` |
+| AC-7 | Analysis | `pk-apps/.github/workflows/release.yml`, `pk-apps/scripts/tests/materialize-release-workspace.sh`, `pk-apps/config/latency-release.json` |
+| AC-8 | Inspection | `product/platformkit-docs/adr/0074-warm-platform-owned-latency-is-a-release-gated-percentile-contract.md`, `product/platformkit-docs/conventions.md`, `pk-core/docs/architecture/runtime_latency_slo.md` |
 
 ## Satisfied by
 

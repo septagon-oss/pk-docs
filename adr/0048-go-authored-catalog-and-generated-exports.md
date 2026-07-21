@@ -18,7 +18,7 @@ and weakest validation surface in the platform.
 
 > **Repository scope.** The implementation paths in this decision refer to
 > the full PlatformKit distribution's
-> `modules/platformkit-business-modules` repository. The public
+> `pk-modules` repository. The public
 > `github.com/septagon-oss/pk-modules` repository is a deliberately small
 > reference module pack under `pkg/`; it does not mirror the full catalog and
 > must not create a parallel YAML or CSV authority. Public consumers compose
@@ -36,7 +36,7 @@ validated only by CI-time check binaries. A typo'd module ID survived until
 (`cmd/contracts-catalog-generate`) already emitted a Go struct literal from
 the YAML — proof that the typed form is sufficient — but it pointed the wrong
 way: Go code was demoted to a validator of strings. A duplicated
-`module_contracts.yaml` copy embedded in platformkit-devtools drifted
+`module_contracts.yaml` copy embedded in pk-tools drifted
 independently of the canonical one.
 
 This contradicts the platform's essence: composition is a typed fx graph

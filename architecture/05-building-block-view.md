@@ -19,45 +19,45 @@ inside a business module), and the internal split of a module
 
 ```mermaid
 flowchart TB
-    Apps["platformkit-apps<br/>app compositions"] -->|"composes"| Modules["pk-modules<br/>47 modules"]
-    Modules -->|"uses runtime"| Backend["platformkit-backend-kit<br/>module system, fx, events, CRUD, auth"]
-    Modules -->|"renders tenant surfaces"| Frontend["platformkit-frontend-kit<br/>HTML + controllers + shell"]
-    Frontend -->|"semantic tokens"| Design["platformkit-design-system<br/>+ pkds/ CUE pipeline"]
+    Apps["pk-apps<br/>app compositions"] -->|"composes"| Modules["pk-modules<br/>47 modules"]
+    Modules -->|"uses runtime"| Backend["pk-core<br/>module system, fx, events, CRUD, auth"]
+    Modules -->|"renders tenant surfaces"| Frontend["the frontend kit<br/>HTML + controllers + shell"]
+    Frontend -->|"semantic tokens"| Design["the design system<br/>+ pkds/ CUE pipeline"]
     Design -->|"DTCG + stories"| Frontend
     Modules -->|"NATS transport"| Bindings["platformkit-module-bindings<br/>NATS-backed port proxies"]
-    Backend -->|"shared transport types"| Shared["platformkit-shared"]
-    Modules -->|"agent execution"| Agents["platformkit-agent-runtime"]
-    Modules -->|"external providers"| Integrations["platformkit-integrations"]
+    Backend -->|"shared transport types"| Shared["pk-shared"]
+    Modules -->|"agent execution"| Agents["the agent runtime"]
+    Modules -->|"external providers"| Integrations["the integrations layer"]
     Design -->|"CUE source"| Mobile["platformkit-mobile"]
-    Tests["platformkit-tests<br/>E2E, flow harness"] -->|"exercises"| Apps
-    Devtools["platformkit-devtools<br/>CLI, scaffolders"] -->|"scaffolds"| Modules
+    Tests["pk-testkit<br/>E2E, flow harness"] -->|"exercises"| Apps
+    Devtools["pk-tools<br/>CLI, scaffolders"] -->|"scaffolds"| Modules
 ```
 
 The 21 repos split into five conceptual bands:
 
 **Runtime** — the primitives every app uses.
-- `platformkit-backend-kit` — module system, fx wiring, `crud.Repository[T]`, event bus, observability, auth transport, security middleware, infrastructure adapters.
-- `platformkit-shared` — transport types, `AgentSkill`, presentation primitives, CloudEvents envelopes.
+- `pk-core` — module system, fx wiring, `crud.Repository[T]`, event bus, observability, auth transport, security middleware, infrastructure adapters.
+- `pk-shared` — transport types, `AgentSkill`, presentation primitives, CloudEvents envelopes.
 
 **Catalog** — the business capabilities.
 - `pk-modules` — 47 modules organised into eight domains: content-experience (7), engagement (10), governance (2), identity-access (3), integrations (2), platform (10), revenue (5), workspace (8).
 
 **Frontend** — the user-facing surface.
-- `platformkit-frontend-kit` — Go-rendered HTML, controller runtime, shell mechanics, Storybook.
-- `platformkit-design-system` (+ `pkds/`) — tokens, themes, overlays, CUE-authored component catalog.
+- the frontend kit — Go-rendered HTML, controller runtime, shell mechanics, Storybook.
+- the design system (+ `pkds/`) — tokens, themes, overlays, CUE-authored component catalog.
 - `platformkit-mobile` — React Native / Expo shell consuming the mobile DTCG tokens.
 
 **Composition** — how the runtime becomes an app.
-- `platformkit-apps` — two canonical compositions: `complete-saas-monolith`, `complete-saas-microservices`.
+- `pk-apps` — two canonical compositions: `complete-saas-monolith`, `complete-saas-microservices`.
 - `platformkit-module-bindings` — NATS-backed port proxies used by the microservices composition.
-- `platformkit-devtools` — the `platformkit` CLI (scaffold, info, graph, sync).
-- `platformkit-agent-runtime` — AI agent execution governance plane.
-- `platformkit-integrations` — third-party provider adapters isolated from core.
+- `pk-tools` — the `platformkit` CLI (scaffold, info, graph, sync).
+- the agent runtime — AI agent execution governance plane.
+- the integrations layer — third-party provider adapters isolated from core.
 
 **Infrastructure + docs + community.**
 - `platformkit-infra-pulumi` — infrastructure catalog and paved-road deployment blueprints.
 - `platformkit-cluster-ops` / `platformkit-kube-apps` — Kubernetes delivery and ops.
-- `platformkit-tests` — cross-repo E2E, browser harness.
+- `pk-testkit` — cross-repo E2E, browser harness.
 - `pk-docs` — this documentation.
 - `platformkit-community` — public discussion and coordination.
 - `platformkit-bridges` — external-tooling bridges consuming PlatformKit control-plane artifacts.
@@ -69,8 +69,8 @@ The 21 repos split into five conceptual bands:
 
 Three forces push repos apart, not together:
 
-- **Dependency hygiene.** `platformkit-devtools` and
-  `platformkit-tests` hold `go-rod`, Docker SDK, and other
+- **Dependency hygiene.** `pk-tools` and
+  `pk-testkit` hold `go-rod`, Docker SDK, and other
   run-the-world deps that don't belong in server binaries
   ([Convention C-05](../conventions.md#c-05-server-binaries-dont-ship-browsers-or-docker)).
   Separate Go modules mean `go mod tidy` in a server repo rejects
@@ -81,7 +81,7 @@ Three forces push repos apart, not together:
   their cadences.
 - **Ownership.** A module author works primarily in
   `pk-modules`; a frontend engineer primarily
-  in `platformkit-frontend-kit` and `platformkit-design-system`.
+  in the frontend kit and the design system.
   The repo boundaries follow the primary-ownership lines.
 
 ## Level 2 — anatomy of a business module
@@ -219,20 +219,19 @@ The 47 modules organise into 8 domains:
 | Domain | Example modules | What they do |
 |---|---|---|
 | **Identity-access** (3) | `user_management`, `auth_management`, `api_key_management` | Who is this request, what are they allowed to do |
-| **Platform** (10) | `tenant_management`, `module_management`, `admin_management`, `theme_management`, `health_management`, `job_management` | Platform-level concerns — tenancy, modules themselves, admin surfaces |
-| **Revenue** (5) | `billing_management`, `payment_management`, `invoicing_management`, `shop_management`, `membership_management` | Money changes hands |
-| **Engagement** (10) | `notification_management`, `event_management`, `support_management`, `chat_management`, `community_management`, `social_management` | How the product reaches and retains users |
-| **Content-experience** (7) | `content_management`, `site_management`, `file_management`, `sitemap_management` | What the product presents |
-| **Workspace** (8) | `booking_management`, `space_management`, `visit_management`, `location_management`, `amenity_management`, `access_management`, `mail_management`, `device_management` | Physical-world operations (coworking focus) |
-| **Governance** (2) | `audit_management`, `change_management` | Traceability, approval workflows, evidence |
-| **Integrations** (2) | `webhook_management`, `execution_management` | External system bindings |
+| **Platform** (10) | `tenant_management`, `admin_management`, `theme`, `health_management`, `job`, and the module control plane | Platform-level concerns — tenancy, modules themselves, admin surfaces |
+| **Revenue** (5) | `billing`, `payment`, `invoicing`, `shop`, `membership` | Money changes hands |
+| **Engagement** (10) | `notification_management`, `event`, `support`, `chat`, `community`, `social` | How the product reaches and retains users |
+| **Content-experience** (7) | `content_management`, `site`, `file`, `sitemap` | What the product presents |
+| **Workspace** (8) | `booking`, `space`, `visit`, `location`, `amenity`, `access`, `mail`, `device` | Physical-world operations (coworking focus) |
+| **Governance** (2) | `audit_management`, `change` | Traceability, approval workflows, evidence |
+| **Integrations** (2) | `webhook`, `execution` | External system bindings |
 
 Tier distribution: 11 core-certified, 27 supported, 9 experimental.
-The full matrix with per-module capability counts lives at
-`.claude/generated/index.md` (regenerated by
-`platformkit claude sync`) and in the live
-`docs/architecture/MODULE_CAPABILITY_MATRIX.md` under
-`pk-modules/`.
+The full matrix with per-module capability counts lives in the
+workspace's generated module index and in the module
+distribution's capability matrix
+(`docs/architecture/MODULE_CAPABILITY_MATRIX.md`).
 
 ## Presets and sets
 

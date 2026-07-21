@@ -14,7 +14,7 @@ Status: **Accepted** (2024-01-15)
 
 ## The problem
 
-`platformkit-frontend-kit`'s *structure* is healthy. Atomic component
+the frontend kit's *structure* is healthy. Atomic component
 layers under `components/`, a behaviour-registry metadata under
 `registry/`, transitional preview tooling under `storybook/`, vendored
 browser primitives under `assets/`. The skeleton is fine.
@@ -28,7 +28,7 @@ from the frontend kit. None of these channels talk to each other.
 
 The consequences are the usual ones. Interactive behaviour is hard to
 discover, hard to test, hard to reuse. Shell concerns drift between
-`platformkit-frontend-kit` and `pk-modules` because
+the frontend kit and `pk-modules` because
 nothing enforces who owns the shell. The component registry
 documents structure faithfully and behaviour not at all.
 
@@ -54,7 +54,7 @@ Seven rules govern the split:
    atoms and many molecules stay plain server-rendered HTML.
 6. The shared controller runtime is the only supported architecture
    for new interactive shared UI.
-7. Generic admin-shell behaviour belongs in `platformkit-frontend-kit`,
+7. Generic admin-shell behaviour belongs in the frontend kit,
    not inside business modules.
 
 Each interactive component converges on the same file shape:

@@ -115,11 +115,11 @@ this seam.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/audit_management/ports_provider_test.go::TestModuleProvidesAuditPorts`. |
-| AC-2 | Test | `modules/platformkit-business-modules/audit_management/ports_provider_test.go::TestAuditRecorderAdapter`. |
-| AC-3 | Test | `modules/platformkit-business-modules/audit_management/ports_provider_test.go::TestAuditReaderAdapterGet`. |
-| AC-4 | Test | `modules/platformkit-business-modules/audit_management/ports_provider_test.go::TestAuditReaderAdapterQuery`. |
-| AC-5 | Inspection | `modules/platformkit-business-modules/audit_management/ports_provider.go::Record` — blank-ID / zero-time / blank-severity guards keep `ports.NewAuditEvent` defaults. Dedicated defaults-only test pending. |
+| AC-1 | Test | `pk-modules/audit_management/ports_provider_test.go::TestModuleProvidesAuditPorts`. |
+| AC-2 | Test | `pk-modules/audit_management/ports_provider_test.go::TestAuditRecorderAdapter`. |
+| AC-3 | Test | `pk-modules/audit_management/ports_provider_test.go::TestAuditReaderAdapterGet`. |
+| AC-4 | Test | `pk-modules/audit_management/ports_provider_test.go::TestAuditReaderAdapterQuery`. |
+| AC-5 | Inspection | `pk-modules/audit_management/ports_provider.go::Record` — blank-ID / zero-time / blank-severity guards keep `ports.NewAuditEvent` defaults. Dedicated defaults-only test pending. |
 
 ## Edge cases & unhappy paths
 
@@ -159,7 +159,7 @@ this seam.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/audit_management/ports_provider.go::registerAuditPorts, auditRecorderAdapter.Record, auditReaderAdapter.Get, auditReaderAdapter.Query, splitActorRef, splitResourceRef, stringifyMetadata`.
+- `pk-modules/audit_management/ports_provider.go::registerAuditPorts, auditRecorderAdapter.Record, auditReaderAdapter.Get, auditReaderAdapter.Query, splitActorRef, splitResourceRef, stringifyMetadata`.
 - `core/platformkit-ports/audit/audit.go` — the seam definition:
   `Recorder`, `Reader`, `Event`, `Filter`, and the authored
   `RecorderContract` / `ReaderContract`.

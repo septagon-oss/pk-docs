@@ -13,8 +13,8 @@ satisfied_by:
   conventions: [C-04, C-14]
 implements_cross_cutting: [REQ-014]
 type: doc
-tags: [requirement, feature, chat_management]
-module: chat_management
+tags: [requirement, feature, chat]
+module: chat
 feature: public_chat
 ---
 
@@ -61,7 +61,7 @@ assistant see only its own context.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/chat_management/features/public_chat/assistant_test.go::TestSendPublicMessageUsesAssistantReply` covers session resolution; `service.go::GetOrCreatePublicSession` constructs the room with the tenant from context. |
+| AC-1 | Test | `pk-modules/chat/features/public_chat/assistant_test.go::TestSendPublicMessageUsesAssistantReply` covers session resolution; `service.go::GetOrCreatePublicSession` constructs the room with the tenant from context. |
 | AC-2 | Inspection | `assistant.go:46-82` declares the timeout field, defaults via `defaultPublicAssistantTimeout`, and applies it in `Reply`. |
 | AC-3 | Inspection | `service.go` and `assistant.go` contain no rate-limiter; reviewers verify no rate-limit code path exists at this layer. |
 
@@ -71,11 +71,11 @@ assistant see only its own context.
 
 ## Satisfied by
 
-- `chat_management/features/public_chat/feature.go`
-- `chat_management/features/public_chat/assistant.go`,
+- `chat/features/public_chat/feature.go`
+- `chat/features/public_chat/assistant.go`,
   `assistant_test.go`
-- `chat_management/features/public_chat/service.go`
-- `chat_management/features/public_chat/handler.go`, `routes.go`,
+- `chat/features/public_chat/service.go`
+- `chat/features/public_chat/handler.go`, `routes.go`,
   `permissions.go`
 
 ## Related requirements

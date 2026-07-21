@@ -49,8 +49,8 @@ admin shell.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/admin_management/features/profile/section_renderer_test.go::TestProfileFeatureDeclaresGovernedPagePermission` verifies the governed self-profile page is permission-owned; request-context scoping remains an integration-review concern. |
-| AC-2 | Test | `modules/platformkit-business-modules/admin_management/features/profile/section_renderer_test.go::TestProfileSectionRendererOwnsProfileContent` verifies that the governed section delegates through the narrow admin content seam instead of implementing a second profile route. |
+| AC-1 | Test | `pk-modules/admin_management/features/profile/section_renderer_test.go::TestProfileFeatureDeclaresGovernedPagePermission` verifies the governed self-profile page is permission-owned; request-context scoping remains an integration-review concern. |
+| AC-2 | Test | `pk-modules/admin_management/features/profile/section_renderer_test.go::TestProfileSectionRendererOwnsProfileContent` verifies that the governed section delegates through the narrow admin content seam instead of implementing a second profile route. |
 
 ## Implements (cross-cutting)
 

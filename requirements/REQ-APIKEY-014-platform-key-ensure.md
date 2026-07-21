@@ -102,9 +102,9 @@ properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/api_key_management/features/key_management/ensure_platform_api_key_test.go::TestEnsurePlatformAPIKey_IdempotentAndTenantScoped`. |
-| AC-2 | Test | `modules/platformkit-business-modules/api_key_management/features/key_management/ensure_platform_api_key_test.go::TestEnsurePlatformAPIKey_IdempotentAndTenantScoped` — the table-driven sub-cases exercise both branches. |
-| AC-3 | Test | `modules/platformkit-business-modules/api_key_management/features/key_management/ensure_platform_api_key_test.go::TestGenerateOpaquePlatformKeyMaterial_PrefixFitsColumn`. |
+| AC-1 | Test | `pk-modules/api_key_management/features/key_management/ensure_platform_api_key_test.go::TestEnsurePlatformAPIKey_IdempotentAndTenantScoped`. |
+| AC-2 | Test | `pk-modules/api_key_management/features/key_management/ensure_platform_api_key_test.go::TestEnsurePlatformAPIKey_IdempotentAndTenantScoped` — the table-driven sub-cases exercise both branches. |
+| AC-3 | Test | `pk-modules/api_key_management/features/key_management/ensure_platform_api_key_test.go::TestGenerateOpaquePlatformKeyMaterial_PrefixFitsColumn`. |
 
 ## Edge cases & unhappy paths
 
@@ -152,7 +152,7 @@ properties:
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/api_key_management/features/key_management/service.go::EnsurePlatformAPIKey, generateOpaquePlatformKeyMaterial, syncPlatformKeyPermissions, recordEnsureAudit`.
+- `pk-modules/api_key_management/features/key_management/service.go::EnsurePlatformAPIKey, generateOpaquePlatformKeyMaterial, syncPlatformKeyPermissions, recordEnsureAudit`.
 
 ## Related requirements
 

@@ -24,7 +24,7 @@ Status: **Active** (2026-05-06)
 ## Statement
 
 Every PlatformKit test (unit, integration, e2e) **shall**: (a) use the
-workspace-level test harness at `platformkit-tests/` for shared
+workspace-level test harness at `pk-testkit/` for shared
 infrastructure (browser harness, flow execution, database fixtures),
 (b) be deterministic — no timing-sensitive flakes, no order-dependent
 state, no machine-specific paths — and (c) be re-runnable in any
@@ -58,7 +58,7 @@ contract test, not three weeks later in production.
 
 ## Acceptance criteria
 
-- **AC-1** Test fixtures and helpers live under `platformkit-tests/`
+- **AC-1** Test fixtures and helpers live under `pk-testkit/`
   or a single `testutil/` package per repo — never duplicated across
   packages.
 - **AC-2** Each interface declared in `ports/`,
@@ -68,7 +68,7 @@ contract test, not three weeks later in production.
 - **AC-3** E2E tests replay deterministically against seeded
   fixtures — no real-time `time.Now()` comparisons, no random IDs
   without explicit seeding, no test-ordering dependencies.
-- **AC-4** Flow execution (`platformkit-tests/flow/`) is the single
+- **AC-4** Flow execution (`pk-testkit/flow/`) is the single
   e2e driver across browser, NATS, and HTTP transports — modules
   do not roll their own e2e runner.
 
@@ -76,17 +76,17 @@ contract test, not three weeks later in production.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Inspection | Repo audit during PR review: new packages under `<module>/<feature>/` should not declare test infrastructure that duplicates `platformkit-tests/` capabilities. |
-| AC-2 | Test | `core/platformkit-backend-kit/observability/logger/providers/noop/contract_test.go::TestNoOpLoggerContract` and siblings exercise explicit test doubles through shared contract suites; these doubles are not runtime providers. |
-| AC-3 | Inspection | E2E suites under `modules/platformkit-business-modules/<module>/tests/e2e/` running against the seeded showroom fixtures. _Verification gap: pending — cited evidence is prose / pattern / non-Go and cannot be auto-resolved._ |
-| AC-4 | Inspection | Grep for any package that declares its own browser bootstrap; reviewers redirect to `platformkit-tests/flow/`. |
+| AC-1 | Inspection | Repo audit during PR review: new packages under `<module>/<feature>/` should not declare test infrastructure that duplicates `pk-testkit/` capabilities. |
+| AC-2 | Test | `pk-core/observability/logger/providers/noop/contract_test.go::TestNoOpLoggerContract` and siblings exercise explicit test doubles through shared contract suites; these doubles are not runtime providers. |
+| AC-3 | Inspection | E2E suites under `pk-modules/<module>/tests/e2e/` running against the seeded showroom fixtures. _Verification gap: pending — cited evidence is prose / pattern / non-Go and cannot be auto-resolved._ |
+| AC-4 | Inspection | Grep for any package that declares its own browser bootstrap; reviewers redirect to `pk-testkit/flow/`. |
 
 ## Satisfied by
 
 - [ADR 0021 — Interface contract test suites](../adr/0021-interface-contract-test-suites.md) —
   the architectural decision that established the shared-suite pattern.
-- `platformkit-tests/flow/`, `platformkit-tests/harness/`,
-  `platformkit-tests/context/` — the workspace-level harness.
+- `pk-testkit/flow/`, `pk-testkit/harness/`,
+  `pk-testkit/context/` — the workspace-level harness.
 
 ## Related requirements
 
@@ -95,7 +95,7 @@ contract test, not three weeks later in production.
 
 ## References
 
-- `platformkit-tests/REPO_CHARTER.md` — harness charter and authority
+- `pk-testkit/REPO_CHARTER.md` — harness charter and authority
   boundary.
 - `make check-dual-path-flows` (in `pk-modules`) —
   reuse-of-harness verification target.

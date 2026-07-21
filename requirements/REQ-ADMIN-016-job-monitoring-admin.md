@@ -118,12 +118,12 @@ concern (REQ-004 / ADR-0007), not this handler's.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/admin_management/features/job_monitoring/handler_test.go::TestCancelDeniesWithoutPermission` (403 + scheduler untouched + zero audit events). Manage-only action menus: Inspection — `handler.go::serveScheduledList` / `serveHistoryList` `canManage` branches. |
-| AC-2 | Test | `modules/platformkit-business-modules/admin_management/features/job_monitoring/handler_test.go::TestCancelHappyPathEmitsAudit` (success outcome), `TestCancelPropagatesSchedulerError` (failure outcome), `TestRescheduleHappyPath` and `TestRetryHappyPath` (per-action events + metadata). |
-| AC-3 | Test | `modules/platformkit-business-modules/admin_management/features/job_monitoring/handler_test.go::TestHandlerWithoutAuditRecorderStillFunctions`. |
-| AC-4 | Test | `modules/platformkit-business-modules/admin_management/features/job_monitoring/handler_test.go::TestRescheduleRejectsBadExecuteAt`. |
-| AC-5 | Test | `modules/platformkit-business-modules/admin_management/features/job_monitoring/handler_test.go::TestRetryHappyPath` and `TestRetryReturnsNotFoundWhenOriginalMissing`. |
-| AC-6 | Inspection | `modules/platformkit-business-modules/admin_management/features/job_monitoring/handler.go::serveOverviewStats, serveScheduledList, serveHistoryList` — error and empty branches render `ui.EmptyState` / degraded stats. Dedicated render tests pending. |
+| AC-1 | Test | `pk-modules/admin_management/features/job_monitoring/handler_test.go::TestCancelDeniesWithoutPermission` (403 + scheduler untouched + zero audit events). Manage-only action menus: Inspection — `handler.go::serveScheduledList` / `serveHistoryList` `canManage` branches. |
+| AC-2 | Test | `pk-modules/admin_management/features/job_monitoring/handler_test.go::TestCancelHappyPathEmitsAudit` (success outcome), `TestCancelPropagatesSchedulerError` (failure outcome), `TestRescheduleHappyPath` and `TestRetryHappyPath` (per-action events + metadata). |
+| AC-3 | Test | `pk-modules/admin_management/features/job_monitoring/handler_test.go::TestHandlerWithoutAuditRecorderStillFunctions`. |
+| AC-4 | Test | `pk-modules/admin_management/features/job_monitoring/handler_test.go::TestRescheduleRejectsBadExecuteAt`. |
+| AC-5 | Test | `pk-modules/admin_management/features/job_monitoring/handler_test.go::TestRetryHappyPath` and `TestRetryReturnsNotFoundWhenOriginalMissing`. |
+| AC-6 | Inspection | `pk-modules/admin_management/features/job_monitoring/handler.go::serveOverviewStats, serveScheduledList, serveHistoryList` — error and empty branches render `ui.EmptyState` / degraded stats. Dedicated render tests pending. |
 
 ## Edge cases & unhappy paths
 
@@ -168,11 +168,11 @@ concern (REQ-004 / ADR-0007), not this handler's.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/admin_management/features/job_monitoring/handler.go::RegisterRoutes, handleCancel, handleReschedule, handleRetry, recordJobAudit`.
-- `modules/platformkit-business-modules/admin_management/features/job_monitoring/feature.go::NewFeature` —
+- `pk-modules/admin_management/features/job_monitoring/handler.go::RegisterRoutes, handleCancel, handleReschedule, handleRetry, recordJobAudit`.
+- `pk-modules/admin_management/features/job_monitoring/feature.go::NewFeature` —
   admin pages, endpoint metadata, and the fx wiring that injects
   the required scheduler + optional audit recorder.
-- `modules/platformkit-business-modules/admin_management/features/job_monitoring/routes.go` —
+- `pk-modules/admin_management/features/job_monitoring/routes.go` —
   route metadata pointer (endpoint truth lives in feature.go).
 
 ## Related requirements

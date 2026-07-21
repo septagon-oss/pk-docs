@@ -18,8 +18,8 @@ satisfied_by:
 implements_cross_cutting: [REQ-001, REQ-009, REQ-014]
 refines: REQ-CHAT-001
 type: doc
-tags: [requirement, capability, chat_management, messaging, send]
-module: chat_management
+tags: [requirement, capability, chat, messaging, send]
+module: chat
 feature: messaging
 capability: send_message
 capability_kind: data_invariant
@@ -114,14 +114,14 @@ surface. Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestSendMessage_CreatesMessageAndReturnsInfo`. |
-| AC-2 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestSendMessage_PropagatesCreateError`. |
-| AC-3 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestSendMessage_EnqueuesOutboxEvent`. |
-| AC-4 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestSendMessage_PublishesToChatTransport`, `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestSendMessage_PublisherErrorDoesNotFailCall`, and `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestSendMessage_PublisherSkippedWhenNoTenantInContext`. The nil-publisher branch is also exercised by `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestSendMessage_CreatesMessageAndReturnsInfo`. |
-| AC-5 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestListMessages_ReturnsAllRoomMessages`. |
-| AC-6 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestListMessages_FiltersNilMessages`. |
-| AC-7 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestListMessages_PropagatesError`. |
-| AC-8 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/service_test.go::TestListMessagesSince_FiltersOldMessages`. |
+| AC-1 | Test | `pk-modules/chat/features/messaging/service_test.go::TestSendMessage_CreatesMessageAndReturnsInfo`. |
+| AC-2 | Test | `pk-modules/chat/features/messaging/service_test.go::TestSendMessage_PropagatesCreateError`. |
+| AC-3 | Test | `pk-modules/chat/features/messaging/service_test.go::TestSendMessage_EnqueuesOutboxEvent`. |
+| AC-4 | Test | `pk-modules/chat/features/messaging/service_test.go::TestSendMessage_PublishesToChatTransport`, `pk-modules/chat/features/messaging/service_test.go::TestSendMessage_PublisherErrorDoesNotFailCall`, and `pk-modules/chat/features/messaging/service_test.go::TestSendMessage_PublisherSkippedWhenNoTenantInContext`. The nil-publisher branch is also exercised by `pk-modules/chat/features/messaging/service_test.go::TestSendMessage_CreatesMessageAndReturnsInfo`. |
+| AC-5 | Test | `pk-modules/chat/features/messaging/service_test.go::TestListMessages_ReturnsAllRoomMessages`. |
+| AC-6 | Test | `pk-modules/chat/features/messaging/service_test.go::TestListMessages_FiltersNilMessages`. |
+| AC-7 | Test | `pk-modules/chat/features/messaging/service_test.go::TestListMessages_PropagatesError`. |
+| AC-8 | Test | `pk-modules/chat/features/messaging/service_test.go::TestListMessagesSince_FiltersOldMessages`. |
 
 ## Edge cases & unhappy paths
 
@@ -168,7 +168,7 @@ surface. Three properties:
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/chat_management/features/messaging/message_service.go::SendMessage, ListMessages, ListMessagesSince`.
+- `pk-modules/chat/features/messaging/message_service.go::SendMessage, ListMessages, ListMessagesSince`.
 
 ## Related requirements
 

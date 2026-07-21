@@ -15,8 +15,8 @@ satisfied_by:
 implements_cross_cutting: [REQ-005, REQ-013]
 refines: REQ-ENTITLE-001
 type: doc
-tags: [requirement, capability, entitlement_management, grants, subscriber]
-module: entitlement_management
+tags: [requirement, capability, entitlement, grants, subscriber]
+module: entitlement
 feature: grants
 capability: grant_subscriber
 capability_kind: failure_mode
@@ -89,11 +89,11 @@ Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/entitlement_management/features/grants/subscriber_test.go::TestExtractItems_AnySlice`. |
-| AC-2 | Test | `modules/platformkit-business-modules/entitlement_management/features/grants/subscriber_test.go::TestExtractItems_TypedSlice`. |
-| AC-3 | Test | `modules/platformkit-business-modules/entitlement_management/features/grants/subscriber_test.go::TestExtractItems_NilOrWrong`. |
-| AC-4 | Test | `modules/platformkit-business-modules/entitlement_management/features/grants/subscriber_test.go::TestExtractItems_SkipsNonMapEntries`. |
-| AC-5 | Test | `modules/platformkit-business-modules/entitlement_management/features/grants/subscriber_test.go::TestNewSubscriber_RejectsNilDeps`. |
+| AC-1 | Test | `pk-modules/entitlement/features/grants/subscriber_test.go::TestExtractItems_AnySlice`. |
+| AC-2 | Test | `pk-modules/entitlement/features/grants/subscriber_test.go::TestExtractItems_TypedSlice`. |
+| AC-3 | Test | `pk-modules/entitlement/features/grants/subscriber_test.go::TestExtractItems_NilOrWrong`. |
+| AC-4 | Test | `pk-modules/entitlement/features/grants/subscriber_test.go::TestExtractItems_SkipsNonMapEntries`. |
+| AC-5 | Test | `pk-modules/entitlement/features/grants/subscriber_test.go::TestNewSubscriber_RejectsNilDeps`. |
 
 ## Edge cases & unhappy paths
 
@@ -130,7 +130,7 @@ Three properties:
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/entitlement_management/features/grants/subscriber.go` — orchestration + ExtractItems + NewSubscriber.
+- `pk-modules/entitlement/features/grants/subscriber.go` — orchestration + ExtractItems + NewSubscriber.
 
 ## Related requirements
 

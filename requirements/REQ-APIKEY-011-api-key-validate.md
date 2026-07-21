@@ -127,8 +127,8 @@ the key being usable.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Inspection | `service.go::ValidateAPIKey` lines 535–537 — `sha256.Sum256([]byte(req.Key))` + hex encode + List by `key_hash`. The adapter-level happy path is covered by `modules/platformkit-business-modules/api_key_management/features/key_management/api_key_validator_adapter_test.go::TestAPIKeyValidatorAdapter_ValidateAPIKeySuccessWithoutUser`. |
-| AC-2 | Test | `modules/platformkit-business-modules/api_key_management/features/key_management/service_test.go::TestAPIKeyValidatorAdapter_InvalidKeyReturnsError` — the adapter surface returns the `Valid: false` envelope as a typed error; the inner-service uniform-refusal branch is at `service.go::ValidateAPIKey` lines 549–551. |
+| AC-1 | Inspection | `service.go::ValidateAPIKey` lines 535–537 — `sha256.Sum256([]byte(req.Key))` + hex encode + List by `key_hash`. The adapter-level happy path is covered by `pk-modules/api_key_management/features/key_management/api_key_validator_adapter_test.go::TestAPIKeyValidatorAdapter_ValidateAPIKeySuccessWithoutUser`. |
+| AC-2 | Test | `pk-modules/api_key_management/features/key_management/service_test.go::TestAPIKeyValidatorAdapter_InvalidKeyReturnsError` — the adapter surface returns the `Valid: false` envelope as a typed error; the inner-service uniform-refusal branch is at `service.go::ValidateAPIKey` lines 549–551. |
 | AC-3 | Inspection | `service.go::ValidateAPIKey` lines 555–558 — `apiKey.IsActive()` gates the response; `service_test.go::TestAPIKey_IsActive_RevokedStatus` and `TestAPIKey_IsActive_ExpiredByTime` exercise the underlying state predicate. |
 | AC-4 | Inspection | `service.go::ValidateAPIKey` lines 565–586 — `context.WithoutCancel` + `go func()` writes the `APIKeyUsage` row and updates `LastUsedAt` + `UsageCount`. Dedicated async-tracking test pending. |
 | AC-5 | Inspection | `service.go::ValidateAPIKey` lines 573–576 and 582–585 — `s.logger.Warn(...)` on each spawned write failure. Dedicated tracking-failure log test pending. |
@@ -187,8 +187,8 @@ the key being usable.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/api_key_management/features/key_management/service.go::ValidateAPIKey`.
-- `modules/platformkit-business-modules/api_key_management/features/key_management/api_key_validator_adapter.go` — the `ports.APIKeyValidator` adapter wrapping this surface.
+- `pk-modules/api_key_management/features/key_management/service.go::ValidateAPIKey`.
+- `pk-modules/api_key_management/features/key_management/api_key_validator_adapter.go` — the `ports.APIKeyValidator` adapter wrapping this surface.
 
 ## Related requirements
 

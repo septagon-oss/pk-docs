@@ -18,8 +18,8 @@ satisfied_by:
 implements_cross_cutting: [REQ-001, REQ-005, REQ-009]
 refines: REQ-BILL-001
 type: doc
-tags: [requirement, capability, billing_management, subscriptions, usage, metering]
-module: billing_management
+tags: [requirement, capability, billing, subscriptions, usage, metering]
+module: billing
 feature: subscriptions
 capability: usage_metering
 capability_kind: data_invariant
@@ -124,13 +124,13 @@ properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestUpdateUsageMetrics_NewMetric`. |
-| AC-2 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestUpdateUsageMetrics_WithinLimit`. |
-| AC-3 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestUpdateUsageMetrics_ExceedsLimit`. |
-| AC-4 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestUpdateUsageMetrics_NoLimitsSet`. |
-| AC-5 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestUpdateUsageMetrics_InvalidData`. |
-| AC-6 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestGetSubscriptionUsage_WithUsageAndLimits`. |
-| AC-7 | Test | `modules/platformkit-business-modules/billing_management/features/subscriptions/service_test.go::TestGetSubscriptionUsage_NoUsage`. |
+| AC-1 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestUpdateUsageMetrics_NewMetric`. |
+| AC-2 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestUpdateUsageMetrics_WithinLimit`. |
+| AC-3 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestUpdateUsageMetrics_ExceedsLimit`. |
+| AC-4 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestUpdateUsageMetrics_NoLimitsSet`. |
+| AC-5 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestUpdateUsageMetrics_InvalidData`. |
+| AC-6 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestGetSubscriptionUsage_WithUsageAndLimits`. |
+| AC-7 | Test | `pk-modules/billing/features/subscriptions/service_test.go::TestGetSubscriptionUsage_NoUsage`. |
 
 ## Edge cases & unhappy paths
 
@@ -183,7 +183,7 @@ properties:
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/billing_management/features/subscriptions/service.go::UpdateUsageMetrics, GetSubscriptionUsage, parseUsageValue`.
+- `pk-modules/billing/features/subscriptions/service.go::UpdateUsageMetrics, GetSubscriptionUsage, parseUsageValue`.
 
 ## Related requirements
 

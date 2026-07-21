@@ -17,8 +17,8 @@ implements_cross_cutting: [REQ-002, REQ-014]
 refines: REQ-CHAT-001
 depends_on: [REQ-CHAT-010]
 type: doc
-tags: [requirement, capability, chat_management, commands, dispatch]
-module: chat_management
+tags: [requirement, capability, chat, commands, dispatch]
+module: chat
 feature: commands
 capability: command_dispatch
 capability_kind: inter_module_contract
@@ -69,10 +69,10 @@ baseline.
 
 ## Rationale
 
-Slash commands are chat_management's extension point (ADR-0033:
+Slash commands are chat's extension point (ADR-0033:
 chat as a pluggable transport with domain on top): external
-modules — most importantly platformkit-agent-runtime — register
-handlers at fx startup without chat_management importing them,
+modules — most importantly the agent runtime — register
+handlers at fx startup without chat importing them,
 which is why `capability_kind: inter_module_contract`. The
 registry's validation and duplicate rejection are the contract
 that keeps the dispatch parser unambiguous across independently
@@ -117,13 +117,13 @@ instead.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/command_dispatch_test.go::TestSendMessage_DispatchesSlashCommand`. |
-| AC-2 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/command_dispatch_test.go::TestSendMessage_UnknownCommandPostsHint`. |
-| AC-3 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/command_dispatch_test.go::TestSendMessage_NoRegistryNoDispatch`. |
-| AC-4 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/command_dispatch_test.go::TestSendMessage_PlainMessageNotDispatched`. |
-| AC-5 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/command_dispatch_test.go::TestSendMessage_PerCommandTimeoutOverride` and `TestSendMessage_ZeroTimeoutFallsBackToDefault`. |
-| AC-6 | Test | `modules/platformkit-business-modules/chat_management/features/messaging/command_dispatch_test.go::TestSendMessage_HandlerNilResultNoReply`. |
-| AC-7 | Test | `modules/platformkit-business-modules/chat_management/features/commands/registry_test.go::TestRegistryRegisterAndLookup`, `TestRegistryRejectsInvalidNames`, `TestRegistryRejectsDuplicate`, `TestRegistryUnregister`, `TestRegistryListSorted`, `TestParseCommand`, `TestHelpCommand`. |
+| AC-1 | Test | `pk-modules/chat/features/messaging/command_dispatch_test.go::TestSendMessage_DispatchesSlashCommand`. |
+| AC-2 | Test | `pk-modules/chat/features/messaging/command_dispatch_test.go::TestSendMessage_UnknownCommandPostsHint`. |
+| AC-3 | Test | `pk-modules/chat/features/messaging/command_dispatch_test.go::TestSendMessage_NoRegistryNoDispatch`. |
+| AC-4 | Test | `pk-modules/chat/features/messaging/command_dispatch_test.go::TestSendMessage_PlainMessageNotDispatched`. |
+| AC-5 | Test | `pk-modules/chat/features/messaging/command_dispatch_test.go::TestSendMessage_PerCommandTimeoutOverride` and `TestSendMessage_ZeroTimeoutFallsBackToDefault`. |
+| AC-6 | Test | `pk-modules/chat/features/messaging/command_dispatch_test.go::TestSendMessage_HandlerNilResultNoReply`. |
+| AC-7 | Test | `pk-modules/chat/features/commands/registry_test.go::TestRegistryRegisterAndLookup`, `TestRegistryRejectsInvalidNames`, `TestRegistryRejectsDuplicate`, `TestRegistryUnregister`, `TestRegistryListSorted`, `TestParseCommand`, `TestHelpCommand`. |
 
 ## Edge cases & unhappy paths
 
@@ -161,11 +161,11 @@ instead.
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/chat_management/features/commands/registry.go::Registry, ParseCommand` —
+- `pk-modules/chat/features/commands/registry.go::Registry, ParseCommand` —
   the extension-point contract and parsing rules.
-- `modules/platformkit-business-modules/chat_management/features/commands/feature.go::NewCommandsFeature, registerBuiltinCommands` —
+- `pk-modules/chat/features/commands/feature.go::NewCommandsFeature, registerBuiltinCommands` —
   fx wiring of the singleton registry and the `/help` baseline.
-- `modules/platformkit-business-modules/chat_management/features/messaging/message_service.go::dispatchCommandIfMatching, postCommandReply` —
+- `pk-modules/chat/features/messaging/message_service.go::dispatchCommandIfMatching, postCommandReply` —
   the dispatch path inside SendMessage.
 
 ## Related requirements

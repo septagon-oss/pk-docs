@@ -3,6 +3,7 @@ id: REQ-008
 title: "Every Go file declares its purpose with a registered reference"
 status: Active
 date: 2026-05-06
+updated: 2026-07-20
 slug: req-008-every-file-declares-purpose
 category: governance
 ears_pattern: ubiquitous
@@ -17,7 +18,13 @@ tags: [requirement, governance]
 
 # REQ 008 — Every Go file declares its purpose with a registered reference
 
-Status: **Active** (2026-05-06)
+Status: **Active** (2026-05-06), revised 2026-07-20.
+
+> **Revision 2 amendment (2026-07-20).** Initial C-14 adoption used a
+> content-addressed historical-debt ratchet. Adoption debt is now zero, so the
+> acknowledgement file, configuration, refresh operation, and matching path
+> are retired. Every governed file now satisfies this requirement or fails the
+> canonical gate directly.
 
 ## Statement
 
@@ -70,22 +77,21 @@ documents alive by making them part of the build.
   includes root `go.work` members and standalone `go.mod` modules discovered
   outside explicit archive, recovery, generated, dependency-cache, vendor, and
   Git-worktree trees; an omitted module is a hard configuration error.
-- **AC-5** Historical violations are acknowledged only by an exact
-  path-and-SHA-256 snapshot of unchanged committed content. New, untracked,
-  edited, deleted, or newly conformant files cannot silently consume or retain
-  an acknowledgement.
-- **AC-6** Workspace `make check-file-purpose` exits non-zero for any new or
-  changed incomplete header, unknown ID, or stale baseline entry.
+- **AC-5** The checker has one current validation path with no historical-debt
+  acknowledgement or compatibility exception; every nonconformant governed
+  file appears in the failing result.
+- **AC-6** Workspace `make check-file-purpose` exits non-zero for every
+  incomplete header or unknown ID.
 
 ## Verification
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestPurposeHeaderRequiresStructuredRequirementADRAndC14Roles`. |
-| AC-2 | Test | `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestPrefixedRequirementCannotHideBehindValidConvention` and `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestLoadValidIDsIncludesEveryRequirementShapeAndLegacyADRDirectories`. |
-| AC-3 | Test | `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestScanExcludesCanonicalGeneratedSourceByProvenance`, `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestGeneratedMarkerAfterPackageCannotBypassGuard`, and `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestMarkerlessGeneratedSuffixCannotBypassGuard`. |
-| AC-4 | Test | `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestValidateModuleCoverageRejectsOmittedGoWorkModules` and `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestValidateModuleCoverageRejectsStandaloneOwnedModules`. |
-| AC-5 | Test | `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestScanBaselinesOnlyExactHistoricalContent`, `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestScanRejectsConformedAndDeletedBaselineEntriesAsStale`, `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestBaselineFromGitHEADDoesNotBlessWorkingTreeEdits`, and `tooling/platformkit-devtools/cmd/check-file-purpose/main_test.go::TestBaselineFromGitHEADDoesNotBlessUnversionedModule`. |
+| AC-1 | Test | `pk-tools/cmd/check-file-purpose/main_test.go::TestPurposeHeaderRequiresStructuredRequirementADRAndC14Roles`. |
+| AC-2 | Test | `pk-tools/cmd/check-file-purpose/main_test.go::TestPrefixedRequirementCannotHideBehindValidConvention` and `pk-tools/cmd/check-file-purpose/main_test.go::TestLoadValidIDsIncludesCanonicalADRAndStrictDocRequirementShapes`. |
+| AC-3 | Test | `pk-tools/cmd/check-file-purpose/main_test.go::TestScanExcludesCanonicalGeneratedSourceByProvenance`, `pk-tools/cmd/check-file-purpose/main_test.go::TestGeneratedMarkerAfterPackageCannotBypassGuard`, and `pk-tools/cmd/check-file-purpose/main_test.go::TestMarkerlessGeneratedSuffixCannotBypassGuard`. |
+| AC-4 | Test | `pk-tools/cmd/check-file-purpose/main_test.go::TestValidateModuleCoverageRejectsOmittedGoWorkModules` and `pk-tools/cmd/check-file-purpose/main_test.go::TestValidateModuleCoverageRejectsStandaloneOwnedModules`. |
+| AC-5 | Test | `pk-tools/cmd/check-file-purpose/main_test.go::TestScanReportsEveryNonconformantFile`. |
 | AC-6 | Analysis | Workspace `make check-file-purpose`; the root target is the canonical blocking invocation. |
 
 ## Satisfied by
@@ -106,5 +112,5 @@ this one at higher granularity.)
 
 - May 2026 complexity sweep — the sequence of refactors that motivated
   this REQ.
-- `platformkit-devtools/cmd/check-file-purpose/main.go` — the guard
+- `pk-tools/cmd/check-file-purpose/main.go` — the guard
   implementation.

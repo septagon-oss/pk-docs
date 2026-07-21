@@ -101,11 +101,11 @@ surface across the admin platform. Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/admin_management/features/ecosystem_search/service_test.go::TestSearchFiltersByPermissionAndRanksTitleMatches`. |
-| AC-2 | Test | `modules/platformkit-business-modules/admin_management/features/ecosystem_search/service_test.go::TestSearchHonorsTenantEnabledModules`. |
-| AC-3 | Test | `modules/platformkit-business-modules/admin_management/features/ecosystem_search/service_test.go::TestSearchIncludesSettingsAndWidgets`. |
-| AC-4 | Test | `modules/platformkit-business-modules/admin_management/features/ecosystem_search/service_test.go::TestSearchIncludesRecordHitsFromRegisteredSources`. |
-| AC-5 | Test | `modules/platformkit-business-modules/admin_management/features/ecosystem_search/service_test.go::TestSearchIncludesModuleSkillsFromGeneratedCatalog`. |
+| AC-1 | Test | `pk-modules/admin_management/features/ecosystem_search/service_test.go::TestSearchFiltersByPermissionAndRanksTitleMatches`. |
+| AC-2 | Test | `pk-modules/admin_management/features/ecosystem_search/service_test.go::TestSearchHonorsTenantEnabledModules`. |
+| AC-3 | Test | `pk-modules/admin_management/features/ecosystem_search/service_test.go::TestSearchIncludesSettingsAndWidgets`. |
+| AC-4 | Test | `pk-modules/admin_management/features/ecosystem_search/service_test.go::TestSearchIncludesRecordHitsFromRegisteredSources`. |
+| AC-5 | Test | `pk-modules/admin_management/features/ecosystem_search/service_test.go::TestSearchIncludesModuleSkillsFromGeneratedCatalog`. |
 
 ## Edge cases & unhappy paths
 
@@ -144,7 +144,7 @@ surface across the admin platform. Three properties:
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/admin_management/features/ecosystem_search/service.go` — the search orchestration.
+- `pk-modules/admin_management/features/ecosystem_search/service.go` — the search orchestration.
 
 ## Related requirements
 

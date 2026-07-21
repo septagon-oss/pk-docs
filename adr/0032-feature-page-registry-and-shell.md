@@ -143,7 +143,7 @@ contract mechanical rather than aspirational.
   feature renderer entry point, assert the rendered HTML contains
   `data-page=<id>`. A new page added to `pages.go` without a
   matching shell call fails this test before any e2e run.
-- **`check-page-shell`** (`platformkit-devtools/cmd/check-page-shell`)
+- **`check-page-shell`** (`pk-tools/cmd/check-page-shell`)
   — workspace-wide AST scan that flags any string literal
   `data-page=` outside `pageshell.Render`. The forward-direction
   enforcement: a renderer that bypasses the shell to set the
@@ -162,7 +162,7 @@ contract mechanical rather than aspirational.
     align assertions to current overlay reality` (the assertion
     drift that the registry would catch by tying the test to the
     declaration, not a snapshot).
-- Inventory: [`proposals/feature-page-inventory-2026-05-10.md`](../proposals/feature-page-inventory-2026-05-10.md)
+- Inventory: `feature-page-inventory-2026-05-10` (internal working document, not in the public set)
   — the per-feature audit that scoped this ADR.
 - Related ADRs:
   - [ADR 0029](./0029-every-file-declares-its-purpose.md) — file-purpose

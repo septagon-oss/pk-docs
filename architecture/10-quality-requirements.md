@@ -83,7 +83,7 @@ flowchart TB
 | Tenant context propagation | Every cross-module call carries the tenant id; there's no "switch tenants mid-request" path. | `crud.Repository[T]`'s ctx-bound tenant + fx middleware. |
 | Fail-closed providers | A noop auth provider doesn't grant permissions. A noop permission check doesn't return `true`. | [ADR 0021](../adr/0021-interface-contract-test-suites.md) fail-closed contract rule + manual audit. Gap — the "fail-closed" rule isn't statically checkable; one instance was caught by reviewer pushback in 2026-04-13. |
 | Audit trail integrity | State-changing operations in core-certified modules emit audit events through the outbox; projections match state. | [ADR 0007](../adr/0007-transactional-outbox-for-event-delivery.md) + `audit_management` as canonical subscriber. |
-| CSRF on mutating HTTP requests | Every mutating endpoint validates a double-submit CSRF token unless authenticated via `X-API-Key`. | `platformkit-backend-kit/security/csrf/middleware.go`. |
+| CSRF on mutating HTTP requests | Every mutating endpoint validates a double-submit CSRF token unless authenticated via `X-API-Key`. | `pk-core/security/csrf/middleware.go`. |
 | API-key rotation and revocation | A revoked API key fails the next request with a clear error; audit trail records the revocation. | `api_key_management` + `api-key-event.api-key-revoked`. |
 
 ## Compliance
@@ -94,7 +94,7 @@ flowchart TB
 | Assurance evidence generates automatically | An auditor runs the evidence generator; the report matches what's on disk. | `check-module-assurance-evidence` + `scripts/generate_module_assurance_evidence.sh --check`. |
 | Retention policy enforcement | A tenant-specified retention window is applied to both entity rows and their audit shadows. | `audit_management/retention` + scheduled retention job. |
 | Digital signature traceability | Audit-sensitive workflows sign decisions with a tenant-scoped key; signatures are verifiable. | `audit-digital-signature`. |
-| Change approval workflow | High-impact changes require documented approval before activation. | `change_management`. |
+| Change approval workflow | High-impact changes require documented approval before activation. | `change`. |
 
 ## Performance
 

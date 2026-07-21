@@ -13,8 +13,8 @@ satisfied_by:
   conventions: [C-04, C-14]
 implements_cross_cutting: [REQ-001, REQ-004]
 type: doc
-tags: [requirement, feature, entitlement_management]
-module: entitlement_management
+tags: [requirement, feature, entitlement]
+module: entitlement
 feature: grants
 ---
 
@@ -66,9 +66,9 @@ re-grant?").
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/entitlement_management/features/grants/service_test.go::TestIsNotFound` covers the duplicate-order-idempotency path. |
-| AC-2 | Test | `modules/platformkit-business-modules/entitlement_management/features/grants/service_test.go::TestIsNotFound` covers the terminal-revoke branch. |
-| AC-3 | Test | `modules/platformkit-business-modules/entitlement_management/features/grants/service_test.go::TestIsNotFound` covers history-row writes; the best-effort behaviour is documented in the service comment block. |
+| AC-1 | Test | `pk-modules/entitlement/features/grants/service_test.go::TestIsNotFound` covers the duplicate-order-idempotency path. |
+| AC-2 | Test | `pk-modules/entitlement/features/grants/service_test.go::TestIsNotFound` covers the terminal-revoke branch. |
+| AC-3 | Test | `pk-modules/entitlement/features/grants/service_test.go::TestIsNotFound` covers history-row writes; the best-effort behaviour is documented in the service comment block. |
 | AC-4 | Inspection | `service.go` uses `event.PublishBestEffort`; reviewers verify the M6 outbox migration is still tracked as an open follow-up. |
 
 ## Implements (cross-cutting)
@@ -78,10 +78,10 @@ re-grant?").
 
 ## Satisfied by
 
-- `entitlement_management/features/grants/feature.go`
-- `entitlement_management/features/grants/service.go`,
+- `entitlement/features/grants/feature.go`
+- `entitlement/features/grants/service.go`,
   `service_test.go`, `subscriber_test.go`
-- `entitlement_management/features/grants/permissions.go`,
+- `entitlement/features/grants/permissions.go`,
   `routes.go`
 
 ## Related requirements

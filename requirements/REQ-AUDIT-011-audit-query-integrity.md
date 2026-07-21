@@ -73,7 +73,7 @@ auditors). Three properties:
    filter dimensions are added there and propagate to
    summary + query through the same shape. Repository-side
    query construction lives in
-   `modules/platformkit-business-modules/audit_management/features/audit_trail/repository.go`;
+   `pk-modules/audit_management/features/audit_trail/repository.go`;
    the service is a thin pass-through.
 2. **Integrity verify is *over a time range*.** The
    audit table grows unbounded; verifying every row would
@@ -125,12 +125,12 @@ auditors). Three properties:
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestGetAuditEvent_Success`, `TestGetAuditEvent_NotFound`, `TestGetAuditEvent_RepositoryError`. |
-| AC-2 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestQueryAuditEvents_Success`, `TestQueryAuditEvents_Error`, `TestQueryAuditEvents_EmptyResult`. The filter pass-through is by inspection of `service.go::QueryAuditEvents`. |
-| AC-3 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestGetAuditSummary_Success` and `TestGetAuditSummary_Error`. The total-equals-len-of-query invariant is by inspection of the repository implementation (filter parity is the source of truth). |
-| AC-4 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestSigningKey_DetectsTampering` exercises the per-event signature mismatch path that `VerifyIntegrity` aggregates over a time range. The time-range traversal is by inspection of `service.go::VerifyIntegrity` lines 254–276. |
+| AC-1 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestGetAuditEvent_Success`, `TestGetAuditEvent_NotFound`, `TestGetAuditEvent_RepositoryError`. |
+| AC-2 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestQueryAuditEvents_Success`, `TestQueryAuditEvents_Error`, `TestQueryAuditEvents_EmptyResult`. The filter pass-through is by inspection of `service.go::QueryAuditEvents`. |
+| AC-3 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestGetAuditSummary_Success` and `TestGetAuditSummary_Error`. The total-equals-len-of-query invariant is by inspection of the repository implementation (filter parity is the source of truth). |
+| AC-4 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestSigningKey_DetectsTampering` exercises the per-event signature mismatch path that `VerifyIntegrity` aggregates over a time range. The time-range traversal is by inspection of `service.go::VerifyIntegrity` lines 254–276. |
 | AC-5 | Inspection | `service.go::VerifyIntegrity` lines 254–257 — `if len(s.signingKey) == 0 { return ... "audit signing key not configured" }` returns before the repository call. Dedicated test pending. |
-| AC-6 | Test | `modules/platformkit-business-modules/audit_management/features/audit_trail/service_test.go::TestSigningKey_NoKeySkipsVerification` — `VerifyEventIntegrity` returns `true` when the signing key is empty. |
+| AC-6 | Test | `pk-modules/audit_management/features/audit_trail/service_test.go::TestSigningKey_NoKeySkipsVerification` — `VerifyEventIntegrity` returns `true` when the signing key is empty. |
 | AC-7 | Inspection | `service.go::GetAuditEvent, QueryAuditEvents, GetAuditSummary, VerifyIntegrity` — each opens with `s.tracer.StartSpan`. |
 
 ## Edge cases & unhappy paths
@@ -189,8 +189,8 @@ auditors). Three properties:
 
 ## Satisfied by
 
-- `modules/platformkit-business-modules/audit_management/features/audit_trail/service.go::GetAuditEvent, QueryAuditEvents, GetAuditSummary, VerifyIntegrity, VerifyEventIntegrity, signEvent`.
-- `modules/platformkit-business-modules/audit_management/features/audit_trail/repository.go` — the underlying repository.
+- `pk-modules/audit_management/features/audit_trail/service.go::GetAuditEvent, QueryAuditEvents, GetAuditSummary, VerifyIntegrity, VerifyEventIntegrity, signEvent`.
+- `pk-modules/audit_management/features/audit_trail/repository.go` — the underlying repository.
 
 ## Related requirements
 

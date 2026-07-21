@@ -120,14 +120,14 @@ is therefore a security-irreversible cutover, not a recoverable downgrade.
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Inspection | `modules/platformkit-business-modules/auth_management/features/authentication/login_link_service.go::ResetPasswordWithToken` implements consume-before-write; session revocation and event emission remain explicit verification gaps while this requirement is Proposed. |
+| AC-1 | Inspection | `pk-modules/auth_management/features/authentication/login_link_service.go::ResetPasswordWithToken` implements consume-before-write; session revocation and event emission remain explicit verification gaps while this requirement is Proposed. |
 | AC-2 | Inspection | `login_link_service.go::consumeTokenInTransaction` rejects a lost versioned compare-and-swap as `ErrLoginTokenInvalid`. |
 | AC-3 | Inspection | `login_link_service.go::lookupPending` rejects expired state through the uniform `ErrLoginTokenInvalid` result. |
 | AC-4 | Inspection | Verification gap: the live path currently enforces a fixed minimum length rather than the full shared `PasswordPolicy`. |
 | AC-5 | Inspection | Verification gap: the live reset path does not yet invoke the REQ-AUTH-012 logout-everywhere boundary. |
 | AC-6 | Inspection | Verification gap: the live reset path does not yet compare the candidate with the current password hash. |
 | AC-7 | Inspection | Verification gap: the canonical `auth.password.reset` event contract exists, but the live reset path does not yet emit it. |
-| AC-8 | Test | `modules/platformkit-business-modules/auth_management/features/authentication/password_reset_schema_retirement_test.go::TestPlaintextPasswordResetSchemaIsRetired`, `TestAuthenticationFeatureDoesNotExposeLegacyPasswordResetPersistence`, and `auth_management/migrations/023_retire_plaintext_password_reset_table.{up,down}.sql`. |
+| AC-8 | Test | `pk-modules/auth_management/features/authentication/password_reset_schema_retirement_test.go::TestPlaintextPasswordResetSchemaIsRetired`, `TestAuthenticationFeatureDoesNotExposeLegacyPasswordResetPersistence`, and `auth_management/migrations/023_retire_plaintext_password_reset_table.{up,down}.sql`. |
 
 ## Edge cases & unhappy paths
 
@@ -181,13 +181,13 @@ is therefore a security-irreversible cutover, not a recoverable downgrade.
 Only AC-2, AC-3, and AC-8 are fully implemented; the verification table above
 records the remaining Proposed gaps.
 
-- `modules/platformkit-business-modules/auth_management/features/authentication/login_link_service.go` —
+- `pk-modules/auth_management/features/authentication/login_link_service.go` —
   purpose-bound digest issuance, read-only peek, and single-use consume.
-- `modules/platformkit-business-modules/auth_management/features/authentication/login_link.go` and `forgot_password.go` —
+- `pk-modules/auth_management/features/authentication/login_link.go` and `forgot_password.go` —
   public request, read-only landing, and explicit reset submission.
-- `modules/platformkit-business-modules/auth_management/entities/login_token.go` —
+- `pk-modules/auth_management/entities/login_token.go` —
   the digest-only `auth_login_tokens` model.
-- `modules/platformkit-business-modules/auth_management/migrations/023_retire_plaintext_password_reset_table.up.sql` —
+- `pk-modules/auth_management/migrations/023_retire_plaintext_password_reset_table.up.sql` —
   the security-irreversible plaintext-table retirement.
 
 ## Related requirements
