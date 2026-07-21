@@ -139,3 +139,8 @@ does.
 
 See also: [quickstart.md](quickstart.md) to run it, [add-a-module.md](add-a-module.md)
 to extend it, [open-core.md](open-core.md) for the free/paid boundary.
+
+---
+
+For a navigable per-module view of this graph (each module's dependencies and
+consumers as clickable pages), see the [Module Map](./module-map/README.md).

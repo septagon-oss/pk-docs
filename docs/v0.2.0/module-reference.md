@@ -16,6 +16,9 @@ they consume the interfaces declared in each module's `ports.go` and the shared
 contracts in `pk-modules/pkg/portslib` (`portslib.AdminRegistrar`,
 `portslib.HealthRegistrar`, `portslib.NotificationChannel`).
 
+For a visual, navigable view of how these modules connect, see the
+[Module Map](./module-map/README.md).
+
 The shape is uniform across all modules:
 
 - **Provides:** the Go interfaces this module exposes (declared in

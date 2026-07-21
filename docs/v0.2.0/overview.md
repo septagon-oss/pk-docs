@@ -78,7 +78,9 @@ public interface stays in OSS. This is described in detail in
 - If you want to run something **right now**, jump to the
   [Quickstart](./quickstart.md).
 - If you want to understand the **shape** of PlatformKit before touching
-  code, read [Architecture](./architecture.md).
+  code, read [Architecture](./architecture.md) — or browse the
+clickable [Module Map](./module-map/README.md) to navigate the nine modules
+and the ports that connect them.
 - If you want to build your own module or swap a provider, start with
   [Add a Module](./add-a-module.md) and [Open Core](./open-core.md).
 - If you are auditing security, read
