@@ -571,6 +571,66 @@ For the wider repo conventions (commit format, the no-cross-module-imports rule,
 append-only migrations, file-purpose comments), see
 [CONTRIBUTING.md](../../CONTRIBUTING.md).
 
+## The easy path: `starterapp.WithModules`
+
+Rebuilding the whole assembly (above) is the low-level route. In v0.3.0+ you can
+instead contribute your module to the batteries-included starter without
+touching its wiring — it joins the same catalog and its routes mount behind the
+same identity, mutation-gate, and request-body-cap middleware as the nine
+built-ins:
+
+```go
+app, err := starterapp.Run(ctx, cfg, starterapp.WithModules(
+    func(env starterapp.ModuleEnv) (starterapp.ModulePlugin, error) {
+        st, err := notesqlite.New(env.DB) // env.DB is the shared, single-writer pool
+        if err != nil {
+            return starterapp.ModulePlugin{}, err
+        }
+        m, err := note.NewModule(note.WithStore(st),
+            note.WithAdminRegistrar(env.Admin), note.WithHealthRegistrar(env.Health))
+        if err != nil {
+            return starterapp.ModulePlugin{}, err
+        }
+        return starterapp.ModulePlugin{
+            ID:             note.ModuleID,
+            Compose:        m.Compose,                     // optional: joins the DI/health graph
+            RegisterRoutes: m.HTTPHandler().RegisterRoutes, // authenticated routes (behind the gate)
+        }, nil
+    },
+))
+```
+
+**Public routes.** For a surface that must be reachable *without* auth — a
+signup form, an inbound webhook, a public status page — set
+`RegisterPublicRoutes` on the plugin. Those routes still get identity resolution
+(so a presented credential is honored) and the body cap, but they bypass the
+anonymous-mutation gate at any path. Authenticated routes and the built-in
+`/api/v1` mutations stay gated. A module may be public-only.
+
+The worked example is `pk-apps/examples/custommodule` (a tenant-scoped widgets
+module with both an authenticated API and a public `GET /w/{tenant}/count`).
+
+## Prove your module is tenant-scoped
+
+Forgetting the `WHERE tenant_id = ?` predicate is the one mistake that silently
+breaks isolation. Assert you didn't, from a test, with the shared conformance
+helper — it creates a row in one tenant and fails if a second tenant can read
+or delete it by ID:
+
+```go
+import "github.com/septagon-oss/pk-modules/pkg/contracttest"
+
+func TestNoteStoreIsTenantScoped(t *testing.T) {
+    s := newTestStore(t)
+    contracttest.AssertTenantScoped(t, contracttest.TenantScopedStore{
+        Create:   func(ctx context.Context, tid string) (string, error) { /* insert, return id */ },
+        Get:      func(ctx context.Context, tid, id string) error { _, err := s.Get(ctx, tid, id); return err },
+        Delete:   s.Delete,
+        NotFound: store.ErrNotFound,
+    })
+}
+```
+
 ---
 
 See also: [architecture.md](architecture.md) for how modules and the catalog fit

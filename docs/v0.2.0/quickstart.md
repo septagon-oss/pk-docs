@@ -128,10 +128,10 @@ is reachable anonymously.
 
 ## Gotchas
 
-- **Port 8080 busy?** The front door binds `:8080` and ships no config file. To
-  change it, run the full starter in pk-apps (`pk-apps/apps/starter-saas`, which
-  reads `http.addr` from its `config.yaml`) or change the address in the
-  wrapper's `main.go`.
+- **Port 8080 busy?** Set the port with an env var — no code edit:
+  `PORT=8090 go run .` (or `PK_HTTP_ADDR=127.0.0.1:8090 go run .` to bind a
+  specific interface). The full starter in pk-apps also reads `http.addr` from
+  its `config.yaml`.
 - **First build is slow, then fast.** The first `go run` downloads modules and
   compiles (tens of seconds). After that, startup is about two seconds.
 - **Reset to a clean slate.** The SQLite file `pk.db` is created in the working
