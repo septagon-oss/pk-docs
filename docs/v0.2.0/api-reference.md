@@ -45,9 +45,7 @@ returns a session whose `id` is your bearer token (see the
 4. **Errors are plain text; the status carries the meaning.** `400` invalid
    input, `401` bad credentials, `404` not found, `405` method not allowed,
    `409` uniqueness conflict, `413` body over 1 MiB, `429` login throttled.
-5. **JSON is snake_case** — except the notification module, whose fields are
-   Go-cased (`ID`, `Title`, …) in v0.2.x. Documented in the spec; a future
-   major will align it.
+5. **JSON is snake_case** across every module, including notifications.
 
 ## Endpoints at a glance
 
