@@ -59,4 +59,5 @@ a heads-up).
 See the current
 [PlatformKit README](https://github.com/septagon-oss/platformkit#readme) for the
 supported local bootstrap and authenticated API flow. Versioned directories in
-this repository are historical snapshots.
+this repository are maintained historical documentation, not exact release
+snapshots or current runtime authority.
