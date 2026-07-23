@@ -7,11 +7,15 @@ and marketing-site source. It is not an executable PlatformKit distribution.
 
 1. The current runnable contract is the code and README on
    [septagon-oss/platformkit](https://github.com/septagon-oss/platformkit).
-2. ADRs describe accepted architectural decisions.
+2. ADRs must be interpreted with their front-matter status. Only `Accepted`
+   decisions are current; `Proposed` is roadmap intent and `Superseded` is
+   historical context.
 3. Requirements must be interpreted with their front-matter status. `Proposed`
    is roadmap intent, not shipped behavior.
-4. Directories named for a version, such as `docs/v0.2.0`, are historical
-   snapshots and must not be used to infer the current release.
+4. Directories named for a version, such as `docs/v0.2.0`, are maintained
+   historical documentation and may contain later corrections or backports. They are not
+   immutable release snapshots and must not be used to infer the current
+   release. Use a pinned Git commit for exact release research.
 5. `overlays/platformkit/site` is marketing-site content. Its copy and public
    site interactions are not runtime APIs, modules, or starter capabilities.
 

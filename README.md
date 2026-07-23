@@ -13,15 +13,10 @@ start with the
 the starter, use the supported
 [`starterapp.WithModules` reference](https://github.com/septagon-oss/pk-apps/tree/main/reference/custommodule).
 
-Directories named for a release are immutable historical snapshots, not current
-runtime documentation. The v0.2.0 archive remains available for release-specific
-research:
-
-- [Quickstart at v0.2.0](docs/v0.2.0/quickstart.md)
-- [Overview at v0.2.0](docs/v0.2.0/overview.md)
-- [Architecture at v0.2.0](docs/v0.2.0/architecture.md)
-- [Add a Module at v0.2.0](docs/v0.2.0/add-a-module.md)
-- [FAQ at v0.2.0](docs/v0.2.0/faq.md)
+Version-named directories in this branch are maintained historical documentation:
+they may contain later corrections or backports and are not exact release
+snapshots. For release-specific research, use the
+[pinned v0.2.0 documentation commit](https://github.com/septagon-oss/pk-docs/tree/2d13847849e69b79a7e71dda807782645d544957/docs/v0.2.0).
 
 PlatformKit exists to make serious SaaS systems composable without making the
 hard parts informal. The OSS contract should make module boundaries,
