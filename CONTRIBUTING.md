@@ -152,4 +152,5 @@ See also: the current
 for the module pattern reviewers expect, and the
 [PlatformKit front door](https://github.com/septagon-oss/platformkit#how-the-pieces-fit)
 for the current composition boundary. Versioned directories under `docs/` are
-historical release snapshots.
+maintained historical documentation, not exact release snapshots or current
+runtime authority.

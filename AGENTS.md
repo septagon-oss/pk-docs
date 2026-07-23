@@ -13,9 +13,9 @@ and marketing-site source. It is not an executable PlatformKit distribution.
 3. Requirements must be interpreted with their front-matter status. `Proposed`
    is roadmap intent, not shipped behavior.
 4. Directories named for a version, such as `docs/v0.2.0`, are maintained
-   historical documentation and may contain later corrections or backports. They are not
-   immutable release snapshots and must not be used to infer the current
-   release. Use a pinned Git commit for exact release research.
+   historical documentation and may contain later corrections or backports.
+   They are not immutable release snapshots and must not be used to infer the
+   current release. Use a pinned Git commit for exact release research.
 5. `overlays/platformkit/site` is marketing-site content. Its copy and public
    site interactions are not runtime APIs, modules, or starter capabilities.
 

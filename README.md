@@ -13,9 +13,9 @@ start with the
 the starter, use the supported
 [`starterapp.WithModules` reference](https://github.com/septagon-oss/pk-apps/tree/main/reference/custommodule).
 
-Version-named directories in this branch are maintained historical documentation:
-they may contain later corrections or backports and are not exact release
-snapshots. For release-specific research, use the
+Version-named directories in this branch are maintained historical
+documentation: they may contain later corrections or backports and are not
+exact release snapshots. For release-specific research, use the
 [pinned v0.2.0 documentation commit](https://github.com/septagon-oss/pk-docs/tree/2d13847849e69b79a7e71dda807782645d544957/docs/v0.2.0).
 
 PlatformKit exists to make serious SaaS systems composable without making the
