@@ -97,7 +97,9 @@ they are what keeps the architecture honest.
    `AdminRegistrar`, `HealthRegistrar`) or another module's published contract
    (like `tenant.TenantService`). The wiring supplies the concrete type. If you
    need a capability another module has, depend on its interface, never its
-   struct. See [add-a-module.md](docs/v0.2.0/add-a-module.md) for the pattern.
+   struct. See the current
+   [`starterapp.WithModules` reference](https://github.com/septagon-oss/pk-apps/tree/main/reference/custommodule)
+   for the pattern.
 
 2. **Migrations are append-only.** Never edit an existing migration file. Add a
    new one with a higher sequence number (`0002_...`, `0003_...`). Someone has
@@ -145,5 +147,9 @@ they are what keeps the architecture honest.
 
 ---
 
-See also: [add-a-module.md](docs/v0.2.0/add-a-module.md) for the module pattern reviewers
-expect, [architecture.md](docs/v0.2.0/architecture.md) for why the port boundary exists.
+See also: the current
+[`starterapp.WithModules` reference](https://github.com/septagon-oss/pk-apps/tree/main/reference/custommodule)
+for the module pattern reviewers expect, and the
+[PlatformKit front door](https://github.com/septagon-oss/platformkit#how-the-pieces-fit)
+for the current composition boundary. Versioned directories under `docs/` are
+historical release snapshots.

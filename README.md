@@ -7,14 +7,21 @@ Public documentation source for PlatformKit OSS.
 
 ## Start here
 
-Reading, not building? Jump straight in:
+For the current runnable contract, setup, credentials, routes, and architecture,
+start with the
+[PlatformKit front door](https://github.com/septagon-oss/platformkit). To extend
+the starter, use the supported
+[`starterapp.WithModules` reference](https://github.com/septagon-oss/pk-apps/tree/main/reference/custommodule).
 
-- [Quickstart](docs/v0.2.0/quickstart.md) — clone, `go run .`, and poke a
-  running multi-tenant SaaS in a few minutes.
-- [Overview](docs/v0.2.0/overview.md) — what is in the box at v0.2.0.
-- [Architecture](docs/v0.2.0/architecture.md) — how modules compose.
-- [Add a Module](docs/v0.2.0/add-a-module.md) — build your own module.
-- [FAQ](docs/v0.2.0/faq.md) — the questions people ask first.
+Directories named for a release are immutable historical snapshots, not current
+runtime documentation. The v0.2.0 archive remains available for release-specific
+research:
+
+- [Quickstart at v0.2.0](docs/v0.2.0/quickstart.md)
+- [Overview at v0.2.0](docs/v0.2.0/overview.md)
+- [Architecture at v0.2.0](docs/v0.2.0/architecture.md)
+- [Add a Module at v0.2.0](docs/v0.2.0/add-a-module.md)
+- [FAQ at v0.2.0](docs/v0.2.0/faq.md)
 
 PlatformKit exists to make serious SaaS systems composable without making the
 hard parts informal. The OSS contract should make module boundaries,
