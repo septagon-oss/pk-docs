@@ -34,7 +34,7 @@ from.
 ## Rationale
 
 Operators navigate by name, not by URL — "show me everything that
-mentions 'acme.bookings.demo'" should hit chat rooms, audit events,
+mentions 'example.bookings.test'" should hit chat rooms, audit events,
 mail items, and tenant settings without the operator knowing each
 module's separate search endpoint exists. The contributor pattern
 keeps the search loosely coupled — each module declares its

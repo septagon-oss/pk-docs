@@ -39,7 +39,7 @@ Tenant identity is the root of the multi-tenant isolation
 discipline (REQ-001) — every other module consults "what tenant am
 I in?" before reading or writing a single row. The host-alias
 table is the production resolver: a request to
-`acme.example.com` finds the `acme` tenant via this feature, and
+`workspace.example.com` finds the `example-org` tenant via this feature, and
 `appcontext.SetTenantInContext` carries the resolved id through
 the rest of the stack. Without a deterministic resolver, two
 hostnames could ambiguously resolve to two tenants, which is the

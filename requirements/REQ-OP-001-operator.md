@@ -40,7 +40,7 @@ Operator access is the most-privileged surface — operators see
 across tenants, run support actions, and can break things. The
 discipline of explicit tenant-entry plus ticket-reference labelling
 keeps the audit trail useful: a year later, "why did Joana view
-Acme's billing in Q1?" is answerable by ticket id, not by
+the example organization's billing in Q1?" is answerable by ticket id, not by
 inference.
 
 ## Acceptance criteria

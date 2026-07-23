@@ -35,7 +35,7 @@ is large enough to exceed the configured memory budget.
 ## Rationale
 
 Auditors and security officers do not query the raw trail row by
-row — they ask "summarise privileged changes by Acme staff for
+row — they ask "summarise privileged changes by Example Organization staff for
 Q1". The reports feature exists so those queries do not require
 re-implementation in every consumer. Streaming output keeps the
 service stable when a year-over-year report touches millions of

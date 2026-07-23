@@ -36,7 +36,7 @@ service.
 ## Rationale
 
 Tenants are the isolation boundary; workspaces are the *grouping*
-inside a tenant. A single tenant ("Acme Corp") may have several
+inside a tenant. A single tenant ("Example Organization") may have several
 workspaces ("Brand Team", "Engineering", "Customer Success") whose
 content is logically separate but whose users are still in one
 tenant. Modelling workspaces as a child of tenant lets the platform

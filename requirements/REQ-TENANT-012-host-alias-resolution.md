@@ -161,8 +161,8 @@ batch on the first conflict.
   alias for the (tenant, source) pair; the report shows the
   pruned count.
 - **Cross-source conflict.** Reconcile asks for host
-  `acme.io` for source `overlay`, but the row is already
-  owned by `(acme, admin_ui)`. The collision is reported,
+  `workspace.example` for source `overlay`, but the row is already
+  owned by `(example-org, admin_ui)`. The collision is reported,
   the existing row is preserved, and the operator is
   expected to log + escalate.
 - **Race against archive.** Archive flips status; the next

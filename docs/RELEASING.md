@@ -119,7 +119,7 @@ test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/v1/tena
 test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/admin)"          = 303
 SID="$(curl -s -X POST http://localhost:8080/api/v1/auth/sessions \
           -H 'Content-Type: application/json' \
-          -d '{"tenant_id":"tenant_acme","email":"admin@local.test","password":"changeme"}' \
+          -d '{"tenant_id":"tenant_local","email":"operator@local.test","password":"local-development-only"}' \
         | jq -r .id)"
 test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/v1/tenants \
           -H "Authorization: Bearer $SID")" = 200

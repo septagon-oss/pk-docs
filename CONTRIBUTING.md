@@ -22,13 +22,14 @@ git clone https://github.com/septagon-oss/pk-runtime
 git clone https://github.com/septagon-oss/pk-modules
 git clone https://github.com/septagon-oss/pk-tools
 git clone https://github.com/septagon-oss/pk-apps
+git clone https://github.com/septagon-oss/platformkit
 # ...and any other layer you need to touch.
 ```
 
 Then create a `go.work` at the workspace root listing the repos you cloned:
 
 ```bash
-go work init ./pk-core ./pk-shared ./pk-runtime ./pk-modules ./pk-tools ./pk-apps
+go work init ./pk-core ./pk-shared ./pk-runtime ./pk-modules ./pk-tools ./pk-apps ./platformkit
 ```
 
 That is the whole setup. With the workspace in place, the per-repo builds and
@@ -37,7 +38,7 @@ from inside it (each is its own Go module) rather than running `go build ./...`
 at the workspace root, e.g.:
 
 ```bash
-for repo in pk-core pk-shared pk-runtime pk-modules pk-tools pk-apps; do
+for repo in pk-core pk-shared pk-runtime pk-modules pk-tools pk-apps platformkit; do
   ( cd "$repo" && go build ./... ) || break
 done
 ```
@@ -67,8 +68,8 @@ make vet
 make staticcheck
 make verify        # the aggregate gate
 
-# Run the starter app end to end (from the pk-apps repo root)
-cd apps/starter-saas
+# Run the one canonical front door end to end
+cd ../platformkit
 go run .
 ```
 
