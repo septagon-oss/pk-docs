@@ -13,7 +13,7 @@
   "content": {
     "metadata": {
       "title": "PlatformKit — Production platform for AI-native SaaS in Go",
-      "description": "PlatformKit helps AI builders turn agent demos into real products: tenants, permissions, billing, audit, admin, MCP tools, traces, evals, and governed workflows inside one modular Go platform.",
+      "description": "PlatformKit is a runnable, domain-neutral Go foundation with tenant isolation, users, authentication, scoped API keys, audit, content, notifications, health, and an operator console.",
       "url": "https://platformkit.dev",
       "keywords": "platformkit, ai native saas, agentic saas, go saas framework, mcp server, ai agent runtime, modular platform, governed ai workflows",
       "image": "/images/overlays/platformkit/branding/og-image.png"
@@ -41,11 +41,11 @@
     "home": {
       "badge": "For AI builders with real users",
       "textTitle": "Ship agentic products on a platform you can trust.",
-      "subtitle": "AI builders move fast until the demo needs tenants, permissions, billing, audit, admin, evals, tool access, and human review. PlatformKit gives Go teams that production layer as modules: inspectable, replaceable, MCP-ready, and designed for agents to act inside clear contracts.",
+      "subtitle": "Start from nine inspectable Go modules for tenancy, identity, scoped machine access, audit, content, notifications, health, and operator workflows. Add product domains in your own repository through one documented extension seam.",
       "joinHref": "#get-started",
       "joinButton": "Get PlatformKit",
-      "communityButton": "Read the architecture",
-      "visitHref": "/docs/architecture"
+      "communityButton": "Read the quickstart",
+      "visitHref": "/docs/current-quickstart"
     },
     "navbar": {
       "joinUsText": "Get PlatformKit",
@@ -53,14 +53,14 @@
       "links": [
         {"title": "Contract", "href": "#enterprise"},
         {"title": "Modules", "href": "#modules"},
-        {"title": "Agent layer", "href": "#agent-runtime"},
+        {"title": "Extensions", "href": "#agent-runtime"},
         {"title": "Topologies", "href": "#integrations"},
         {"title": "Pricing", "href": "#pricing"},
         {"title": "Docs", "href": "/docs"}
       ]
     },
     "ui": {
-      "experienceSectionsTitle": "The production layer AI builders usually discover too late.",
+      "experienceSectionsTitle": "A small, explicit foundation for serious SaaS work.",
       "moduleFootprintTitle": "Agent-ready platform graph",
       "contactTitle": "",
       "contactDescription": "",
@@ -111,80 +111,80 @@
       {
         "id": "boring-half",
         "title": "The demo is not the product.",
-        "subtitle": "A working agent still needs users, organizations, roles, billing, audit, background jobs, admin rescue paths, content, notifications, and a place to put policy. PlatformKit gives you that layer before the rewrite starts.",
+        "subtitle": "The OSS starter supplies tenant isolation, users, authentication, scoped API keys, audit, content, notifications, health, and operator workflows. It leaves product domains and presentation to your application.",
         "background": "",
         "textColor": "",
         "buttonText": "Read the platform charter",
-        "buttonHref": "/docs/architecture",
+        "buttonHref": "/docs/current-runtime-surfaces",
         "imageSrc": ""
       },
       {
         "id": "two-topologies",
         "title": "Build once. Surface everywhere.",
-        "subtitle": "The same module graph can power a public app, internal admin, docs portal, background workflow, MCP server, and governed agent surface. You stop rebuilding the same capability for each interface.",
+        "subtitle": "The starter owns one authenticated HTTP and operator surface. Downstream modules join the same database, identity perimeter, health graph, request limits, and OpenAPI discovery.",
         "background": "",
         "textColor": "",
         "buttonText": "See the architecture",
-        "buttonHref": "/docs/platformkit-formula",
+        "buttonHref": "/docs/current-extensions",
         "imageSrc": ""
       },
       {
         "id": "public-contracts",
         "title": "Tools are product contracts.",
-        "subtitle": "Expose capability through typed ports, events, manifests, and MCP tools instead of fragile glue. Agents can inspect and act, while the product still owns permission, validation, and audit.",
+        "subtitle": "Expose capability through declared module contracts and explicit scopes. Your application still owns authorization, validation, tenant isolation, and server-owned identity.",
         "background": "",
         "textColor": "",
         "buttonText": "Read module rules",
-        "buttonHref": "/docs/platformkit-formula",
+        "buttonHref": "/docs/current-api-contract",
         "imageSrc": ""
       },
       {
         "id": "agent-runtime",
-        "title": "Let agents act, but leave evidence.",
-        "subtitle": "The MCP server and governed runtime use the same graph the product runs on, with tool boundaries, policy gates, budgets, traces, eval hooks, human review, and audit trails.",
+        "title": "Extend without weakening the perimeter.",
+        "subtitle": "The secure reference shows append-only migrations, declared machine scopes, route-level authorization, strict JSON, server-owned identity, tenant-scoped queries, and regression tests.",
         "background": "",
         "textColor": "",
-        "buttonText": "Read agent governance",
-        "buttonHref": "/docs/platformkit-formula",
+        "buttonText": "Build a secure extension",
+        "buttonHref": "/docs/current-extensions",
         "imageSrc": ""
       },
       {
-        "id": "client-overlays",
-        "title": "Taste belongs at the edge.",
-        "subtitle": "A product site, vertical pack, brand layer, or admin experience belongs in its client overlay or the shared design system when it becomes reusable. The platform core stays clean.",
+        "id": "application-modules",
+        "title": "Product decisions belong downstream.",
+        "subtitle": "Your product site, workflows, domain model, delivery providers, and end-user experience live in the application repository. The reusable OSS foundation stays generic.",
         "background": "",
         "textColor": "",
-        "buttonText": "Inspect overlay model",
-        "buttonHref": "/docs/architecture",
+        "buttonText": "Review the boundary",
+        "buttonHref": "/docs/current-runtime-surfaces",
         "imageSrc": ""
       },
       {
         "id": "evidence",
         "title": "Replace parts without losing the system.",
-        "subtitle": "Models will change. Agent frameworks will change. Your platform contract should survive it. PlatformKit keeps modules, migrations, events, design-system governance, and operational proof in one inspectable graph.",
+        "subtitle": "Module composition, migrations, identity, authorization, health, and release checks stay inspectable as downstream applications evolve.",
         "background": "",
         "textColor": "",
         "buttonText": "Read requirements",
-        "buttonHref": "/docs/v0-0-0-release-audit",
+        "buttonHref": "/docs/current-api-contract",
         "imageSrc": ""
       }
     ],
     "gallery": {"title": "", "subtitle": "", "categories": [], "seeMoreText": "", "images": []},
     "team": {"title": "", "description": "", "members": []},
     "commodities": {
-      "title": "One graph, many AI surfaces",
-      "subtitle": "Serve the same composition as an app, admin console, MCP server, docs portal, worker runtime, module catalog, or vertical client surface.",
-      "joinButton": "Read topology ADR",
-      "buttonHref": "/docs/platformkit-formula",
+      "title": "One starter, explicit extension points",
+      "subtitle": "Run the generic HTTP and operator surfaces, then add only the application-owned modules your product needs.",
+      "joinButton": "Read the extension guide",
+      "buttonHref": "/docs/current-extensions",
       "items": [
-        {"icon": "topology", "label": "MCP tools"},
-        {"icon": "topology", "label": "Agent workflows"},
+        {"icon": "topology", "label": "Scoped API keys"},
+        {"icon": "topology", "label": "Application modules"},
         {"icon": "topology", "label": "Admin console"},
         {"icon": "topology", "label": "Tenant data"},
         {"icon": "topology", "label": "Audit trail"},
         {"icon": "topology", "label": "Module catalog"},
-        {"icon": "topology", "label": "Human review"},
-        {"icon": "topology", "label": "Design system"}
+        {"icon": "topology", "label": "Health checks"},
+        {"icon": "topology", "label": "OpenAPI discovery"}
       ]
     },
     "event": {"title": "", "subtitle": "", "categories": [], "seeMoreText": "", "images": []},
@@ -200,7 +200,7 @@
         {
           "name": "Community",
           "nameMobile": "Community",
-          "subtext": "Read the source, run the graph, test the agent contract.",
+          "subtext": "Run the nine-module OSS starter and extend it through public contracts.",
           "monthlyPrice": 0,
           "yearlyPrice": 0,
           "available": true,
@@ -208,7 +208,7 @@
           "cellColor": "",
           "features": [],
           "buttonText": "Start free",
-          "buttonHref": "/docs/architecture"
+          "buttonHref": "/docs/current-quickstart"
         },
         {
           "name": "Team",
@@ -240,13 +240,13 @@
     },
     "contact": {
       "title": "Contact",
-      "description": "PlatformKit is built and supported by Septagon. Talk to us about agent-ready modules, private overlays, or architecture adoption.",
+      "description": "PlatformKit is built and supported by Septagon. Talk to us about the OSS foundation, downstream modules, or architecture adoption.",
       "email": "hello@platformkit.dev",
       "phone": "",
       "website": "https://platformkit.dev"
     },
     "footer": {
-      "description": "PlatformKit is the production substrate for AI-native SaaS: one graph of modules, contracts, overlays, docs, and governed agent tooling.",
+      "description": "PlatformKit is a domain-neutral Go foundation for multi-tenant SaaS, with explicit contracts and one supported extension seam.",
       "hours": "",
       "hoursDetail": "",
       "location": "",
@@ -258,44 +258,23 @@
     },
     "testimonials": [
       {
-        "name": "COMUM Cowork",
-        "role": "Real coworking operation",
-        "quote": "An operations surface where agents can reason about bookings, billing, community, mail, and tenant controls without bypassing the platform contract.",
+        "name": "Security boundary",
+        "role": "Automated regression evidence",
+        "quote": "Anonymous access, insufficient scopes, body-supplied identity, cross-tenant reads, and stale credentials are exercised as fail-closed cases.",
         "image": "",
         "rating": 5
       },
       {
-        "name": "Incomum",
-        "role": "Education blueprint",
-        "quote": "Cohorts, guardian visibility, learner progress, and public storytelling with evidence trails that a human team can still trust.",
+        "name": "Extension path",
+        "role": "Runnable public reference",
+        "quote": "A downstream module joins the same database, identity perimeter, health graph, request limits, and OpenAPI discovery without forking the starter.",
         "image": "",
         "rating": 5
       },
       {
-        "name": "Velora",
-        "role": "Wellness blueprint",
-        "quote": "Scheduling, memberships, consent-aware content, and tenant-safe audit for AI-assisted workflows with healthcare-style governance.",
-        "image": "",
-        "rating": 5
-      },
-      {
-        "name": "Record",
-        "role": "Clinical study blueprint",
-        "quote": "Audit-first data capture where every form edit, signature, approval, and agent action can be replayed as evidence.",
-        "image": "",
-        "rating": 5
-      },
-      {
-        "name": "Apex",
-        "role": "Smart-building operations composition",
-        "quote": "Portfolio workflows where agents can triage anomalies, contractor SLAs, and compliance reporting across building fleets.",
-        "image": "",
-        "rating": 5
-      },
-      {
-        "name": "CutOut",
-        "role": "Custom commerce composition",
-        "quote": "Configurator-led commerce where product logic, quote accuracy, and tenant-isolated storefront operations remain inspectable.",
+        "name": "Upgrade path",
+        "role": "Durable identity migration",
+        "quote": "Released tenant and user identifiers survive upgrades, while visible defaults and stale development credentials are remediated safely.",
         "image": "",
         "rating": 5
       }

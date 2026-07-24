@@ -71,3 +71,69 @@ test("published documentation does not expose private workspace paths", async ()
   }
   assert.deepEqual(findings, []);
 });
+
+test("only current OSS guides are published as setup and capability truth", async () => {
+  const entries = await collectDocumentationContent({ workspaceRoot: repoRoot });
+  const sources = entries.map((entry) => entry.sourcePath);
+
+  for (const current of [
+    "docs/current/quickstart.md",
+    "docs/current/extensions.md",
+    "docs/current/runtime-surfaces.md",
+    "docs/current/api-contract.md",
+  ]) {
+    assert.ok(sources.includes(current), `missing current guide: ${current}`);
+  }
+  assert.equal(
+    sources.some((source) => source.startsWith("docs/v0.2.0/")),
+    false,
+    "historical versioned docs must not be published as current",
+  );
+  assert.equal(
+    sources.some((source) => source.startsWith("architecture/")),
+    false,
+    "the historical downstream architecture must not be published as OSS truth",
+  );
+
+  const retiredClaims = [
+    "tenant_acme",
+    "admin@local.test",
+    "changeme",
+    "47 business modules",
+    "All 49 production-grade modules",
+  ];
+  const body = entries.map((entry) => `${entry.sourcePath}\n${entry.content}`).join("\n");
+  for (const claim of retiredClaims) {
+    assert.equal(body.includes(claim), false, `published docs contain retired claim: ${claim}`);
+  }
+});
+
+test("historical v0.2 pages are explicitly archived and bannered", async () => {
+  const historicalRoot = path.join(repoRoot, "docs", "v0.2.0");
+  const pending = [historicalRoot];
+  const markdown = [];
+  while (pending.length > 0) {
+    const directory = pending.pop();
+    for (const entry of await fs.readdir(directory, { withFileTypes: true })) {
+      const target = path.join(directory, entry.name);
+      if (entry.isDirectory()) pending.push(target);
+      if (entry.isFile() && entry.name.endsWith(".md")) markdown.push(target);
+    }
+  }
+
+  for (const file of markdown) {
+    const source = await fs.readFile(file, "utf8");
+    assert.match(source, /^status:\s*archived\s*$/m, `${file} must be archived`);
+    assert.match(source, /Historical v0\.2\.0 documentation/, `${file} needs a historical banner`);
+  }
+});
+
+test("federated navigation points to current guides, not archived architecture", async () => {
+  const manifest = await fs.readFile(
+    path.join(repoRoot, ".platformkit", "docs.manifest.yaml"),
+    "utf8",
+  );
+  assert.match(manifest, /path:\s+docs\/current\/quickstart\.md/);
+  assert.match(manifest, /path:\s+docs\/current\/extensions\.md/);
+  assert.doesNotMatch(manifest, /path:\s+architecture\/(?:index|\d{2}-)[^\s]*\.md/);
+});

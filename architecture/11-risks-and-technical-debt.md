@@ -6,7 +6,11 @@ collection: architecture
 type: doc
 tags: [architecture, arc42, risks, debt]
 authoring: authored
+status: archived
 ---
+
+> **Historical architecture source.** This narrative describes a larger downstream workspace and is not the current PlatformKit OSS runtime. Use `docs/current/` and verify executable claims against the public `septagon-oss` repositories.
+
 
 # 11 — Risks and Technical Debt
 

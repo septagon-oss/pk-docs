@@ -2,8 +2,12 @@
 title: PlatformKit Formula
 slug: platformkit-formula
 collection: docs
-status: published
+status: archived
 ---
+
+> **Archived concept note.** This formula describes a broader design direction,
+> not the current OSS runtime. Use [`docs/current/`](./current/quickstart.md) for
+> shipped capabilities and extension guidance.
 
 # PlatformKit Formula
 

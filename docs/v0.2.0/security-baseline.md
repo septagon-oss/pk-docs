@@ -2,8 +2,11 @@
 title: v0.2.0 Security Baseline
 slug: v0-2-0-security-baseline
 collection: docs
-status: published
+status: archived
 ---
+
+> **Historical v0.2.0 documentation.** This page is retained for release research and is not the current OSS contract. Use `docs/current/` and the `septagon-oss/platformkit` README for current setup, credentials, routes, and capabilities.
+
 
 # v0.2.0 Security Baseline
 

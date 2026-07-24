@@ -1,22 +1,27 @@
 # PlatformKit architecture documentation
 
-This directory holds the public, workspace-level architecture narrative. Start
-with [`index.md`](./index.md), then follow the numbered arc42 sections for the
-system context, building blocks, runtime, deployment, decisions, quality, risks,
-and glossary.
+The numbered arc42 narrative in this directory is archived. It describes a
+larger historical/downstream workspace, not the current nine-module PlatformKit
+OSS runtime, and it is intentionally absent from the public docs manifest.
+
+For current setup, capabilities, boundaries, and extension guidance, use
+[`docs/current/`](../docs/current/quickstart.md) and verify executable claims
+against the public `septagon-oss` code repositories. The files remain here only
+to preserve decision context while accurate current architecture documentation
+is written from the public code.
 
 ## Authoring boundaries
 
-- Cross-workspace explanations belong in the matching numbered architecture
-  section.
+- Do not add current claims to the archived numbered sections.
 - Decisions with meaningful alternatives belong in [`../adr/`](../adr/); copy
   [`../adr/0000-template.md`](../adr/0000-template.md) and register an accepted
   decision in [the docs manifest](../.platformkit/docs.manifest.yaml).
 - Executable obligations belong in [`../requirements/`](../requirements/).
 - Mechanical house rules belong in [`../conventions.md`](../conventions.md).
 - Reference-module behavior belongs beside the code in the public
-  `github.com/septagon-oss/pk-modules/pkg/<name>` package. The release-oriented
-  module index lives in [`../docs/v0.2.0/module-reference.md`](../docs/v0.2.0/module-reference.md).
+  `github.com/septagon-oss/pk-modules/pkg/<name>` package. Current runtime
+  boundaries live in
+  [`../docs/current/runtime-surfaces.md`](../docs/current/runtime-surfaces.md).
 
 The abandoned CUE/module-charter projection plan is preserved only as history
 in superseded [ADR 0023](../adr/0023-module-documentation-stack.md). Do not add

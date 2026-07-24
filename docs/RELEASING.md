@@ -2,8 +2,12 @@
 title: Releasing
 slug: releasing
 collection: docs
-status: published
+status: archived
 ---
+
+> **Archived v0.2 release process.** Do not use these versions, repository
+> counts, or dependency steps for a current release. Each public repository's
+> current README, Makefile, and release workflow are authoritative.
 
 # Releasing
 

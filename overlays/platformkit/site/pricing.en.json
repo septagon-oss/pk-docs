@@ -19,18 +19,18 @@
       "tier": "community",
       "name": "Community",
       "tagline": "Run the stack on your own.",
-      "description": "The full open-source PlatformKit runtime. No commercial assets, but every module, every contract, every test.",
+      "description": "The runnable open-source starter, its nine reference modules, public composition contracts, and release tests.",
       "bullets": [
-        "All 49 production-grade modules",
+        "Nine reusable OSS modules",
         "Apache-2.0 source code",
-        "Self-hosted deploy guides",
+        "Loopback-first quickstart and verification guides",
         "Community Discord support"
       ],
       "priceUnit": "always free",
       "cta": {
         "kind": "link",
         "label": "Install Community",
-        "href": "/docs/architecture"
+        "href": "/docs/current-quickstart"
       }
     },
     {
@@ -116,7 +116,7 @@
   "comparison": {
     "rows": [
       {
-        "feature": "Open-source modules",
+        "feature": "Open-source starter modules",
         "cells": {
           "community": {"kind": "yes"},
           "design": {"kind": "yes"},
@@ -234,7 +234,7 @@
     {
       "anchor": "can-i-use-just-community",
       "question": "Can I run the platform on Community alone?",
-      "answer": "Yes. Community is the entire open-source runtime. The paid tiers add design assets, commercial templates, and the production infra catalog; none of those are required to ship."
+      "answer": "Yes. Community is the complete public nine-module starter and extension contract. Product-specific capabilities, delivery providers, and end-user experiences are built downstream; paid offerings are separate accelerators, not hidden OSS modules."
     }
   ],
   "ctaStrip": {
@@ -243,7 +243,7 @@
     "primaryCta": {
       "kind": "link",
       "label": "Install Community",
-      "href": "/docs/architecture"
+      "href": "/docs/current-quickstart"
     },
     "secondaryCta": {
       "kind": "mailto",

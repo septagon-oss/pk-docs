@@ -1,7 +1,7 @@
 ---
 id: REQ-012
 title: "Mobile shell composes module + client packs at build time"
-status: Active
+status: Proposed
 date: 2026-05-06
 slug: req-012-mobile-build-time-composition
 category: governance
@@ -19,7 +19,12 @@ tags: [requirement, governance, mobile, composition]
 
 # REQ 012 — Mobile shell composes module + client packs at build time
 
-Status: **Active** (2026-05-06)
+Status: **Proposed** (2026-07-24)
+
+> This requirement concerns a possible downstream/mobile distribution. It is
+> not implemented or shipped by PlatformKit OSS and must not be used to infer a
+> mobile client, client packs, EAS profiles, or per-customer demos in the public
+> runtime.
 
 ## Statement
 

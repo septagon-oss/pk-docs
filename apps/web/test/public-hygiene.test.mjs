@@ -65,6 +65,35 @@ test("public documentation sources avoid migration-era placeholders", async () =
   assert.deepEqual(findings, []);
 });
 
+test("public marketing does not present demo brands or unshipped OSS modules", async () => {
+  const siteRoot = path.join(repoRoot, "overlays", "platformkit", "site");
+  const sources = await Promise.all(
+    ["homepage.en.json", "pricing.en.json"].map((name) =>
+      readFile(path.join(siteRoot, name), "utf8"),
+    ),
+  );
+  const body = sources.join("\n");
+  const bannedClaims = [
+    "All 49 production-grade modules",
+    "47 business modules",
+    "COMUM Cowork",
+    '"name": "Incomum"',
+    '"name": "Velora"',
+    '"name": "Record"',
+    '"name": "Apex"',
+    '"name": "CutOut"',
+  ];
+  for (const claim of bannedClaims) {
+    assert.equal(body.includes(claim), false, `marketing contains demo/unshipped claim: ${claim}`);
+  }
+
+  const archivedPortuguese = JSON.parse(
+    await readFile(path.join(siteRoot, "homepage.pt.archived.json"), "utf8"),
+  );
+  assert.equal(archivedPortuguese._translation_status?.published, false);
+  assert.equal(archivedPortuguese._translation_status?.status, "archived-unreviewed");
+});
+
 async function* walk(directory) {
   for (const entry of await readdir(directory, { withFileTypes: true })) {
     if (ignoredDirectories.has(entry.name)) {

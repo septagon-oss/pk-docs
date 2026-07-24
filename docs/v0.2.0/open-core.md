@@ -2,8 +2,11 @@
 title: Open Core
 slug: v0-2-0-open-core
 collection: docs
-status: published
+status: archived
 ---
+
+> **Historical v0.2.0 documentation.** This page is retained for release research and is not the current OSS contract. Use `docs/current/` and the `septagon-oss/platformkit` README for current setup, credentials, routes, and capabilities.
+
 
 # Open core
 

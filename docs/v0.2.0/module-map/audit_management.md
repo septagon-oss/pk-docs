@@ -2,8 +2,11 @@
 title: v0.2.0 Module Map — audit_management
 slug: v0-2-0-module-map-audit-management
 collection: docs
-status: published
+status: archived
 ---
+
+> **Historical v0.2.0 documentation.** This page is retained for release research and is not the current OSS contract. Use `docs/current/` and the `septagon-oss/platformkit` README for current setup, credentials, routes, and capabilities.
+
 
 # `audit_management`
 

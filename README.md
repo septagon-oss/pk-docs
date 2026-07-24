@@ -7,16 +7,21 @@ Public documentation source for PlatformKit OSS.
 
 ## Start here
 
-For the current runnable contract, setup, credentials, routes, and architecture,
-start with the
-[PlatformKit front door](https://github.com/septagon-oss/platformkit). To extend
-the starter, use the supported
-[`starterapp.WithModules` reference](https://github.com/septagon-oss/pk-apps/tree/main/reference/custommodule).
+For the current runnable contract, start with the
+[current quickstart](docs/current/quickstart.md), then read the
+[runtime boundaries](docs/current/runtime-surfaces.md), [API contract](docs/current/api-contract.md),
+and [secure extension guide](docs/current/extensions.md). Executable facts are
+owned by the
+[PlatformKit front door](https://github.com/septagon-oss/platformkit).
 
 Version-named directories in this branch are maintained historical
 documentation: they may contain later corrections or backports and are not
 exact release snapshots. For release-specific research, use the
 [pinned v0.2.0 documentation commit](https://github.com/septagon-oss/pk-docs/tree/2d13847849e69b79a7e71dda807782645d544957/docs/v0.2.0).
+
+The numbered arc42 files under `architecture/` describe a larger historical
+workspace. They are archived source, are no longer published by the docs
+manifest, and must not be used as evidence of current OSS modules or products.
 
 PlatformKit exists to make serious SaaS systems composable without making the
 hard parts informal. The OSS contract should make module boundaries,

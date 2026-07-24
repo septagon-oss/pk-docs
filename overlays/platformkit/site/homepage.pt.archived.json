@@ -1,4 +1,10 @@
 {
+  "_translation_status": {
+    "status": "archived-unreviewed",
+    "published": false,
+    "source": "homepage.en.json",
+    "note": "Do not publish or use as current copy. Regenerate with the approved European-Portuguese translation workflow and require native review."
+  },
   "site": {
     "contentProfile": "platformkit",
     "homepageRenderer": "overlay_experience",
