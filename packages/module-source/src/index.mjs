@@ -5,6 +5,14 @@ import { assertModuleBundle, compareBundlesByTitle } from "../../contracts/src/i
 
 export async function discoverModuleSources({ modulesRoot, selectedModules = [] }) {
   const allowed = new Set(selectedModules.map((value) => value.trim()).filter(Boolean));
+  if (!(await fileExists(modulesRoot))) {
+    if (allowed.size > 0) {
+      throw new Error(
+        `Module source root ${modulesRoot} does not exist; cannot select ${[...allowed].join(", ")}.`,
+      );
+    }
+    return [];
+  }
   const entries = await fs.readdir(modulesRoot, { withFileTypes: true });
   const discovered = [];
 

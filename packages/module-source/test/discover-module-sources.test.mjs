@@ -57,3 +57,19 @@ test("discoverModuleSources finds translation management bundle", async () => {
 
   await fs.rm(workspaceRoot, { recursive: true, force: true });
 });
+
+test("discoverModuleSources permits a standalone docs checkout", async () => {
+  const workspaceRoot = await fs.mkdtemp(path.join(os.tmpdir(), "pk-docs-standalone-"));
+  const modulesRoot = path.join(workspaceRoot, "pk-modules");
+
+  assert.deepEqual(await discoverModuleSources({ modulesRoot }), []);
+  await assert.rejects(
+    discoverModuleSources({
+      modulesRoot,
+      selectedModules: ["translation_management"],
+    }),
+    /Module source root .* does not exist; cannot select translation_management/,
+  );
+
+  await fs.rm(workspaceRoot, { recursive: true, force: true });
+});
