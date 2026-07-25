@@ -102,6 +102,7 @@ is never emitted.
 - Escape hatches fail closed: `Raw` classes, arbitrary values, and `peer:`
   error instead of guessing.
 
-One known gap: this page's palette table is hand-maintained. Until a generator
-derives it from `themes.Default()`, the theme tests in pk-design are the
-source of truth when they disagree.
+The generated artifact
+[`pk-design/docs/palette.md`](https://github.com/septagon-oss/pk-design/blob/main/docs/palette.md)
+is emitted from `themes.Default()` by a golden test and is the source of truth
+if this page's table ever disagrees.
