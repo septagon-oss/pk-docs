@@ -176,6 +176,12 @@ function renderAtlasContracts(content) {
 
 function renderAtlasModules(content, site) {
   const ui = content.ui ?? {};
+  const modules = homepageModules(site).slice(0, 8);
+  // No composed module bundles means no module section: fabricating cards
+  // would publish invented counts.
+  if (modules.length === 0) {
+    return "";
+  }
   return `
 <section class="pk-atlas-modules" id="modules">
   <div class="pk-shell">
@@ -366,24 +372,13 @@ body{font-family:${sanitizeFontFamily(branding.fontFamily, "Inter")}, "Avenir Ne
 }
 
 function homepageModules(site) {
-  if (site.modules.length > 0) {
-    return site.modules.map((module) => ({
-      moduleId: module.id,
-      category: module.module.category || "module",
-      title: module.title,
-      entityCount: module.stats.operationCount,
-      featureCount: module.stats.featureCount,
-    }));
-  }
-
-  return [
-    { moduleId: "pk-core", category: "framework", title: "Core runtime", entityCount: 0, featureCount: 4 },
-    { moduleId: "pk-modules", category: "modules", title: "Module pack", entityCount: 0, featureCount: 6 },
-    { moduleId: "pk-design", category: "design", title: "Design system", entityCount: 0, featureCount: 5 },
-    { moduleId: "pk-client", category: "client", title: "Client contract", entityCount: 0, featureCount: 3 },
-    { moduleId: "pk-docs", category: "docs", title: "Docs substrate", entityCount: 0, featureCount: 4 },
-    { moduleId: "pk-apps", category: "apps", title: "Reference apps", entityCount: 0, featureCount: 3 },
-  ];
+  return site.modules.map((module) => ({
+    moduleId: module.id,
+    category: module.module.category || "module",
+    title: module.title,
+    entityCount: module.stats.operationCount,
+    featureCount: module.stats.featureCount,
+  }));
 }
 
 function homepagePlanPrice(plan) {

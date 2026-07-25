@@ -264,3 +264,17 @@ test("renderContentPage renders a hosted documentation content entry", () => {
 
   assert.match(html, /href="\/docs\/adr-0009-ports-only-cross-module-communication"/);
 });
+
+test("renderHomePage never fabricates module cards when no bundles are composed", () => {
+  const site = { ...siteFixture(), modules: [], featuredModuleId: null };
+  const html = renderHomePage(site, {
+    clientSlug: "platformkit",
+    manifest: {
+      experience: {},
+      content: { metadata: { title: "PlatformKit" }, branding: {}, ui: {} },
+    },
+  });
+
+  assert.doesNotMatch(html, /Core runtime|Module pack|pk-core|Docs substrate/);
+  assert.doesNotMatch(html, /pk-atlas-module-ledger/);
+});
