@@ -1,16 +1,40 @@
 import { escapeHtml } from "../../../packages/contracts/src/index.mjs";
 import { renderMarkdown } from "./markdown.mjs";
 
-export function renderHomePage(site, overlay) {
+export function renderHomePage(site, overlay, contentEntries = []) {
   if (overlay?.manifest?.content) {
     return renderOverlayHomePage(site, overlay);
   }
 
   return renderLayout({
     title: "PlatformKit Docs",
-    description: "Central docs preview for PlatformKit modules",
-    content: renderGeneratedDocsCatalog(site),
+    description: "Architecture, requirements, and decisions for PlatformKit OSS.",
+    content: `
+      ${renderDocsWelcome(contentEntries)}
+      ${site.modules.length > 0 ? renderGeneratedDocsCatalog(site) : ""}
+    `,
   });
+}
+
+function renderDocsWelcome(contentEntries) {
+  const groups = groupContentEntries(contentEntries);
+
+  return `
+      <section class="hero hero--home">
+        <div class="hero__copy">
+          <span class="eyebrow">PlatformKit</span>
+          <h1>PlatformKit Docs</h1>
+          <p>Architecture, requirements, and decisions for a small trusted core, module-owned capability, and apps that compose business workflows.</p>
+          <p>
+            <a class="button" href="/docs">Browse the docs</a>
+            <a class="button button--secondary" href="https://github.com/septagon-oss/platformkit">Source on GitHub</a>
+          </p>
+        </div>
+      </section>
+      <div class="pk-docs-index-grid">
+        ${groups.map(([collection, entries]) => renderContentGroup(collectionTitle(collection), entries)).join("")}
+      </div>
+  `;
 }
 
 function renderOverlayHomePage(site, overlay) {
@@ -500,7 +524,7 @@ export function renderModulePage(module, options = {}) {
 }
 
 export function renderContentIndexPage(contentEntries, options = {}) {
-  const grouped = groupContentEntries(contentEntries);
+  const groups = groupContentEntries(contentEntries);
   return renderLayout({
     title: "PlatformKit Docs",
     description: "Architecture, requirements, and decisions for PlatformKit OSS.",
@@ -516,9 +540,7 @@ export function renderContentIndexPage(contentEntries, options = {}) {
       </section>
 
       <div class="pk-docs-index-grid pk-shell">
-        ${renderContentGroup("Architecture", grouped.architecture)}
-        ${renderContentGroup("Requirements", grouped.requirements)}
-        ${renderContentGroup("ADRs", grouped.adr)}
+        ${groups.map(([collection, entries]) => renderContentGroup(collectionTitle(collection), entries)).join("")}
       </div>
     `,
   });
@@ -1466,8 +1488,7 @@ function renderLayout({ title, description, content, overlay = null, activeHref 
         </a>
         <nav class="top-nav" aria-label="Primary navigation">
           <a href="/docs">Docs</a>
-          <a href="/#customers">Customers</a>
-          <a href="/#compare">Compare</a>
+          <a href="https://github.com/septagon-oss/platformkit">GitHub</a>
           <a href="mailto:hello@septagon.dev">Contact</a>
         </nav>
       </header>
@@ -1525,11 +1546,16 @@ function joinClassNames(values) {
 }
 
 function groupContentEntries(contentEntries) {
-  return {
-    architecture: contentEntries.filter((entry) => entry.collection === "architecture"),
-    requirements: contentEntries.filter((entry) => entry.collection === "requirements"),
-    adr: contentEntries.filter((entry) => entry.collection === "adr"),
-  };
+  const order = ["guides", "architecture", "requirements", "adr"];
+  const groups = new Map();
+  for (const entry of contentEntries) {
+    const key = entry.collection || "docs";
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(entry);
+  }
+  return [...groups.entries()].sort(
+    (a, b) => ((order.indexOf(a[0]) + 1 || order.length + 1) - (order.indexOf(b[0]) + 1 || order.length + 1)),
+  );
 }
 
 function renderContentGroup(title, entries) {
@@ -1550,5 +1576,6 @@ function collectionTitle(collection) {
   if (collection === "adr") return "Architecture Decisions";
   if (collection === "requirements") return "Requirements";
   if (collection === "architecture") return "Architecture";
+  if (collection === "guides") return "Guides";
   return "Docs";
 }

@@ -6,14 +6,20 @@ import { loadGeneratedBundles } from "../../../packages/module-source/src/index.
 import { collectDocumentationContent } from "./docs-source.mjs";
 import { renderContentIndexPage, renderContentPage, renderHomePage, renderModulePage, renderStyles } from "./site-template.mjs";
 
-export async function buildSite({ workspaceRoot, basePath = process.env.BASE_PATH ?? "" }) {
+export async function buildSite({
+  workspaceRoot,
+  basePath = process.env.BASE_PATH ?? "",
+  publishOverlay = process.env.PUBLISH_OVERLAY === "1",
+}) {
   const prefix = basePath.replace(/\/+$/, "");
   // Templates emit root-absolute URLs for domain-root hosting; rewrite them at
   // the output boundary when the site is served from a subpath (GitHub Pages).
   const withBase = (html) => (prefix ? html.replace(/\b(href|src)="\/(?!\/)/g, `$1="${prefix}/`) : html);
   const generatedRoot = path.join(workspaceRoot, ".generated");
   const distRoot = path.join(workspaceRoot, "apps", "web", "dist");
-  const overlay = await loadPlatformKitOverlay({ workspaceRoot });
+  // The marketing overlay targets a hosted product domain that is not live
+  // yet; the published docs site stays overlay-free until opted in.
+  const overlay = publishOverlay ? await loadPlatformKitOverlay({ workspaceRoot }) : null;
   const bundles = await loadGeneratedBundles({ generatedRoot });
   const site = await composeSiteModel({ bundles, generatedRoot });
   const contentEntries = await collectDocumentationContent({ workspaceRoot });
@@ -24,7 +30,7 @@ export async function buildSite({ workspaceRoot, basePath = process.env.BASE_PAT
   if (overlay) {
     await copyPlatformKitOverlayAssets({ distRoot, overlay });
   }
-  await fs.writeFile(path.join(distRoot, "index.html"), withBase(renderHomePage(site, overlay)));
+  await fs.writeFile(path.join(distRoot, "index.html"), withBase(renderHomePage(site, overlay, contentEntries)));
   await fs.writeFile(path.join(distRoot, "site-model.json"), JSON.stringify(site, null, 2) + "\n");
   await fs.mkdir(path.join(distRoot, "docs"), { recursive: true });
   await fs.writeFile(path.join(distRoot, "docs", "index.html"), withBase(renderContentIndexPage(contentEntries, { overlay })));
