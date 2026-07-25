@@ -6,7 +6,11 @@ import { loadGeneratedBundles } from "../../../packages/module-source/src/index.
 import { collectDocumentationContent } from "./docs-source.mjs";
 import { renderContentIndexPage, renderContentPage, renderHomePage, renderModulePage, renderStyles } from "./site-template.mjs";
 
-export async function buildSite({ workspaceRoot }) {
+export async function buildSite({ workspaceRoot, basePath = process.env.BASE_PATH ?? "" }) {
+  const prefix = basePath.replace(/\/+$/, "");
+  // Templates emit root-absolute URLs for domain-root hosting; rewrite them at
+  // the output boundary when the site is served from a subpath (GitHub Pages).
+  const withBase = (html) => (prefix ? html.replace(/\b(href|src)="\/(?!\/)/g, `$1="${prefix}/`) : html);
   const generatedRoot = path.join(workspaceRoot, ".generated");
   const distRoot = path.join(workspaceRoot, "apps", "web", "dist");
   const overlay = await loadPlatformKitOverlay({ workspaceRoot });
@@ -20,10 +24,10 @@ export async function buildSite({ workspaceRoot }) {
   if (overlay) {
     await copyPlatformKitOverlayAssets({ distRoot, overlay });
   }
-  await fs.writeFile(path.join(distRoot, "index.html"), renderHomePage(site, overlay));
+  await fs.writeFile(path.join(distRoot, "index.html"), withBase(renderHomePage(site, overlay)));
   await fs.writeFile(path.join(distRoot, "site-model.json"), JSON.stringify(site, null, 2) + "\n");
   await fs.mkdir(path.join(distRoot, "docs"), { recursive: true });
-  await fs.writeFile(path.join(distRoot, "docs", "index.html"), renderContentIndexPage(contentEntries, { overlay }));
+  await fs.writeFile(path.join(distRoot, "docs", "index.html"), withBase(renderContentIndexPage(contentEntries, { overlay })));
   await fs.writeFile(
     path.join(distRoot, "docs", "content-index.json"),
     JSON.stringify(contentEntries.map(contentIndexRecord), null, 2) + "\n",
@@ -32,14 +36,14 @@ export async function buildSite({ workspaceRoot }) {
   for (const entry of contentEntries) {
     const documentRoot = path.join(distRoot, "docs", entry.slug);
     await fs.mkdir(documentRoot, { recursive: true });
-    await fs.writeFile(path.join(documentRoot, "index.html"), renderContentPage(entry, contentEntries, { overlay }));
+    await fs.writeFile(path.join(documentRoot, "index.html"), withBase(renderContentPage(entry, contentEntries, { overlay })));
     await fs.writeFile(path.join(documentRoot, "page-model.json"), JSON.stringify(entry, null, 2) + "\n");
   }
 
   for (const module of site.modules) {
     const moduleRoot = path.join(distRoot, "modules", module.id);
     await fs.mkdir(moduleRoot, { recursive: true });
-    await fs.writeFile(path.join(moduleRoot, "index.html"), renderModulePage(module, { overlay }));
+    await fs.writeFile(path.join(moduleRoot, "index.html"), withBase(renderModulePage(module, { overlay })));
     await fs.writeFile(path.join(moduleRoot, "page-model.json"), JSON.stringify(module, null, 2) + "\n");
     if (module.api.document) {
       await fs.mkdir(path.join(moduleRoot, "api"), { recursive: true });

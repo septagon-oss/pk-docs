@@ -58,11 +58,16 @@ jobs:
       - name: Install
         run: npm ci
 
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      # base_path is "/pk-docs" on the project site and "" once a custom
+      # domain serves the site from the root.
       - name: Build site
         run: make build
-
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
+        env:
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

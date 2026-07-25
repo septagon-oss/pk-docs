@@ -36,3 +36,24 @@ test("buildSite publishes docs as hosted content pages with page models", async 
   assert.equal(pageModel.contentType, "documentation");
   assert.match(pageHtml, /Public architecture/);
 });
+
+test("buildSite prefixes root-absolute URLs with basePath for subpath hosting", async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "pk-docs-build-"));
+  await fs.mkdir(path.join(root, ".generated", "modules"), { recursive: true });
+  await fs.mkdir(path.join(root, "docs"), { recursive: true });
+  await fs.writeFile(
+    path.join(root, "docs", "ARCHITECTURE.md"),
+    "---\ntitle: Architecture\nslug: architecture\ncollection: docs\n---\n# Architecture\n\nPublic architecture.",
+  );
+
+  const result = await buildSite({ workspaceRoot: root, basePath: "/pk-docs" });
+  const homeHtml = await fs.readFile(path.join(result.distRoot, "index.html"), "utf8");
+  const pageHtml = await fs.readFile(
+    path.join(result.distRoot, "docs", "architecture", "index.html"),
+    "utf8",
+  );
+
+  assert.match(homeHtml, /href="\/pk-docs\/assets\/site\.css"/);
+  assert.doesNotMatch(homeHtml, /(href|src)="\/(?!pk-docs\/)/);
+  assert.doesNotMatch(pageHtml, /(href|src)="\/(?!pk-docs\/)/);
+});
