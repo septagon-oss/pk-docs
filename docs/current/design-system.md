@@ -15,7 +15,7 @@ Four small pieces compose, and each is replaceable.
 | Canonical theme | [`pk-design`](https://github.com/septagon-oss/pk-design) | `themes.Default()` — tokens as data (DTCG), rendered to `--pk-*` custom properties |
 | Utility classes | [`tw`](https://github.com/septagon-oss/tw) | Typed class builder + `emission`: CSS for every enumerable class, mapped onto the theme through `--pk-role-*` variables |
 | CSS engine | [`styleengine`](https://github.com/septagon-oss/styleengine) | Typed sheet IR, render, parse, sanitize |
-| Components | [`pk-ui`](https://github.com/septagon-oss/pk-ui) | Props contracts, ARIA builder, gomponents renderers |
+| Components | [`pk-ui`](https://github.com/septagon-oss/pk-ui) | Props contracts, ARIA builder, gomponents renderers — atoms, molecules, and organisms |
 
 ## The palette
 
@@ -76,6 +76,51 @@ registrar.RegisterPage(portslib.AdminPage{
 [`pk-apps/reference/polls`](https://github.com/septagon-oss/pk-apps/tree/main/reference/polls)
 is the living version of this page — zero authored CSS.
 
+## Atoms, molecules, organisms
+
+Composition runs the whole ladder, in Go:
+
+- **Atoms** — Button, Input, Textarea, Select, Checkbox, Badge, Tag, Alert,
+  Heading, Text, Link, Spinner, Divider, EmptyState, Kbd.
+- **Molecules** — Table (sortable, striped, selectable), Pagination (numbered or
+  cursor), SearchBar, Card, Breadcrumb, Tabs.
+- **Organisms** — `DataGrid`: a whole data-management section (toolbar, filters,
+  actions, sortable table, pagination) with a children slot between table and
+  pagination where a page interleaves its own state.
+
+The admin console's resource list page is one `DataGrid` call. Its sortable
+headers are real buttons carrying `aria-sort`, and sort state lives in the URL
+hash so a sorted view is shareable.
+
+## Variants cannot collide
+
+Two single-class utilities that set the same property tie on specificity, so the
+emitted sheet's order — alphabetical, an implementation detail — would silently
+pick the winner. That bug class once left secondary buttons borderless and
+selected tags unselected.
+
+The rule is structural: a base fragment never declares a property any of its
+variants declares, and every variant is a complete state.
+`TestComposedListsHaveNoPropertyCollisions` renders every composition the
+renderers and the exported class surface produce, parses the CSS, and fails if
+any property is declared twice at the same variant prefix.
+
+## Styling markup you build yourself
+
+Scripts that create rows, pills, or controls in the browser must wear the same
+classes the renderers produce. `pk-ui/render/web` exports the compiled lists for
+exactly that:
+
+```go
+web.ButtonClasses("secondary", "xs")  // a row action
+web.BadgeClasses("success")           // a status pill
+web.TableClasses().TdPrimary          // an emphasized identity cell
+```
+
+PlatformKit's admin embeds these as JSON (`#pk-classnames`) and its script
+assigns them wholesale — never stacking two lists onto one element, mirroring the
+same variant discipline. Classes stay declared exactly once, in Go.
+
 ## Deriving a stylesheet outside the shell
 
 Applications that render pk-ui outside the admin derive exactly the CSS their
@@ -99,6 +144,11 @@ is never emitted.
   class-closure test in `pk-ui/render/web`.
 - All four stylesheet layers reach the browser — the served-stylesheet test in
   `pk-modules/pkg/admin`.
+- No variant collides with its base — the collision guard in
+  `pk-ui/render/web`.
+- Every contract field a renderer claims to honor is exercised by the gallery
+  golden, and contracts without a renderer are listed explicitly so the scope
+  statement cannot drift.
 - Escape hatches fail closed: `Raw` classes, arbitrary values, and `peer:`
   error instead of guessing.
 

@@ -8,14 +8,30 @@ status: published
 # Build a secure extension
 
 PlatformKit has one supported application-extension seam:
-`starterapp.WithModules`. Start with
+`starterapp.WithModules`.
+
+The fastest correct start is to generate one:
+
+```bash
+platformkit new module invoice
+```
+
+The generated module already embodies every rule below — tenant-scoped queries,
+per-route scope checks, server-owned identity, canonical entity IDs, append-only
+migrations — and ships a test that fails the moment tenant isolation breaks. It
+registers itself, so adding a module never edits `main.go`.
+
+To read the same thing by hand, see
 [`pk-apps/reference/custommodule`](https://github.com/septagon-oss/pk-apps/tree/main/reference/custommodule).
 That directory is a runnable teaching reference, not a shipped product, module,
 or alternate starter.
 
 The reference demonstrates the required defaults:
 
-1. Build the module on `ModuleEnv.DB`, the starter's shared SQLite pool.
+1. Build the module on `ModuleEnv.DB`, the starter's shared connection pool.
+   The pool is whichever engine the application configured — SQLite or Postgres
+   — so write portable SQL, or ship an adapter per engine the way the built-in
+   modules do.
 2. Apply append-only, embedded migrations and record each applied filename.
 3. Declare every machine capability in `ModulePlugin.APIKeyScopes`.
 4. Enforce the matching scope in every authenticated route, while allowing the
