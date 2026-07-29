@@ -1,6 +1,6 @@
 ---
 id: REQ-PORTS-024
-title: "The canonical surface vocabulary lives only in platformkit-ports/surface"
+title: "The canonical surface vocabulary lives only in pk-ui/surface"
 status: Proposed
 date: 2026-07-02
 slug: req-ports-024-surface-vocabulary-authority
@@ -16,8 +16,8 @@ satisfied_by:
 implements_cross_cutting: [REQ-002]
 refines: REQ-PORTS-001
 type: doc
-tags: [requirement, governance, ports, surface]
-module: platformkit_ports
+tags: [requirement, governance, oss, ui, surface]
+module: platformkit_ui
 feature: contract
 capability: surface_vocabulary_authority
 capability_kind: inter_module_contract
@@ -34,12 +34,16 @@ vocabulary — targets, page patterns, component levels, routes,
 nav sections, widgets, settings, page contracts, the
 `surface.Provider` port, and the structural validators
 (`ValidateContribution`, `ValidateContributionsGlobal`,
-`NamespacedRouteID`) — in `platformkit-ports/surface`, the
-design-authority repo. Consumers **shall** import that package
-directly. Compatibility aliases, constant re-exports, validator
-wrappers, and duplicate vocabulary in
-`pk-shared/presentation` or
-`pk-modules/ports` are prohibited.
+`NamespacedRouteID`) — in the OSS
+`github.com/septagon-oss/pk-ui/surface` package. The rich
+`PageContract` — presenter, template, slots, Storybook reference,
+and design artifacts — **shall** also have this one authority.
+Consumers **shall** use that exact type. Duplicate structs, enum
+copies, conversion functions, flattened projections, and validator
+wrappers in `platformkit-ports`, `pk-shared/presentation`,
+`platformkit-frontend-kit`, or `pk-modules/ports` are prohibited.
+Exact type aliases for pervasive shell vocabulary are permitted
+only when they introduce no second type or behavior.
 
 Every `surface.Provider` implementation **shall** return a
 contribution that is valid under `ValidateContribution`, stable
@@ -51,13 +55,16 @@ return).
 
 The surface vocabulary is the fleet-wide contract between every
 business module and every rendering shell (admin chrome, app,
-operator console). Two homes for it would mean two drifting
-definitions of "what is a route contribution" — the exact
-second-source-of-truth failure the platformkit-ports charter
-exists to prevent. The ports repo is the design authority, and
-forward-only direct imports keep that authority visible in every
-consumer. Removing aliases and wrappers also prevents compatibility
-paths from silently becoming permanent public APIs.
+operator console). It is reusable outside the proprietary product,
+so placing it in a private ports repository reverses the intended
+dependency direction. Two homes would mean two drifting definitions
+of both route contribution and page composition.
+
+The OSS UI pillar is therefore the authority. PlatformKit extends it
+with concrete shells, renderers, business contributions, and
+application wiring. Forward-only direct use keeps that authority
+visible, while removing adapters and flattened models prevents
+compatibility paths from silently becoming permanent APIs.
 
 The provider behavioral contract (valid, stable, isolated) is what
 lets shells cache and project contributions safely: a provider
@@ -66,13 +73,13 @@ caller mutation, would corrupt every registry built from it.
 
 ## Acceptance criteria
 
-- **AC-1** The vocabulary types, the `surface.Provider` port with
-  its authored contract, and the structural validators are defined
-  only in `platformkit-ports/surface`.
-- **AC-2** Canonical consumers import `platformkit-ports/surface`
-  directly. AST retirement tests reject reintroduced declarations
-  and uses of the removed shared-presentation and business-ports
-  compatibility names.
+- **AC-1** The vocabulary types, rich `PageContract`, the
+  `surface.Provider` contract, cloning, and structural validators are
+  defined only in `pk-ui/surface`.
+- **AC-2** Canonical consumers use `pk-ui/surface` directly.
+  Architecture tests reject OSS-to-private dependency reversal,
+  frontend dependencies on private backend/business/ports layers,
+  and reintroduced compatibility models.
 - **AC-3** Every `surface.Provider` passes the conformance suite:
   its contribution validates, is stable across calls, and caller
   mutation of a returned contribution does not leak back into
@@ -80,32 +87,31 @@ caller mutation, would corrupt every registry built from it.
 - **AC-4** The structural validators reject malformed
   contributions — missing module id, duplicate/blank route ids,
   missing paths/titles/targets, unsupported targets, malformed
-  widget and setting shapes, and global route-id collisions
-  across modules.
+  widget and setting shapes, inconsistent route/page targets or
+  patterns, incomplete page contracts, and global route-id
+  collisions across modules.
 
 ## Verification
 
 | AC | Method | Evidence |
 |---|---|---|
-| AC-1 | Inspection | `core/platformkit-ports/surface/surface.go` (vocabulary + validators) and `core/platformkit-ports/surface/provider.go` (`Provider` + `ProviderContract`). |
-| AC-2 | Test | `core/pk-shared/presentation/surface_alias_retirement_test.go::TestPresentationSurfaceAliasesStayRetired` and `pk-modules/ports/surface_vocabulary_retirement_test.go` scan declarations and import-qualified selectors so compatibility paths cannot return. |
-| AC-3 | Test | `core/platformkit-ports/surface/surfacetest/surfacetest_test.go::TestStaticPassesProviderConformance` — runs `surfacetest.ProviderConformance` (validity, call stability, mutation isolation) against the reference `Static` provider. |
-| AC-4 | Test | `core/platformkit-ports/surface/surfacetest/surfacetest_test.go::TestValidateContributionCatchesWidgetAndSettingShape` — validator rejection coverage for malformed shapes. |
+| AC-1 | Inspection | `overlays/septagon-oss-workspace/pk-ui/surface/contribution.go`, `provider.go`, and `admin.go`. |
+| AC-2 | Test | `pk-ui/architecture_test.go`, `platformkit-frontend-kit/dependency_boundary_test.go`, and `pk-modules/ports/surface_vocabulary_retirement_test.go`. |
+| AC-3 | Test | `pk-ui/surface/surfacetest/surfacetest_test.go::TestStaticPassesProviderConformance` — runs `surfacetest.ProviderConformance` (validity, call stability, mutation isolation) against the reference `Static` provider. |
+| AC-4 | Test | `pk-ui/surface/page_contract_test.go` plus the surface and surfacetest validator suites. |
 
 ## Satisfied by
 
 - [ADR 0009 — Ports-only cross-module communication](../adr/0009-ports-only-cross-module-communication.md) —
   the discipline that puts shared vocabulary in the ports layer
   rather than in any consumer.
-- `core/platformkit-ports/docs/ADR-0001-ports-charter.md` — the
-  platformkit-ports charter (external ADR namespace; distinct
-  from this registry's ADR-0001) that names the ports repo the
-  design authority for cross-cutting seams.
-- `core/platformkit-ports/surface/surfacetest/surfacetest.go::ProviderConformance` —
+- `pk-ui/REPO_CHARTER.md` — the OSS ownership and downstream
+  extension rule.
+- `pk-ui/surface/surfacetest/surfacetest.go::ProviderConformance` —
   the reusable behavioral suite every provider is held to.
-- `core/pk-shared/presentation/surface_alias_retirement_test.go` —
+- `core/platformkit-shared/presentation/surface_alias_retirement_test.go` —
   the forward-only retirement guard for the former presentation path.
-- `pk-modules/ports/surface_vocabulary_retirement_test.go` —
+- `modules/platformkit-business-modules/ports/surface_vocabulary_retirement_test.go` —
   the forward-only retirement guard for the former business-ports re-exports.
 
 ## Related requirements
@@ -122,6 +128,6 @@ caller mutation, would corrupt every registry built from it.
 
 ## References
 
-- `core/platformkit-ports/surface/surfacetest/surfacetest.go` —
+- `pk-ui/surface/surfacetest/surfacetest.go` —
   conformance suite + the reference `Static` provider (deep-copy
   semantics as the exemplar of mutation isolation).
