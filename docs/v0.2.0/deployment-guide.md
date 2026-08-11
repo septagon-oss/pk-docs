@@ -195,10 +195,16 @@ For any orchestrator:
 
 ## pk-deploy — when you outgrow "one binary, one host"
 
-[`pk-deploy`](https://github.com/septagon-oss/pk-deploy) is a separate OSS
-repo: a small, vendor-neutral **deployment control-plane kernel**. It is not
-required to deploy the starter app, and it is intentionally not
-PlatformKit-specific. What it gives you:
+`pk-deploy` is a separate deployment tool: a small, vendor-neutral
+**deployment control-plane kernel**. It is not required to deploy the starter
+app, and it is intentionally not PlatformKit-specific.
+
+> **Availability:** the pk-deploy repository is **not yet public**, so there
+> is nothing to clone or `go get` today. This section previews the design;
+> for current deployment guidance, use the
+> [published PlatformKit docs](https://septagon-oss.github.io/pk-docs/).
+
+What it gives you:
 
 - a self-hosted control plane (a NAS, a VM, a small server) that creates
   **signed deployment jobs** (HMAC-SHA256 envelopes);
@@ -222,12 +228,10 @@ Use it when you have a fleet — several apps, several hosts, and a need for
 auditable, signed deployments from self-hosted infrastructure. Skip it while
 `scp` + `systemctl restart` covers you.
 
-```bash
-go get github.com/septagon-oss/pk-deploy@v0.2.0
-# or explore locally:
-git clone https://github.com/septagon-oss/pk-deploy
-cd pk-deploy && make verify && make example
-```
+The repository is private while its public release is prepared, so `go get`
+and `git clone` will 404 for now. Watch the
+[published docs site](https://septagon-oss.github.io/pk-docs/) for the
+announcement when the code opens up.
 
 ## Related pages
 

@@ -42,9 +42,11 @@ It owns:
 - documentation federation contracts in `.platformkit/` and `packages/`
 - the lightweight docs build and preview tooling in `apps/` and `scripts/`
 
-The public repo does not include hosted publishing automation. Downstream
-distributions can publish these sources to their preferred docs host or compose
-them into PlatformKit content modules.
+The public repo publishes itself: `.github/workflows/docs.yml` builds the site
+and deploys it to GitHub Pages at
+[septagon-oss.github.io/pk-docs](https://septagon-oss.github.io/pk-docs/).
+Downstream distributions can also publish these sources to their preferred
+docs host or compose them into PlatformKit content modules.
 
 ## Reader Promise
 
