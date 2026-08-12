@@ -15,7 +15,7 @@ compliance:
   - ISO27001_A.9.4
   - GDPR_Art_32
 satisfied_by:
-  adr: [ADR-0007, ADR-0009, ADR-0066, ADR-0070]
+  adr: [ADR-0007, ADR-0009, ADR-0066, ADR-0070, ADR-0078]
   conventions: [C-04, C-18, C-20, C-14]
 implements_cross_cutting: [REQ-001, REQ-003, REQ-004, REQ-005, REQ-007]
 refines: REQ-AUTH-006
@@ -75,11 +75,16 @@ exact active identity cannot be reloaded; request-host context and email are
 never recovery keys.
 
 Provider protocol validity is necessary but not sufficient callback authority.
-The complete OIDC `state` or SAML `RelayState` **shall** be durable, one-time,
-and bound to an independent 256-bit proof from the browser that started the
-flow and to the exact tenant/provider/connection tuple. This proof **shall** be
-consumed atomically before provider completion and retained through any local
-MFA continuation. Upstream provider credentials **shall not** be projected or
+The provider-visible OIDC `state` or SAML `RelayState` **shall** be registered
+in a durable, one-time browser-flow ledger bound to an independent 256-bit
+proof from the browser that started the flow and to the exact
+tenant/provider/connection tuple. OIDC `state` carries the purpose-bound
+protected continuation. SAML `RelayState` carries only a bounded random handle
+to a separate durable, purpose-bound protected provider continuation. The
+browser-flow proof **shall** be consumed atomically before provider completion;
+the SAML provider continuation **shall** be consumed atomically before
+assertion parsing. Browser binding remains authoritative through any local MFA
+continuation. Upstream provider credentials **shall not** be projected or
 persisted as PlatformKit session material.
 
 ## Rationale
@@ -105,13 +110,16 @@ bindings in every rollout mode.
   resolved durable identity ID and authoritative tenant ID. Missing, inactive,
   failed, or malformed provider sessions are denied before platform-identity
   lookup, membership mutation, or session issuance.
-- **AC-2 — Exact provider-state and host binding.** The provider session carries
-  the tenant ID established at interactive-login start. The callback request
-  must resolve to the same tenant through authoritative
-  `resolution_source=host_alias` middleware. Missing provider tenant state,
-  mismatched tenant IDs, or a caller-selected/default resolution source cannot
-  authenticate or self-enroll. The callback request tenant never fills missing
-  provider state.
+- **AC-2 — Exact provider-state and public-tenant binding.** The provider
+  session carries the tenant ID established at interactive-login start. The
+  callback request must resolve to the same tenant through server-owned public
+  authority: `resolution_source=host_alias` or the configured
+  `default_tenant`. Missing provider tenant state, mismatched tenant IDs, or a
+  caller-selected resolution source cannot authenticate. The callback request
+  tenant never fills missing provider state. The absent-membership branch is
+  narrower: self-enrollment still requires `host_alias`; `default_tenant` may
+  complete an already-authorized member's login but can never create a tenant
+  membership.
 - **AC-3 — Safe identity lifecycle boundary.** A newly provisioned provider
   identity is based only on provider-verified attributes. An existing inactive,
   suspended, deleted, or otherwise blocked platform identity is never activated
@@ -152,8 +160,10 @@ bindings in every rollout mode.
 - **AC-11 — Durable provider-subject binding.** OIDC uses the validated token
   issuer and subject; SAML uses the validated assertion issuer and a stable
   signed NameID. The exact tenant/provider/connection/issuer/subject tuple is
-  bound atomically with first-link identity creation only when a global lookup
-  proves the canonical verified email is unused. An existing account with the
+  bound atomically with first-link identity creation only when the user owner's
+  narrow provisioner, inside that transaction, serializes and proves the
+  canonical verified email is unused. Auth performs no duplicate preflight
+  email lookup. An existing account with the
   same email yields a link-required conflict; a separately authenticated
   proof-of-possession or explicit audited administrator flow must create that
   binding. Repeat login resolves the immutable binding even when email changes,
@@ -162,26 +172,55 @@ bindings in every rollout mode.
   stale, inactive, missing-ID, or unreloadable identity binding.
 - **AC-12 — Durable one-time browser-bound callback.** Interactive start
   requires a durable flow store and creates an independent cryptographically
-  random 256-bit browser binding. Persistence contains only SHA-256 digests of
-  the complete OIDC `state` or SAML `RelayState` and browser binding, plus the
-  exact tenant ID, normalized provider, stable connection key, expiry, and
+  random 256-bit browser binding. The application-owned
+  `auth_interactive_flows` ledger contains only SHA-256 digests of the complete
+  browser-visible OIDC `state` or SAML `RelayState` and browser binding, plus
+  the exact tenant ID, canonical provider, stable connection key, expiry, and
   consumption state. Before invoking provider completion, the callback uses
   one conditional durable update to match both digests, every authority field,
   unexpired state, and `consumed_at IS NULL`. Exactly one callback wins. A
   mismatch does not consume another flow; missing, ambiguous, expired,
   unavailable, or failing authority calls no provider and creates no
-  membership or platform session. OIDC `state` and SAML `RelayState` are
-  randomized, independently purpose-bound `pkps:v1` AES-256-GCM envelopes, not
-  readable signed JWT claims. OIDC protects the nonce and PKCE verifier. SAML
-  requires and protects tenant, connection, authentication-request ID,
-  absolute ACS URL, issued-at and expiry no more than five minutes plus the
-  30-second skew allowance apart, configured issuer, connection subject, and
-  connection audience. Completion rejects tampering, malformed, wrong-purpose,
-  or signed-readable formats and invalid claim authority. It rejects every
-  connection/client or callback tenant/provider/connection mismatch; SAML also
-  requires exact callback ACS authority before assertion parsing. Rejecting
-  prior readable JWT continuations is a deliberate cutover bounded by their
-  former five-minute lifetime.
+  membership or platform session.
+
+  OIDC `state` remains the complete randomized, purpose-bound `pkps:v1`
+  AES-256-GCM envelope in the browser, using purpose
+  `identity.oidc.authorization-continuation`, not readable signed JWT claims.
+  It protects the nonce, PKCE verifier, redirect, bounded time window, tenant,
+  durable connection authority, configured issuer, and client audience.
+
+  SAML `RelayState` is instead exactly 256 cryptographically random bits encoded
+  as 43 bytes of unpadded base64url. It is an opaque handle, not an envelope or
+  routing token. The complete purpose-bound `pkps:v1` AEAD envelope uses
+  purpose `identity.saml.authentication-continuation` and stays durable
+  server-side in a separate provider-continuation store. Its selector contains
+  only the SHA-256 handle digest and the exact tenant, canonical provider,
+  stable connection key, and that same purpose. The envelope protects the
+  durable connection identity and key, authentication-request ID, absolute ACS
+  URL, SP metadata URL, metadata source authority and entity ID, configured
+  issuer, connection subject and audience, optional return target, and
+  issued-at and expiry no more than five minutes plus the 30-second skew
+  allowance apart. SAML completion validates the handle shape, then performs
+  one database-clock conditional consume matching handle digest, tenant,
+  provider, connection, purpose, unexpired state, and `consumed_at IS NULL`.
+  Registration supplies only a bounded lifetime and one database-clock
+  expression derives both creation and expiry. The same database clock
+  supplies the expiry predicate and consumption timestamp. Exactly one caller
+  receives the protected envelope across all
+  replicas, while a mismatched selector does not burn the legitimate row.
+  Decryption, complete claim revalidation, and assertion parsing happen only
+  after consumption. Expired provider continuations are removed with indexed,
+  bounded database-time cleanup; cleanup failure is visible but never relaxes
+  callback authority.
+
+  Completion rejects tampering, malformed or wrong-purpose values,
+  previous signed-readable formats, recreated connections, and every client or
+  callback tenant/provider/connection mismatch. SAML also requires exact ACS
+  authority before assertion parsing. Rejecting prior readable JWT
+  continuations is a deliberate cutover bounded by their former five-minute
+  lifetime. The provider-continuation store does not replace the outer
+  browser-flow ledger: the former proves SAML request correlation and replay
+  exclusion, while the latter independently proves browser continuity.
 - **AC-13 — Protocol cookie, MFA, and bearer boundary.** The host-only,
   `HttpOnly` flow cookie is scoped to the callback path and flow expiry. OIDC
   uses `SameSite=Lax` and `Secure` over HTTPS. Deployed SAML HTTP-POST uses
@@ -201,7 +240,7 @@ bindings in every rollout mode.
 | AC | Method | Evidence |
 |---|---|---|
 | AC-1 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestCompleteInteractiveAuthenticationRejectsInactiveProviderSessionBeforeIdentityLookup`, `pk-core/security/identity/providers/oidc/service_test.go::TestUpsertIdentity_RequiresProviderVerifiedSubjectAndEmail`, and `security/identity/providers/saml/service_test.go::TestUpsertIdentity_RejectsUntrustedOrAmbiguousEmail`. |
-| AC-2 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestCompleteInteractiveAuthenticationSelfEnrollmentRequiresAuthoritativeHostAlias`, the callback-tenant mismatch case, and `interactive_forward_only_test.go::TestInteractiveCallbackRequiresProviderTenantBinding`. |
+| AC-2 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestCompleteInteractiveAuthentication_TrustedDefaultTenantPersistsPlatformSession`, `TestCompleteInteractiveAuthenticationSelfEnrollmentRequiresAuthoritativeHostAlias`, the callback-tenant mismatch case, and `interactive_forward_only_test.go::TestInteractiveCallbackAcceptsOnlyTrustedPublicTenantResolution` plus `TestInteractiveCallbackRequiresProviderTenantBinding`. |
 | AC-3 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestCompleteInteractiveAuthenticationDoesNotCreateOrActivatePlatformIdentity`, plus OIDC/SAML inactive-account and profile-authority cases. |
 | AC-4 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/service_membership_provisioner_test.go::TestInteractiveProviderAdmissionRequiresIndependentTenantOptIn` plus policy-lock repository tests. |
 | AC-5 | Test | `pk-modules/tenant_management/features/tenant_lifecycle/service_membership_provisioner_test.go::TestEnsureLeastPrivilegeActiveMembershipCreatesGuestAndEmitsEvent`, with atomic write/outbox and duplicate-race cases. |
@@ -210,8 +249,8 @@ bindings in every rollout mode.
 | AC-8 | Test | `pk-modules/auth_management/features/permissions/session_evaluator_test.go::TestSessionPermissionEvaluatorLiveGuestCeilingOverridesStaleAdminClaim`, with Topaz and tenant-admin ordering cases. |
 | AC-9 | Test | `pk-modules/auth_management/features/authentication/service_test.go::TestCompleteInteractiveAuthenticationRejectsCallbackTenantMismatch`, plus identity, membership, and session mutation-failure cases. |
 | AC-10 | Analysis | `pk-modules/auth_management/features/authentication/login_resolution.go` and module-boundary inspection prove only interactive callback completion passes `TenantMembershipAdmissionInteractiveProvider`. |
-| AC-11 | Test | `pk-modules/auth_management/internal/adapters/federated_identity_binding_store_test.go::TestFederatedIdentityBindingCreatesOnDefinitiveAbsenceThenUsesExactSubject`, `features/authentication/service_test.go::TestUserFromProviderSessionBoundIdentityFailureDoesNotRelinkByEmail`, and `interactive_forward_only_test.go::TestInteractiveIdentityRequiresDurableSubjectBinding`, with mutable-email repeat, existing-email conflict, global race, rollback, migration, and conflicting-subject cases plus core OIDC/SAML tests. |
-| AC-12 | Test | `pk-modules/auth_management/features/authentication/interactive_flow_security_test.go::TestInteractiveAuthenticationFlowMismatchDoesNotBurnLegitimateCallback`, `TestInteractiveAuthenticationFlowConcurrentCallbacksHaveExactlyOneProviderWinner`, `TestInteractiveAuthenticationFlowExpiryAndStorageOutageFailBeforeProvider`, `TestSAMLRelayStateIsConsumedBeforeAssertionParsingAndCannotReplay`, `TestInteractiveAuthenticationFlowStoreNeverRetainsRawStateOrBinding`, `TestInteractiveAuthenticationStartRegistrationFailureDoesNotRedirectUsableFlow`, and `TestInteractiveProviderErrorStillConsumesBoundFlow`; `interactive_flow_migration_test.go::TestInteractiveAuthenticationFlowMigrationEnforcesHashedOneTimeAuthority`, `pk-core/security/protectedstate/codec_test.go`, OIDC `TestBeginAuthentication_UsesDefaultConnection` and `TestValidateOIDCStateAuthorityRequiresExactConnectionAndCallbackMetadata`, plus SAML `TestBeginAuthentication_BuildsRedirectFlowWithProtectedRelayState` and `TestValidateSAMLRelayStateAuthorityRequiresExactConnectionAndCallbackMetadata` verify migration 020, opaque purpose-bound continuations, readable-JWT rejection, bounded required SAML claims, and exact callback authority before assertion parsing. |
+| AC-11 | Test | `pk-modules/auth_management/internal/adapters/federated_identity_binding_store_test.go::TestFederatedIdentityBindingDelegatesFirstLinkToOwnerThenUsesExactSubject`, `features/authentication/service_test.go::TestUserFromProviderSessionBoundIdentityFailureDoesNotRelinkByEmail`, and `interactive_forward_only_test.go::TestInteractiveIdentityRequiresDurableSubjectBinding`, with zero auth-side email preflight reads, one owner admission per attempt, mutable-email repeat, existing-email conflict, global race, rollback, migration, and conflicting-subject cases plus core OIDC/SAML tests. |
+| AC-12 | Test | `pk-modules/auth_management/features/authentication/interactive_flow_security_test.go::TestInteractiveAuthenticationFlowMismatchDoesNotBurnLegitimateCallback`, `TestInteractiveAuthenticationFlowConcurrentCallbacksHaveExactlyOneProviderWinner`, `TestInteractiveAuthenticationFlowExpiryAndStorageOutageFailBeforeProvider`, `TestSAMLRelayStateIsConsumedBeforeAssertionParsingAndCannotReplay`, `TestInteractiveAuthenticationFlowStoreNeverRetainsRawStateOrBinding`, `TestInteractiveAuthenticationStartRegistrationFailureDoesNotRedirectUsableFlow`, and `TestInteractiveProviderErrorStillConsumesBoundFlow`; `interactive_flow_migration_test.go::TestInteractiveAuthenticationFlowMigrationEnforcesHashedOneTimeAuthority`; `pk-modules/auth_management/features/auth_provider/interactive_continuation_store_test.go::TestInteractiveProviderContinuationStoreConsumesOnceWithoutMismatchBurn` and `TestInteractiveProviderContinuationStoreRejectsMalformedAuthority`; `pk-modules/auth_management/features/auth_provider/interactive_continuation_migration_test.go::TestInteractiveProviderContinuationMigrationIsHashedBoundedAndOneTime`; `pk-core/security/identity/interactive_continuation.go`; `pk-core/security/protectedstate/codec_test.go`; OIDC `TestBeginAuthentication_UsesDefaultConnection` and `TestValidateOIDCStateAuthorityRequiresExactConnectionAndCallbackMetadata`; and SAML `TestSAMLMetadata_IsSharedAcrossBeginAndComplete` and `TestValidateSAMLRelayStateAuthorityRequiresExactConnectionAndCallbackMetadata` verify the separate ledgers, 256-bit/43-byte handle, server-side purpose-bound envelope, exact selector and claim authority, database-clock one-time consume, bounded expiry cleanup, readable-JWT rejection, and callback authority before assertion parsing. |
 | AC-13 | Test | `pk-modules/auth_management/features/authentication/interactive_flow_browser_security_test.go::TestInteractiveBrowserStartUsesServerBindingAndOIDCLaxHostOnlyCookie`, `TestInteractiveBrowserStartUsesSecureSameSiteNoneForSAML`, `TestInteractiveBrowserSAMLInsecureProductionFailsClosedButLocalhostIsDeliberate`, `TestInteractiveBrowserAttackerStartCannotAuthorizeVictimCallback`, `TestInteractiveBrowserConcurrentTabsSelectIndependentFlowCookies`, and `TestInteractiveMFAChallengeCannotBeContinuedInAnotherBrowser`; `interactive_mfa_test.go::TestCompleteInteractiveAuthenticationRequiresLocalMFABeforeExistingOrGuestSession`, core OIDC `TestCompleteAuthentication_JITProvisionsIdentity`, and `interactive_flow_migration_test.go::TestSessionTokenScrubMigrationRemovesHistoricalProviderBearers` verify provider non-reentry and bearer-free projection and persistence. |
 
 ## Edge cases and explicit limits
@@ -233,12 +272,14 @@ bindings in every rollout mode.
 
 - [ADR 0066 — Federated identities bind verified issuer and subject, not mutable claims](../adr/0066-federated-identities-bind-verified-issuer-and-subject.md) — defines immutable provider-subject identity resolution.
 - [ADR 0070 — Interactive browser authentication uses durable one-time bound proofs](../adr/0070-interactive-browser-authentication-uses-durable-one-time-bound-proofs.md) — defines callback replay, browser continuity, cookie, MFA, and bearer-projection boundaries.
+- ADR 0078 — SAML RelayState is a bounded handle to a durable protected continuation — amends ADR 0070's SAML representation and defines the separate provider-continuation authority. The ADR is authored in the canonical product documentation and will enter this public mirror through the documentation synchronization pipeline.
 - [Convention C-18 — Federated login binds stable provider subjects](../conventions.md#c-18-federated-login-binds-stable-provider-subjects) — makes the provider-subject rule mechanical across OIDC and SAML.
 - [Convention C-20 — Interactive browser authentication uses one-time bound proofs](../conventions.md#c-20-interactive-browser-authentication-uses-one-time-bound-proofs) — makes the durable consume and browser handoff rules mechanical.
-- `pk-modules/auth_management/features/authentication/interactive_flow_store.go`, `login_service.go`, `login_viewer.go`, and `login_2fa.go` — hash-only callback authority, protocol cookies, provider ordering, and local-MFA continuation.
-- `pk-modules/auth_management/migrations/020_create_interactive_authentication_flows.up.sql` and `021_scrub_upstream_session_tokens.up.sql` — constrained one-time state and removal of prior upstream values from projectable sessions.
-- `pk-core/security/protectedstate/codec.go` — randomized, purpose-bound authenticated encryption for opaque OIDC and SAML continuation state.
-- `pk-core/security/identity/providers/oidc/service.go` and `saml/service.go` — protocol verification and bearer-free provider-neutral completion.
+- `pk-modules/auth_management/features/authentication/interactive_flow_store.go`, `login_service.go`, `login_viewer.go`, and `login_2fa.go` — hash-only browser callback authority, protocol cookies, provider ordering, and local-MFA continuation.
+- `pk-modules/auth_management/features/auth_provider/interactive_continuation_store.go` and migration 037 — hash-only, purpose-bound SAML provider continuation, atomic database-clock consume, and bounded expiry lifecycle.
+- `pk-modules/auth_management/migrations/020_create_interactive_authentication_flows.up.sql`, `021_scrub_upstream_session_tokens.up.sql`, and `038_harden_interactive_flow_retention.up.sql` — constrained one-time browser state, removal of prior upstream values from projectable sessions, and indexed retention for expired pending and consumed browser-flow rows.
+- `pk-core/security/protectedstate/codec.go` — randomized, purpose-bound authenticated encryption for browser-carried OIDC state and the server-side SAML continuation envelope.
+- `pk-core/security/identity/interactive_continuation.go` and `providers/oidc/service.go` and `providers/saml/service.go` — narrow continuation-store authority, protocol-specific state representation, protocol verification, and bearer-free provider-neutral completion.
 
 ## Related requirements
 

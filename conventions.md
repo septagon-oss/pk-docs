@@ -683,10 +683,13 @@ name, group claims, and other mutable attributes are never repeat-login keys.
 SAML transient NameIDs are not linkable identities.
 
 **First link.** A canonical provider-verified email is used only for global
-collision detection. The adapter serializes the exact subject and canonical
-email, then creates an identity with no roles, permissions, or tenant
-membership only when no account owns the address. If an account already owns
-it, the callback fails with a link-required conflict. A separately
+collision detection. The auth adapter serializes the exact subject, then calls
+the user owner's narrow provisioner once inside that transaction. The owner
+canonicalizes and locks the email, performs the sole global collision check,
+and creates an identity with no roles, permissions, or tenant membership only
+when no account owns the address. Auth must not add a preflight email lookup.
+If an account already owns it, the callback fails with a link-required
+conflict. A separately
 authenticated proof-of-possession flow or explicit audited administrator
 operation must create that binding. Identity creation and binding commit in
 one atomic transaction.
@@ -708,7 +711,8 @@ atomically persist and resolve these bindings.
 - The provider-neutral `FederatedDirectory` contract requires exact-subject
   resolution and atomic first link.
 - Append-only auth migrations enforce exact-key and per-user/connection
-  uniqueness; the production adapter uses subject and global-email locks.
+  uniqueness; the auth adapter owns the subject lock and the user-owner
+  provisioner owns the sole canonical-email lock, check, and insert authority.
 - OIDC/SAML and business tests cover mutable-email repeat login,
   existing-account collision, concurrent first links, conflicting bindings, and
   authoritative-ID failure without email fallback.
@@ -766,30 +770,57 @@ instead of copying them; rollback must not restore recoverable bearer storage.
 An OIDC or SAML browser login has two independent proofs: provider protocol
 material and a cryptographically random 256-bit browser binding. At start, the
 service writes one durable flow row containing only SHA-256 digests of the
-complete OIDC `state` or SAML `RelayState` and the browser binding, plus the
-exact tenant ID, normalized provider, stable connection key, expiry, and
-consumption state. Raw protocol material remains confined to the redirect and
-callback protocol channel, and the raw binding remains confined to its browser
-cookie; neither enters durable rows, entities, admin/CRUD/MCP projections,
-logs, metrics, audits, events, or jobs.
+complete browser-visible OIDC `state` or SAML `RelayState` and the browser
+binding, plus the exact tenant ID, canonical provider, stable connection key,
+expiry, and consumption state. The raw browser values remain confined to the
+redirect, callback, and host-only cookie channels; they do not enter durable
+rows, entities, admin/CRUD/MCP projections, logs, metrics, audits, events, or
+jobs.
 
-OIDC `state` and SAML `RelayState` each use a randomized, purpose-bound
-`pkps:v1` AES-256-GCM envelope with a distinct purpose, never a readable signed
-claim set. OIDC protects the nonce, PKCE verifier, redirect, bounded
-issue/expiry times, tenant, connection subject, configured issuer, and client
-audience. SAML protects the required tenant, connection, authentication-request
-ID, absolute ACS URL, issue/expiry times, configured issuer, connection subject
-and audience, plus an optional return target. Its issue-to-expiry interval is
+Public interactive start and metadata routes also require an opaque tenant
+proof minted from an exact tenant context that the owner resolver established
+before request fields were considered. In a shared deployment only
+`resolution_source=host_alias` or the server-configured `default_tenant` may be
+sealed. Query, header, cookie, form, and DTO selectors are assertions only and
+must not create or replace tenant authority. Direct selector fallback is an
+explicit development/test capability, never a deployed default.
+
+Callback completion binds protected provider state to that same server-owned
+public tenant authority. Either trusted source may complete an existing active
+member's login. This transport rule does not grant admission: an absent
+membership may self-enroll only under `host_alias`, so the configured default
+tenant can never become an anonymous membership-creation shortcut.
+
+OIDC `state` is the complete randomized, purpose-bound `pkps:v1` AES-256-GCM
+envelope in the browser, using purpose
+`identity.oidc.authorization-continuation`, never a readable signed claim set.
+It protects the nonce, PKCE verifier, redirect, bounded issue/expiry times,
+tenant, durable connection authority, configured issuer, and client audience.
+
+SAML `RelayState` is different because its HTTP binding budget is 80 bytes.
+Generate exactly 256 random bits and expose only their 43-byte unpadded
+base64url encoding as an opaque handle. Seal the complete SAML continuation as
+a purpose-bound `pkps:v1` AEAD envelope using purpose
+`identity.saml.authentication-continuation`, and persist that envelope
+server-side behind only the SHA-256 handle digest. Bind the selector to the
+exact tenant, canonical provider, stable connection key, and that same
+purpose. The envelope protects the durable connection identity and key,
+authentication-request ID, absolute ACS URL, SP metadata URL, metadata source
+authority and entity ID, configured issuer, connection subject and audience,
+optional return target, and issue/expiry times. Its issue-to-expiry interval is
 at most five minutes plus the explicit 30-second clock-skew allowance.
 
-Completion authenticates and decrypts the protocol-specific envelope, then
-requires all mandatory fields, bounded time and issuer/subject/audience claims,
-the exact connection, and callback tenant/provider/connection authority. SAML
-also requires the callback ACS authority to equal the protected absolute ACS
-URL, before assertion parsing. Tampered, malformed, wrong-purpose, and
-signed-readable JWT continuations fail closed without a compatibility fallback.
-This is a deliberate security cutover: a prior readable continuation may be
-invalidated in flight for no more than its former five-minute lifetime.
+SAML completion validates the 256-bit handle shape and consumes the provider
+continuation with one database-clock conditional mutation matching handle
+digest, tenant, provider, connection, purpose, unexpired state, and
+`consumed_at IS NULL`. Use the same database clock for the expiry predicate and
+consumption timestamp; registration supplies only a bounded lifetime and uses
+one database-clock expression for both creation and expiry. A mismatch must
+not burn a legitimate row, and only one
+caller across all replicas may receive the protected envelope. Authenticate
+and decrypt it, validate every claim and the exact callback ACS authority, and
+only then parse the assertion. Tampered, malformed, wrong-purpose, and previous
+signed-readable continuations fail closed without format guessing.
 
 The callback consumes that row with one conditional durable update matching
 both digests, every authority field, unexpired state, and `consumed_at IS NULL`.
@@ -797,6 +828,15 @@ Consumption occurs before provider completion. Exactly one callback wins; a
 mismatch does not burn another flow. A missing or non-durable store, storage
 error, absent or ambiguous cookie, expired row, or authority mismatch fails
 closed without calling the provider or creating a platform session.
+
+The browser-flow ledger and SAML provider-continuation store are deliberately
+separate. The outer ledger proves browser continuity and remains bound through
+local MFA. The inner store proves SAML request correlation and replay exclusion
+before assertion parsing. Neither is a substitute for the other, and neither
+may be implemented as a process-local cache, read-then-delete sequence, context
+flag, or convention-named decorator. Provider-continuation rows use an indexed
+expiry and bounded database-time cleanup under a deadline; cleanup failure is
+operator-visible but never weakens callback consumption.
 
 Flow cookies are host-only, `HttpOnly`, scoped to the provider callback path,
 and bounded by the durable flow expiry. OIDC uses `SameSite=Lax` and adds
@@ -843,6 +883,10 @@ request token.
 - The interactive-flow schema constrains 32-byte digests, exact supported
   providers, non-empty connections, bounded expiry, and one unique state
   digest; the store uses one authority-complete conditional update.
+- The provider-continuation schema constrains a unique 32-byte handle digest,
+  exact provider, non-empty connection and purpose, protected-payload size,
+  bounded expiry, and an expiry index. Its narrow store contract requires
+  one database-clock conditional consume and bounded expiry cleanup.
 - `interactive_flow_security_test.go` exercises mismatch-without-burning,
   concurrent single consumption, expiry, outage, raw-material opacity, SAML
   RelayState, registration failure, and provider-error consumption.
@@ -851,11 +895,12 @@ request token.
   tabs, cleanup, and MFA browser continuity. Magic-link confirmation tests
   cover nonce pairing, origin/fetch-site rejection, and scanner-safe GET.
 - `security/protectedstate/codec_test.go`, OIDC begin/authority tests, SAML
-  `TestBeginAuthentication_BuildsRedirectFlowWithProtectedRelayState`, and
+  `TestSAMLMetadata_IsSharedAcrossBeginAndComplete`, and
   `TestValidateSAMLRelayStateAuthorityRequiresExactConnectionAndCallbackMetadata`
-  exercise opaque randomized state, purpose separation, bounded claim
-  validation, tamper and malformed-input rejection, no readable signed
-  fallback, and exact callback authority before assertion parsing.
+  exercise the browser-carried OIDC envelope, bounded SAML handle, server-side
+  protected continuation, purpose separation, bounded claim validation,
+  tamper and malformed-input rejection, no readable signed fallback, and exact
+  callback authority before assertion parsing.
 - Provider-adapter tests reject bearer-valued provider-neutral session fields
   and metadata projections; OIDC completion returns a fresh 256-bit reference
   after discarding exchange credentials.
@@ -865,7 +910,10 @@ request token.
   rotation, no-JavaScript, and custom-renderer behavior.
 
 **Motivating ADR.**
-[ADR 0070 — interactive browser authentication uses durable one-time bound proofs](./adr/0070-interactive-browser-authentication-uses-durable-one-time-bound-proofs.md).
+[ADR 0070 — interactive browser authentication uses durable one-time bound proofs](./adr/0070-interactive-browser-authentication-uses-durable-one-time-bound-proofs.md)
+defines the browser-flow boundary. ADR 0078 — SAML RelayState is a bounded
+handle to a durable protected continuation — amends its SAML representation
+and provider-continuation storage.
 
 ---
 
