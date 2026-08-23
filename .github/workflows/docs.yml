@@ -60,7 +60,7 @@ jobs:
 
       - name: Configure Pages
         id: pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       # base_path is "/pk-docs" on the project site and "" once a custom
       # domain serves the site from the root.
