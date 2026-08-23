@@ -3,8 +3,16 @@ import path from "node:path";
 
 import { composeSiteModel } from "../../../packages/composer/src/index.mjs";
 import { loadGeneratedBundles } from "../../../packages/module-source/src/index.mjs";
-import { collectDocumentationContent } from "./docs-source.mjs";
-import { renderContentIndexPage, renderContentPage, renderHomePage, renderModulePage, renderStyles } from "./site-template.mjs";
+import { DOCS_ASSET_SOURCE, collectDocumentationContent } from "./docs-source.mjs";
+import {
+  renderContentIndexPage,
+  renderContentPage,
+  renderFavicon,
+  renderHomePage,
+  renderModulePage,
+  renderScript,
+  renderStyles,
+} from "./site-template.mjs";
 
 export async function buildSite({
   workspaceRoot,
@@ -27,6 +35,9 @@ export async function buildSite({
   await fs.rm(distRoot, { recursive: true, force: true });
   await fs.mkdir(path.join(distRoot, "assets"), { recursive: true });
   await fs.writeFile(path.join(distRoot, "assets", "site.css"), renderStyles());
+  await fs.writeFile(path.join(distRoot, "assets", "site.js"), renderScript());
+  await fs.writeFile(path.join(distRoot, "assets", "favicon.svg"), renderFavicon());
+  await copyDocsAssets({ workspaceRoot, distRoot });
   if (overlay) {
     await copyPlatformKitOverlayAssets({ distRoot, overlay });
   }
@@ -62,6 +73,18 @@ export async function buildSite({
     moduleCount: site.modules.length,
     documentCount: contentEntries.length,
   };
+}
+
+// Images and diagrams referenced from markdown live in docs/assets and are
+// served from /docs/assets so the same relative links work on GitHub and here.
+async function copyDocsAssets({ workspaceRoot, distRoot }) {
+  const source = path.join(workspaceRoot, ...DOCS_ASSET_SOURCE.split("/"));
+  try {
+    await fs.access(source);
+  } catch {
+    return;
+  }
+  await fs.cp(source, path.join(distRoot, "docs", "assets"), { recursive: true, force: true });
 }
 
 function contentIndexRecord(entry) {

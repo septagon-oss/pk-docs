@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 420" width="1100" height="420" role="img" aria-labelledby="title">
+  <title id="title">The design system layers: pk-design tokens feed tw utility classes, styleengine renders the CSS, and pk-ui components compose it; the admin shell serves one derived stylesheet.</title>
+  <style>
+  .canvas { fill: #fffdf7; }
+  .ink { fill: #15221f; }
+  .muted { fill: #5f6b65; }
+  .line { stroke: #8f988f; }
+  .card { fill: #f2efe7; stroke: #cbc5b8; }
+  .card-strong { fill: #fffdf7; stroke: #8f988f; }
+  .accent { fill: #0f5d4e; }
+  .accent-on { fill: #f9fff9; }
+  .signal { fill: #d8f35d; }
+  .dark { fill: #12201d; }
+  .dark-text { fill: #eff4e9; }
+  .dark-muted { fill: #aebbb2; }
+  .ok { fill: #12715d; }
+  .okbg { fill: #dcf3e8; }
+  .warn { fill: #9a5318; }
+  .warnbg { fill: #fff0d2; }
+  .danger { fill: #9e3833; }
+  .dangerbg { fill: #fbe5e2; }
+  .focus { fill: #326de6; }
+  .infobg { fill: #e3ecfb; }
+  .arrow { stroke: #5f6b65; stroke-width: 2; fill: none; }
+  .arrow-dashed { stroke: #8f988f; stroke-width: 2; fill: none; stroke-dasharray: 6 6; }
+  .arrow-accent { stroke: #0f5d4e; stroke-width: 2.5; fill: none; }
+  .t { font-family: 'IBM Plex Sans', Inter, 'Segoe UI', system-ui, sans-serif; }
+  .m { font-family: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace; }
+  @media (prefers-color-scheme: dark) {
+    .canvas { fill: #15201d; }
+    .ink { fill: #eaf1ea; }
+    .muted { fill: #aebbb2; }
+    .line { stroke: #4a5c55; }
+    .card { fill: #1b2825; stroke: #2a3a35; }
+    .card-strong { fill: #0e1513; stroke: #4a5c55; }
+    .accent { fill: #5fc2a6; }
+    .accent-on { fill: #0b1a16; }
+    .okbg { fill: #16302a; } .ok { fill: #7ed3b5; }
+    .warnbg { fill: #33271a; } .warn { fill: #f0b36b; }
+    .dangerbg { fill: #3a1f1d; } .danger { fill: #f09a94; }
+    .infobg { fill: #1c2a3f; } .focus { fill: #7aa7ff; }
+    .arrow { stroke: #aebbb2; }
+    .arrow-dashed { stroke: #6f827a; }
+    .arrow-accent { stroke: #5fc2a6; }
+  }
+</style>
+  <defs>
+    <marker id="head" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#5f6b65"/></marker>
+    <marker id="head-accent" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#0f5d4e"/></marker>
+    <marker id="head-faint" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#8f988f"/></marker>
+  </defs>
+  <rect class="canvas" width="1100" height="420" rx="16"/>
+  <text x="40" y="42" class="ink t" font-size="22" font-weight="700" text-anchor="start" >Four small pieces, all in Go — each one replaceable</text><text x="40" y="66" class="muted t" font-size="14" font-weight="400" text-anchor="start" >No Node, no Tailwind build, no bundler. Classes are declared as values and the stylesheet is derived from them.</text><rect x="40" y="96" width="238" height="226" rx="12" class="card-strong" stroke-width="1.5"/><text x="58" y="124" class="accent t" font-size="10.5" font-weight="700" text-anchor="start" letter-spacing="1.5">CANONICAL THEME</text><text x="58" y="152" class="ink m" font-size="19" font-weight="700" text-anchor="start" >pk-design</text><text x="58" y="180" class="muted t" font-size="12" font-weight="400" text-anchor="start" >themes.Default() — tokens as data</text>
+<text x="58" y="197" class="muted t" font-size="12" font-weight="400" text-anchor="start" >(DTCG) rendered to --pk-* custom</text>
+<text x="58" y="214" class="muted t" font-size="12" font-weight="400" text-anchor="start" >properties. Brand = layer a theme.</text><rect x="54" y="246" width="210" height="56" rx="8" class="dark" stroke-width="0"/><text x="66" y="268" class="dark-muted t" font-size="10" font-weight="700" text-anchor="start" letter-spacing="1.5">emits</text><text x="66" y="288" class="signal m" font-size="10.5" font-weight="400" text-anchor="start" >--pk-accent-default: #0f5d4e</text><line x1="281" y1="206" x2="297" y2="206" class="arrow-accent" marker-end="url(#head-accent)"/><rect x="300" y="96" width="238" height="226" rx="12" class="card-strong" stroke-width="1.5"/><text x="318" y="124" class="accent t" font-size="10.5" font-weight="700" text-anchor="start" letter-spacing="1.5">UTILITY CLASSES</text><text x="318" y="152" class="ink m" font-size="19" font-weight="700" text-anchor="start" >tw</text><text x="318" y="180" class="muted t" font-size="12" font-weight="400" text-anchor="start" >Typed class builder + emission:</text>
+<text x="318" y="197" class="muted t" font-size="12" font-weight="400" text-anchor="start" >CSS for every enumerable class,</text>
+<text x="318" y="214" class="muted t" font-size="12" font-weight="400" text-anchor="start" >mapped onto --pk-role-* variables.</text><rect x="314" y="246" width="210" height="56" rx="8" class="dark" stroke-width="0"/><text x="326" y="268" class="dark-muted t" font-size="10" font-weight="700" text-anchor="start" letter-spacing="1.5">emits</text><text x="326" y="288" class="signal m" font-size="10.5" font-weight="400" text-anchor="start" >bg-surface-brand text-fg-on-brand</text><line x1="541" y1="206" x2="557" y2="206" class="arrow-accent" marker-end="url(#head-accent)"/><rect x="560" y="96" width="238" height="226" rx="12" class="card-strong" stroke-width="1.5"/><text x="578" y="124" class="accent t" font-size="10.5" font-weight="700" text-anchor="start" letter-spacing="1.5">CSS ENGINE</text><text x="578" y="152" class="ink m" font-size="19" font-weight="700" text-anchor="start" >styleengine</text><text x="578" y="180" class="muted t" font-size="12" font-weight="400" text-anchor="start" >Typed sheet IR: render, parse,</text>
+<text x="578" y="197" class="muted t" font-size="12" font-weight="400" text-anchor="start" >sanitize. The thing that turns</text>
+<text x="578" y="214" class="muted t" font-size="12" font-weight="400" text-anchor="start" >declarations into a stylesheet.</text><rect x="574" y="246" width="210" height="56" rx="8" class="dark" stroke-width="0"/><text x="586" y="268" class="dark-muted t" font-size="10" font-weight="700" text-anchor="start" letter-spacing="1.5">emits</text><text x="586" y="288" class="signal m" font-size="10.5" font-weight="400" text-anchor="start" >sheet.Render(RenderOptions{…})</text><line x1="801" y1="206" x2="817" y2="206" class="arrow-accent" marker-end="url(#head-accent)"/><rect x="820" y="96" width="238" height="226" rx="12" class="card-strong" stroke-width="1.5"/><text x="838" y="124" class="accent t" font-size="10.5" font-weight="700" text-anchor="start" letter-spacing="1.5">COMPONENTS</text><text x="838" y="152" class="ink m" font-size="19" font-weight="700" text-anchor="start" >pk-ui</text><text x="838" y="180" class="muted t" font-size="12" font-weight="400" text-anchor="start" >Props contracts, ARIA builder,</text>
+<text x="838" y="197" class="muted t" font-size="12" font-weight="400" text-anchor="start" >gomponents renderers — atoms,</text>
+<text x="838" y="214" class="muted t" font-size="12" font-weight="400" text-anchor="start" >molecules, organisms (DataGrid).</text><rect x="834" y="246" width="210" height="56" rx="8" class="dark" stroke-width="0"/><text x="846" y="268" class="dark-muted t" font-size="10" font-weight="700" text-anchor="start" letter-spacing="1.5">emits</text><text x="846" y="288" class="signal m" font-size="10.5" font-weight="400" text-anchor="start" >web.Button(ButtonProps{…})</text><rect x="40" y="344" width="1020" height="52" rx="10" class="okbg" stroke-width="0"/><text x="58" y="366" class="ink t" font-size="12.5" font-weight="400" text-anchor="start" >Result: the admin shell serves one stylesheet (/admin/static/_admin.css) that already carries tokens, role variables, and every utility rule.</text><text x="58" y="385" class="muted t" font-size="12.5" font-weight="400" text-anchor="start" >A module admin page links that one asset and composes components — zero authored CSS.</text>
+</svg>

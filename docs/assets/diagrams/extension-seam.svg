@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 520" width="1100" height="520" role="img" aria-labelledby="title">
+  <title id="title">The WithModules seam: files in your repository (main.go, modules.go, a module, migrations, tests) join the starter's shared database pool, identity perimeter, mutation gate, body cap, scope registry, admin and health registrars, and OpenAPI discovery.</title>
+  <style>
+  .canvas { fill: #fffdf7; }
+  .ink { fill: #15221f; }
+  .muted { fill: #5f6b65; }
+  .line { stroke: #8f988f; }
+  .card { fill: #f2efe7; stroke: #cbc5b8; }
+  .card-strong { fill: #fffdf7; stroke: #8f988f; }
+  .accent { fill: #0f5d4e; }
+  .accent-on { fill: #f9fff9; }
+  .signal { fill: #d8f35d; }
+  .dark { fill: #12201d; }
+  .dark-text { fill: #eff4e9; }
+  .dark-muted { fill: #aebbb2; }
+  .ok { fill: #12715d; }
+  .okbg { fill: #dcf3e8; }
+  .warn { fill: #9a5318; }
+  .warnbg { fill: #fff0d2; }
+  .danger { fill: #9e3833; }
+  .dangerbg { fill: #fbe5e2; }
+  .focus { fill: #326de6; }
+  .infobg { fill: #e3ecfb; }
+  .arrow { stroke: #5f6b65; stroke-width: 2; fill: none; }
+  .arrow-dashed { stroke: #8f988f; stroke-width: 2; fill: none; stroke-dasharray: 6 6; }
+  .arrow-accent { stroke: #0f5d4e; stroke-width: 2.5; fill: none; }
+  .t { font-family: 'IBM Plex Sans', Inter, 'Segoe UI', system-ui, sans-serif; }
+  .m { font-family: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace; }
+  @media (prefers-color-scheme: dark) {
+    .canvas { fill: #15201d; }
+    .ink { fill: #eaf1ea; }
+    .muted { fill: #aebbb2; }
+    .line { stroke: #4a5c55; }
+    .card { fill: #1b2825; stroke: #2a3a35; }
+    .card-strong { fill: #0e1513; stroke: #4a5c55; }
+    .accent { fill: #5fc2a6; }
+    .accent-on { fill: #0b1a16; }
+    .okbg { fill: #16302a; } .ok { fill: #7ed3b5; }
+    .warnbg { fill: #33271a; } .warn { fill: #f0b36b; }
+    .dangerbg { fill: #3a1f1d; } .danger { fill: #f09a94; }
+    .infobg { fill: #1c2a3f; } .focus { fill: #7aa7ff; }
+    .arrow { stroke: #aebbb2; }
+    .arrow-dashed { stroke: #6f827a; }
+    .arrow-accent { stroke: #5fc2a6; }
+  }
+</style>
+  <defs>
+    <marker id="head" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#5f6b65"/></marker>
+    <marker id="head-accent" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#0f5d4e"/></marker>
+    <marker id="head-faint" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#8f988f"/></marker>
+  </defs>
+  <rect class="canvas" width="1100" height="520" rx="16"/>
+  <text x="40" y="42" class="ink t" font-size="22" font-weight="700" text-anchor="start" >The one supported seam: starterapp.WithModules</text><text x="40" y="66" class="muted t" font-size="14" font-weight="400" text-anchor="start" >Your module lives in your repository. It joins the starter's shared machinery instead of re-implementing it.</text><rect x="40" y="96" width="380" height="400" rx="16" class="okbg" stroke-width="0"/><text x="58" y="124" class="ok t" font-size="11" font-weight="700" text-anchor="start" letter-spacing="1.5">YOUR REPOSITORY</text><text x="58" y="150" class="ink m" font-size="18" font-weight="700" text-anchor="start" >acme/</text><rect x="58" y="168" width="344" height="54" rx="8" class="card-strong" stroke-width="1.5"/><text x="72" y="188" class="ink m" font-size="12.5" font-weight="700" text-anchor="start" >main.go</text><text x="72" y="204" class="muted m" font-size="10.5" font-weight="400" text-anchor="start" >cfg := starterapp.DefaultConfig()</text><text x="72" y="217" class="muted m" font-size="10.5" font-weight="400" text-anchor="start" >starterapp.Run(ctx, cfg, WithModules(extraModules()...))</text><rect x="58" y="232" width="344" height="54" rx="8" class="card-strong" stroke-width="1.5"/><text x="72" y="252" class="ink m" font-size="12.5" font-weight="700" text-anchor="start" >modules.go</text><text x="72" y="268" class="muted m" font-size="10.5" font-weight="400" text-anchor="start" >registerModule(m) — additive registry</text><text x="72" y="281" class="muted m" font-size="10.5" font-weight="400" text-anchor="start" >generated modules call it from init()</text><rect x="58" y="296" width="344" height="54" rx="8" class="card-strong" stroke-width="1.5"/><text x="72" y="316" class="ink m" font-size="12.5" font-weight="700" text-anchor="start" >mod_invoice.go</text><text x="72" y="332" class="muted m" font-size="10.5" font-weight="400" text-anchor="start" >store on env.DB · RegisterRoutes</text><text x="72" y="345" class="muted m" font-size="10.5" font-weight="400" text-anchor="start" >APIKeyScopes · OpenAPI · scope checks</text><rect x="58" y="360" width="344" height="54" rx="8" class="card-strong" stroke-width="1.5"/><text x="72" y="380" class="ink m" font-size="12.5" font-weight="700" text-anchor="start" >migrations/invoice/0001_….up.sql</text><text x="72" y="396" class="muted m" font-size="10.5" font-weight="400" text-anchor="start" >append-only, embedded</text><text x="72" y="409" class="muted m" font-size="10.5" font-weight="400" text-anchor="start" >applied once, filename recorded</text><rect x="58" y="424" width="344" height="54" rx="8" class="card-strong" stroke-width="1.5"/><text x="72" y="444" class="ink m" font-size="12.5" font-weight="700" text-anchor="start" >mod_invoice_test.go</text><text x="72" y="460" class="muted m" font-size="10.5" font-weight="400" text-anchor="start" >tenant isolation: a row in tenant A is</text><text x="72" y="473" class="muted m" font-size="10.5" font-weight="400" text-anchor="start" >invisible to tenant B, by list and by id</text><path d="M 424 300 L 486 300" class="arrow-accent" marker-end="url(#head-accent)"/><rect x="430" y="262" width="52" height="22" rx="11" class="dark" stroke-width="0"/><text x="456" y="277" class="signal m" font-size="10.5" font-weight="700" text-anchor="middle" >seam</text><rect x="492" y="96" width="568" height="400" rx="16" class="card-strong" stroke-width="2"/><text x="510" y="124" class="accent t" font-size="11" font-weight="700" text-anchor="start" letter-spacing="1.5">THE STARTER YOU INHERIT</text><text x="510" y="150" class="ink t" font-size="14" font-weight="600" text-anchor="start" >pk-apps/pkg/starterapp · ten built-in modules</text><rect x="510" y="168" width="532" height="38" rx="8" class="card" stroke-width="1.5"/><text x="524" y="192" class="ink m" font-size="12.5" font-weight="700" text-anchor="start" >ModuleEnv.DB</text><text x="712" y="192" class="muted t" font-size="11.5" font-weight="400" text-anchor="start" >the shared *sql.DB — SQLite or Postgres, your call</text><rect x="510" y="213" width="532" height="38" rx="8" class="card" stroke-width="1.5"/><text x="524" y="237" class="ink m" font-size="12.5" font-weight="700" text-anchor="start" >identity perimeter</text><text x="712" y="237" class="muted t" font-size="11.5" font-weight="400" text-anchor="start" >credential → principal; RequestActor gives tenant + subject</text><rect x="510" y="258" width="532" height="38" rx="8" class="card" stroke-width="1.5"/><text x="524" y="282" class="ink m" font-size="12.5" font-weight="700" text-anchor="start" >anonymous-mutation gate</text><text x="712" y="282" class="muted t" font-size="11.5" font-weight="400" text-anchor="start" >unauthenticated writes never reach your handler</text><rect x="510" y="303" width="532" height="38" rx="8" class="card" stroke-width="1.5"/><text x="524" y="327" class="ink m" font-size="12.5" font-weight="700" text-anchor="start" >request-body cap</text><text x="712" y="327" class="muted t" font-size="11.5" font-weight="400" text-anchor="start" >1 MiB, enforced before you read the body</text><rect x="510" y="348" width="532" height="38" rx="8" class="card" stroke-width="1.5"/><text x="524" y="372" class="ink m" font-size="12.5" font-weight="700" text-anchor="start" >scope registry</text><text x="712" y="372" class="muted t" font-size="11.5" font-weight="400" text-anchor="start" >your APIKeyScopes become issuable; typos are rejected</text><rect x="510" y="393" width="532" height="38" rx="8" class="card" stroke-width="1.5"/><text x="524" y="417" class="ink m" font-size="12.5" font-weight="700" text-anchor="start" >admin + health</text><text x="712" y="417" class="muted t" font-size="11.5" font-weight="400" text-anchor="start" >RegisterPage adds a console page; health checks aggregate</text><rect x="510" y="438" width="532" height="38" rx="8" class="card" stroke-width="1.5"/><text x="524" y="462" class="ink m" font-size="12.5" font-weight="700" text-anchor="start" >OpenAPI discovery</text><text x="712" y="462" class="muted t" font-size="11.5" font-weight="400" text-anchor="start" >your OpenAPIOperation entries appear in extensions.json</text>
+</svg>

@@ -1,7 +1,10 @@
-import { promises as fs } from "node:fs";
+import { promises as fs, readFileSync } from "node:fs";
 import path from "node:path";
 
 import { renderMarkdown } from "./markdown.mjs";
+
+export const DOCS_ASSET_SOURCE = "docs/assets";
+export const DOCS_ASSET_ROUTE = "/docs/assets";
 
 const DOC_SECTIONS = ["docs", "architecture", "adr", "requirements"];
 const DEFAULT_PUBLIC_SECTION = "docs";
@@ -42,7 +45,15 @@ export async function collectDocumentationContent({ workspaceRoot, locale = "en"
     const collection = parsed.frontmatter.collection || collectionFromPath(sourcePath);
     const slug = parsed.frontmatter.slug || deriveSlug(sourcePath);
     const title = parsed.frontmatter.title || titleFromSlug(slug);
-    const excerpt = excerptFromMarkdown(parsed.body, title);
+    const excerpt = String(parsed.frontmatter.description || "").trim() || excerptFromMarkdown(parsed.body, title);
+    const headings = [];
+    const contentHtml = renderMarkdown(parsed.body, {
+      resolveHref: (href) => resolveDocsHref(href, sourcePath),
+      resolveAsset: (src) => resolveDocsAssetWithSize(src, sourcePath, workspaceRoot),
+      collectHeadings: headings,
+    });
+    const adrNumber = numberOrNull(parsed.frontmatter.adr_number ?? deriveADRNumber(sourcePath));
+    const arc42Section = numberOrNull(parsed.frontmatter.arc42_section ?? deriveArc42Section(sourcePath));
     entries.push({
       id: `pk-docs:${locale}:${slug}`,
       type: "content_page",
@@ -54,23 +65,25 @@ export async function collectDocumentationContent({ workspaceRoot, locale = "en"
       sourcePath,
       collection,
       content: parsed.body,
-      contentHtml: renderMarkdown(parsed.body, {
-        resolveHref: (href) => resolveDocsHref(href, sourcePath),
-      }),
+      contentHtml,
       excerpt,
+      headings: headings.filter((heading) => heading.level >= 2 && heading.level <= 3),
       status: "published",
       metadata: {
         docsSource: "pk-docs",
         sourcePath,
         collection,
-        arc42Section: numberOrNull(parsed.frontmatter.arc42_section ?? deriveArc42Section(sourcePath)),
-        adrNumber: numberOrNull(parsed.frontmatter.adr_number ?? deriveADRNumber(sourcePath)),
+        arc42Section,
+        adrNumber,
+        group: String(parsed.frontmatter.group || "").trim() || null,
+        readingTime: readingTimeMinutes(parsed.body),
       },
       order: sortOrder({
         collection,
         sourcePath,
-        adrNumber: numberOrNull(parsed.frontmatter.adr_number ?? deriveADRNumber(sourcePath)),
-        arc42Section: numberOrNull(parsed.frontmatter.arc42_section ?? deriveArc42Section(sourcePath)),
+        adrNumber,
+        arc42Section,
+        explicitOrder: numberOrNull(parsed.frontmatter.order),
       }),
     });
   }
@@ -95,6 +108,61 @@ export function resolveDocsHref(href, fromSourcePath) {
   }
   const suffix = fragment ? `#${fragment}` : "";
   return `/docs/${deriveSlug(normalized)}${suffix}`;
+}
+
+export function resolveDocsAsset(src, fromSourcePath) {
+  const raw = String(src ?? "").trim();
+  if (raw === "" || raw.startsWith("/") || raw.startsWith("#") || /^[a-z][a-z0-9+.-]*:/i.test(raw)) {
+    return raw;
+  }
+  const [target, fragment = ""] = raw.split("#", 2);
+  const normalized = path.posix.normalize(path.posix.join(path.posix.dirname(fromSourcePath), target));
+  if (!normalized.startsWith(`${DOCS_ASSET_SOURCE}/`)) {
+    return raw;
+  }
+  const suffix = fragment ? `#${fragment}` : "";
+  return `${DOCS_ASSET_ROUTE}/${normalized.slice(DOCS_ASSET_SOURCE.length + 1)}${suffix}`;
+}
+
+// Figures get intrinsic width/height so the page does not jump while images
+// load. Dimensions are read from the PNG header or the SVG viewBox at build
+// time; anything unreadable falls back to the bare URL.
+export function resolveDocsAssetWithSize(src, fromSourcePath, workspaceRoot) {
+  const resolved = resolveDocsAsset(src, fromSourcePath);
+  if (!resolved.startsWith(`${DOCS_ASSET_ROUTE}/`) || !workspaceRoot) {
+    return resolved;
+  }
+  const relative = resolved.slice(DOCS_ASSET_ROUTE.length + 1).replace(/#.*$/, "");
+  const file = path.join(workspaceRoot, ...DOCS_ASSET_SOURCE.split("/"), ...relative.split("/"));
+  const size = imageSize(file);
+  return size ? { src: resolved, ...size } : resolved;
+}
+
+function imageSize(file) {
+  try {
+    const buffer = readFileSync(file);
+    if (buffer.length > 24 && buffer.toString("ascii", 1, 4) === "PNG") {
+      return { width: buffer.readUInt32BE(16), height: buffer.readUInt32BE(20) };
+    }
+    if (file.endsWith(".svg")) {
+      const head = buffer.toString("utf8", 0, Math.min(buffer.length, 2048));
+      const viewBox = head.match(/viewBox="[\d.\-]+\s+[\d.\-]+\s+([\d.]+)\s+([\d.]+)"/);
+      if (viewBox) {
+        return { width: Math.round(Number(viewBox[1])), height: Math.round(Number(viewBox[2])) };
+      }
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+function readingTimeMinutes(markdown) {
+  const words = String(markdown ?? "")
+    .replace(/```[\s\S]*?```/g, " ")
+    .split(/\s+/)
+    .filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
 }
 
 async function walkMarkdown(root) {
@@ -230,7 +298,8 @@ function numberOrNull(value) {
   return Number.isFinite(number) ? number : null;
 }
 
-function sortOrder({ collection, sourcePath, adrNumber, arc42Section }) {
+function sortOrder({ collection, sourcePath, adrNumber, arc42Section, explicitOrder = null }) {
+  if (explicitOrder !== null) return explicitOrder;
   if (DOC_SOURCE_ORDER.has(sourcePath)) return DOC_SOURCE_ORDER.get(sourcePath);
   if (sourcePath === "architecture/index.md") return 0;
   if (collection === "architecture" && arc42Section !== null) return arc42Section;

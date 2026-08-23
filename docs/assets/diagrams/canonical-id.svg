@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 300" width="1100" height="300" role="img" aria-labelledby="title">
+  <title id="title">Canonical entity id path segment: the identifier is hex-encoded and prefixed with id-; raw or non-canonical spellings return 400.</title>
+  <style>
+  .canvas { fill: #fffdf7; }
+  .ink { fill: #15221f; }
+  .muted { fill: #5f6b65; }
+  .line { stroke: #8f988f; }
+  .card { fill: #f2efe7; stroke: #cbc5b8; }
+  .card-strong { fill: #fffdf7; stroke: #8f988f; }
+  .accent { fill: #0f5d4e; }
+  .accent-on { fill: #f9fff9; }
+  .signal { fill: #d8f35d; }
+  .dark { fill: #12201d; }
+  .dark-text { fill: #eff4e9; }
+  .dark-muted { fill: #aebbb2; }
+  .ok { fill: #12715d; }
+  .okbg { fill: #dcf3e8; }
+  .warn { fill: #9a5318; }
+  .warnbg { fill: #fff0d2; }
+  .danger { fill: #9e3833; }
+  .dangerbg { fill: #fbe5e2; }
+  .focus { fill: #326de6; }
+  .infobg { fill: #e3ecfb; }
+  .arrow { stroke: #5f6b65; stroke-width: 2; fill: none; }
+  .arrow-dashed { stroke: #8f988f; stroke-width: 2; fill: none; stroke-dasharray: 6 6; }
+  .arrow-accent { stroke: #0f5d4e; stroke-width: 2.5; fill: none; }
+  .t { font-family: 'IBM Plex Sans', Inter, 'Segoe UI', system-ui, sans-serif; }
+  .m { font-family: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace; }
+  @media (prefers-color-scheme: dark) {
+    .canvas { fill: #15201d; }
+    .ink { fill: #eaf1ea; }
+    .muted { fill: #aebbb2; }
+    .line { stroke: #4a5c55; }
+    .card { fill: #1b2825; stroke: #2a3a35; }
+    .card-strong { fill: #0e1513; stroke: #4a5c55; }
+    .accent { fill: #5fc2a6; }
+    .accent-on { fill: #0b1a16; }
+    .okbg { fill: #16302a; } .ok { fill: #7ed3b5; }
+    .warnbg { fill: #33271a; } .warn { fill: #f0b36b; }
+    .dangerbg { fill: #3a1f1d; } .danger { fill: #f09a94; }
+    .infobg { fill: #1c2a3f; } .focus { fill: #7aa7ff; }
+    .arrow { stroke: #aebbb2; }
+    .arrow-dashed { stroke: #6f827a; }
+    .arrow-accent { stroke: #5fc2a6; }
+  }
+</style>
+  <defs>
+    <marker id="head" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#5f6b65"/></marker>
+    <marker id="head-accent" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#0f5d4e"/></marker>
+    <marker id="head-faint" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#8f988f"/></marker>
+  </defs>
+  <rect class="canvas" width="1100" height="300" rx="16"/>
+  <text x="40" y="42" class="ink t" font-size="22" font-weight="700" text-anchor="start" >How an entity id travels in a path</text><text x="40" y="66" class="muted t" font-size="14" font-weight="400" text-anchor="start" >The id is hex-encoded and prefixed with id- so it is always exactly one URL path segment, however odd its bytes.</text><rect x="40" y="96" width="320" height="104" rx="12" class="card-strong" stroke-width="1.5"/><text x="56" y="122" class="accent t" font-size="11" font-weight="700" text-anchor="start" letter-spacing="1.2">1 · the identifier</text><text x="56" y="152" class="ink m" font-size="12" font-weight="700" text-anchor="start" >1787466721729910452-tenant_local-welcome</text><text x="56" y="178" class="muted m" font-size="11.5" font-weight="400" text-anchor="start" >what the API returns as &quot;id&quot;</text><line x1="364" y1="148" x2="386" y2="148" class="arrow-accent" marker-end="url(#head-accent)"/><rect x="390" y="96" width="320" height="104" rx="12" class="card-strong" stroke-width="1.5"/><text x="406" y="122" class="accent t" font-size="11" font-weight="700" text-anchor="start" letter-spacing="1.2">2 · lowercase hex of its bytes</text><text x="406" y="152" class="ink m" font-size="12" font-weight="700" text-anchor="start" >31373837…77656c636f6d65</text><text x="406" y="178" class="muted m" font-size="11.5" font-weight="400" text-anchor="start" >printf '%s' &quot;$ID&quot; | od -An -tx1</text><line x1="714" y1="148" x2="736" y2="148" class="arrow-accent" marker-end="url(#head-accent)"/><rect x="740" y="96" width="320" height="104" rx="12" class="okbg" stroke-width="0"/><text x="756" y="122" class="accent t" font-size="11" font-weight="700" text-anchor="start" letter-spacing="1.2">3 · prefix id-</text><text x="756" y="152" class="ink m" font-size="12" font-weight="700" text-anchor="start" >id-31373837…77656c636f6d65</text><text x="756" y="178" class="muted m" font-size="11.5" font-weight="400" text-anchor="start" >one opaque path segment</text><rect x="40" y="222" width="1020" height="56" rx="10" class="dark" stroke-width="0"/><text x="58" y="246" class="signal m" font-size="14" font-weight="700" text-anchor="start" >GET /api/v1/content/id-31373837…77656c636f6d65</text><text x="58" y="266" class="dark-muted t" font-size="11.5" font-weight="400" text-anchor="start" >raw id · uppercase hex · percent-escapes  →  400 (malformed), never 404. pk-client and portslib.EntityIDFromPath do this for you.</text>
+</svg>

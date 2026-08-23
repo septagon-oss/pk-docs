@@ -1,4 +1,12 @@
 import { escapeHtml } from "../../../packages/contracts/src/index.mjs";
+import {
+  renderDocsFavicon,
+  renderDocsHome,
+  renderDocsIndex,
+  renderDocsPage as renderDocsShellPage,
+  renderDocsScript,
+  renderDocsStyles,
+} from "./docs-shell.mjs";
 import { renderMarkdown } from "./markdown.mjs";
 
 export function renderHomePage(site, overlay, contentEntries = []) {
@@ -6,14 +14,26 @@ export function renderHomePage(site, overlay, contentEntries = []) {
     return renderOverlayHomePage(site, overlay);
   }
 
-  return renderLayout({
-    title: "PlatformKit Docs",
-    description: "Architecture, requirements, and decisions for PlatformKit OSS.",
-    content: `
+  if (site.modules.length > 0) {
+    return renderLayout({
+      title: "PlatformKit Docs",
+      description: "Architecture, requirements, and decisions for PlatformKit OSS.",
+      content: `
       ${renderDocsWelcome(contentEntries)}
-      ${site.modules.length > 0 ? renderGeneratedDocsCatalog(site) : ""}
+      ${renderGeneratedDocsCatalog(site)}
     `,
-  });
+    });
+  }
+
+  return renderDocsHome(contentEntries);
+}
+
+export function renderScript() {
+  return renderDocsScript();
+}
+
+export function renderFavicon() {
+  return renderDocsFavicon();
 }
 
 function renderDocsWelcome(contentEntries) {
@@ -519,6 +539,9 @@ export function renderModulePage(module, options = {}) {
 }
 
 export function renderContentIndexPage(contentEntries, options = {}) {
+  if (!options.overlay?.manifest?.content) {
+    return renderDocsIndex(contentEntries);
+  }
   const groups = groupContentEntries(contentEntries);
   return renderLayout({
     title: "PlatformKit Docs",
@@ -542,6 +565,9 @@ export function renderContentIndexPage(contentEntries, options = {}) {
 }
 
 export function renderContentPage(entry, contentEntries = [], options = {}) {
+  if (!options.overlay?.manifest?.content) {
+    return renderDocsShellPage(entry, contentEntries);
+  }
   return renderLayout({
     title: `${entry.title} | PlatformKit Docs`,
     description: entry.excerpt,
@@ -1278,7 +1304,7 @@ th {
     width: 100%;
   }
 }
-`;
+${renderDocsStyles()}`;
 }
 
 function renderFeatures(module) {
@@ -1469,6 +1495,7 @@ function renderLayout({ title, description, content, overlay = null, activeHref 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/assets/site.css" />
   </head>
   <body>

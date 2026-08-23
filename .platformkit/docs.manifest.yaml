@@ -35,32 +35,60 @@ collections:
 # Only current, public OSS guidance is federated. The numbered arc42 source
 # describes a larger historical workspace and is intentionally excluded.
 repo_topics:
+  - id: current-overview
+    title: What is PlatformKit?
+    path: docs/current/overview.md
+    dita_type: concept
+    diataxis: explanation
+    collection: guides
+    authoring: authored
   - id: current-quickstart
-    title: Current Quickstart
+    title: Quickstart
     path: docs/current/quickstart.md
     dita_type: task
     diataxis: tutorial
     collection: guides
     authoring: authored
-  - id: current-runtime-surfaces
-    title: Runtime Surfaces
-    path: docs/current/runtime-surfaces.md
+  - id: current-extensions
+    title: Build a secure extension
+    path: docs/current/extensions.md
+    dita_type: task
+    diataxis: howto
+    collection: guides
+    authoring: authored
+  - id: current-design-system
+    title: Design system
+    path: docs/current/design-system.md
     dita_type: concept
     diataxis: explanation
     collection: guides
     authoring: authored
   - id: current-api-contract
-    title: API Contract
+    title: API contract
     path: docs/current/api-contract.md
     dita_type: reference
     diataxis: reference
     collection: guides
     authoring: authored
-  - id: current-extensions
-    title: Secure Extensions
-    path: docs/current/extensions.md
-    dita_type: task
+  - id: current-runtime-surfaces
+    title: Runtime surfaces
+    path: docs/current/runtime-surfaces.md
+    dita_type: concept
+    diataxis: explanation
+    collection: guides
+    authoring: authored
+  - id: current-troubleshooting
+    title: Troubleshooting
+    path: docs/current/troubleshooting.md
+    dita_type: reference
     diataxis: howto
+    collection: guides
+    authoring: authored
+  - id: current-glossary
+    title: Glossary
+    path: docs/current/glossary.md
+    dita_type: reference
+    diataxis: reference
     collection: guides
     authoring: authored
 

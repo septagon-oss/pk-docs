@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 272" width="1240" height="272" role="img" aria-labelledby="title">
+  <title id="title">The four-step PlatformKit journey: run it, log in, call the API, make it yours.</title>
+  <style>
+  .canvas { fill: #fffdf7; }
+  .ink { fill: #15221f; }
+  .muted { fill: #5f6b65; }
+  .line { stroke: #8f988f; }
+  .card { fill: #f2efe7; stroke: #cbc5b8; }
+  .card-strong { fill: #fffdf7; stroke: #8f988f; }
+  .accent { fill: #0f5d4e; }
+  .accent-on { fill: #f9fff9; }
+  .signal { fill: #d8f35d; }
+  .dark { fill: #12201d; }
+  .dark-text { fill: #eff4e9; }
+  .dark-muted { fill: #aebbb2; }
+  .ok { fill: #12715d; }
+  .okbg { fill: #dcf3e8; }
+  .warn { fill: #9a5318; }
+  .warnbg { fill: #fff0d2; }
+  .danger { fill: #9e3833; }
+  .dangerbg { fill: #fbe5e2; }
+  .focus { fill: #326de6; }
+  .infobg { fill: #e3ecfb; }
+  .arrow { stroke: #5f6b65; stroke-width: 2; fill: none; }
+  .arrow-dashed { stroke: #8f988f; stroke-width: 2; fill: none; stroke-dasharray: 6 6; }
+  .arrow-accent { stroke: #0f5d4e; stroke-width: 2.5; fill: none; }
+  .t { font-family: 'IBM Plex Sans', Inter, 'Segoe UI', system-ui, sans-serif; }
+  .m { font-family: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace; }
+  @media (prefers-color-scheme: dark) {
+    .canvas { fill: #15201d; }
+    .ink { fill: #eaf1ea; }
+    .muted { fill: #aebbb2; }
+    .line { stroke: #4a5c55; }
+    .card { fill: #1b2825; stroke: #2a3a35; }
+    .card-strong { fill: #0e1513; stroke: #4a5c55; }
+    .accent { fill: #5fc2a6; }
+    .accent-on { fill: #0b1a16; }
+    .okbg { fill: #16302a; } .ok { fill: #7ed3b5; }
+    .warnbg { fill: #33271a; } .warn { fill: #f0b36b; }
+    .dangerbg { fill: #3a1f1d; } .danger { fill: #f09a94; }
+    .infobg { fill: #1c2a3f; } .focus { fill: #7aa7ff; }
+    .arrow { stroke: #aebbb2; }
+    .arrow-dashed { stroke: #6f827a; }
+    .arrow-accent { stroke: #5fc2a6; }
+  }
+</style>
+  <defs>
+    <marker id="head" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#5f6b65"/></marker>
+    <marker id="head-accent" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#0f5d4e"/></marker>
+    <marker id="head-faint" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#8f988f"/></marker>
+  </defs>
+  <rect class="canvas" width="1240" height="272" rx="16"/>
+  <rect x="19" y="58" width="278" height="184" rx="12" class="card-strong" stroke-width="1.5"/><circle cx="47" cy="88" r="16" class="dark"/><text x="47" y="93" class="signal m" font-size="14" font-weight="700" text-anchor="middle" >1</text><text x="73" y="94" class="ink t" font-size="19" font-weight="700" text-anchor="start" >Run it</text><rect x="35" y="116" width="246" height="58" rx="8" class="dark" stroke-width="0"/><text x="45" y="139" class="dark-text m" font-size="11.5" font-weight="400" text-anchor="start" >go run github.com/</text>
+<text x="45" y="158" class="dark-text m" font-size="11.5" font-weight="400" text-anchor="start" >septagon-oss/platformkit@latest</text><text x="35" y="204" class="muted t" font-size="13" font-weight="400" text-anchor="start" >One process. SQLite. No Docker.</text><line x1="303" y1="150" x2="321" y2="150" class="arrow-accent" marker-end="url(#head-accent)"/><rect x="327" y="58" width="278" height="184" rx="12" class="card-strong" stroke-width="1.5"/><circle cx="355" cy="88" r="16" class="dark"/><text x="355" y="93" class="signal m" font-size="14" font-weight="700" text-anchor="middle" >2</text><text x="381" y="94" class="ink t" font-size="19" font-weight="700" text-anchor="start" >Log in</text><rect x="343" y="116" width="246" height="58" rx="8" class="dark" stroke-width="0"/><text x="353" y="139" class="dark-text m" font-size="11.5" font-weight="400" text-anchor="start" >127.0.0.1:8080/admin</text>
+<text x="353" y="158" class="dark-text m" font-size="11.5" font-weight="400" text-anchor="start" >operator@local.test</text><text x="343" y="204" class="muted t" font-size="13" font-weight="400" text-anchor="start" >A real operator console, ten modules.</text><line x1="611" y1="150" x2="629" y2="150" class="arrow-accent" marker-end="url(#head-accent)"/><rect x="635" y="58" width="278" height="184" rx="12" class="card-strong" stroke-width="1.5"/><circle cx="663" cy="88" r="16" class="dark"/><text x="663" y="93" class="signal m" font-size="14" font-weight="700" text-anchor="middle" >3</text><text x="689" y="94" class="ink t" font-size="19" font-weight="700" text-anchor="start" >Call the API</text><rect x="651" y="116" width="246" height="58" rx="8" class="dark" stroke-width="0"/><text x="661" y="139" class="dark-text m" font-size="11.5" font-weight="400" text-anchor="start" >POST /api/v1/auth/sessions</text>
+<text x="661" y="158" class="dark-text m" font-size="11.5" font-weight="400" text-anchor="start" >Authorization: Bearer &lt;id&gt;</text><text x="651" y="204" class="muted t" font-size="13" font-weight="400" text-anchor="start" >Tenant-scoped, fail-closed JSON.</text><line x1="919" y1="150" x2="937" y2="150" class="arrow-accent" marker-end="url(#head-accent)"/><rect x="943" y="58" width="278" height="184" rx="12" class="card-strong" stroke-width="1.5"/><circle cx="971" cy="88" r="16" class="dark"/><text x="971" y="93" class="signal m" font-size="14" font-weight="700" text-anchor="middle" >4</text><text x="997" y="94" class="ink t" font-size="19" font-weight="700" text-anchor="start" >Make it yours</text><rect x="959" y="116" width="246" height="58" rx="8" class="dark" stroke-width="0"/><text x="969" y="139" class="dark-text m" font-size="11.5" font-weight="400" text-anchor="start" >platformkit new app acme</text>
+<text x="969" y="158" class="dark-text m" font-size="11.5" font-weight="400" text-anchor="start" >platformkit new module invoice</text><text x="959" y="204" class="muted t" font-size="13" font-weight="400" text-anchor="start" >Your module, isolation tests included.</text><text x="620" y="36" class="muted t" font-size="15" font-weight="400" text-anchor="middle" >From zero to your own module — the path these guides follow</text>
+</svg>

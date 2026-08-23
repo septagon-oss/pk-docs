@@ -265,6 +265,38 @@ test("renderContentPage renders a hosted documentation content entry", () => {
   assert.match(html, /href="\/docs\/adr-0009-ports-only-cross-module-communication"/);
 });
 
+test("renderContentPage renders the docs shell with sidebar, on-page navigation, and prev/next links", () => {
+  const entries = [
+    { title: "What is PlatformKit?", slug: "current-overview", route: "/docs/current-overview", collection: "guides", excerpt: "The picture.", sourcePath: "docs/current/overview.md", headings: [], metadata: { group: "Start here", readingTime: 4 }, content: "" },
+    { title: "Quickstart", slug: "current-quickstart", route: "/docs/current-quickstart", collection: "guides", excerpt: "Run it.", sourcePath: "docs/current/quickstart.md", headings: [{ level: 2, id: "1-run-it", text: "Run it", step: 1 }, { level: 3, id: "banner", text: "Banner", step: null }], metadata: { group: "Start here", readingTime: 9 }, content: "# Quickstart\n\nIntro.", contentHtml: '<h1 id="quickstart">Quickstart</h1>\n<p>Intro.</p>' },
+    { title: "API contract", slug: "current-api-contract", route: "/docs/current-api-contract", collection: "guides", excerpt: "Rules.", sourcePath: "docs/current/api-contract.md", headings: [], metadata: { group: "Reference", readingTime: 7 }, content: "" },
+  ];
+  const html = renderContentPage(entries[1], entries);
+
+  assert.match(html, /<body class="pk-site ">/);
+  assert.match(html, /<p class="pk-nav__group">Start here<\/p>/);
+  assert.match(html, /<a href="\/docs\/current-quickstart" aria-current="page">Quickstart<\/a>/);
+  assert.match(html, /<p class="pk-lede">Run it\.<\/p>/);
+  assert.match(html, /<li class="pk-toc__item pk-toc__item--h2"><a href="#1-run-it"><span class="pk-toc__step">1<\/span>Run it<\/a><\/li>/);
+  assert.match(html, /pk-pager__link--prev" href="\/docs\/current-overview"/);
+  assert.match(html, /pk-pager__link--next" href="\/docs\/current-api-contract"/);
+  assert.match(html, /https:\/\/github\.com\/septagon-oss\/pk-docs\/edit\/main\/docs\/current\/quickstart\.md/);
+  assert.match(html, /id="pk-search-data"/);
+  assert.doesNotMatch(html, /<script type="application\/json" id="pk-search-data">[^<]*<\/script>[\s\S]*<\/script>/, "search data must be escaped so it cannot close the script tag");
+});
+
+test("renderHomePage renders the docs home with learning paths when no modules are composed", () => {
+  const entries = [
+    { title: "Quickstart", slug: "current-quickstart", route: "/docs/current-quickstart", collection: "guides", excerpt: "Run it.", sourcePath: "docs/current/quickstart.md", headings: [], metadata: { group: "Start here", readingTime: 9 }, content: "" },
+  ];
+  const html = renderHomePage({ ...siteFixture(), modules: [], featuredModuleId: null }, null, entries);
+
+  assert.match(html, /go run github\.com\/septagon-oss\/platformkit@latest/);
+  assert.match(html, /<a class="pk-path" href="\/docs\/current-quickstart">/);
+  assert.match(html, /href="\/docs\/assets\/diagrams\/journey\.svg"|src="\/docs\/assets\/diagrams\/journey\.svg"/);
+  assert.match(html, /<h3 class="pk-group__title">Start here<\/h3>/);
+});
+
 test("renderHomePage never fabricates module cards when no bundles are composed", () => {
   const site = { ...siteFixture(), modules: [], featuredModuleId: null };
   const html = renderHomePage(site, {

@@ -5,7 +5,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { fileURLToPath } from "node:url";
 
-import { collectDocumentationContent, resolveDocsHref } from "../src/docs-source.mjs";
+import { collectDocumentationContent, resolveDocsAsset, resolveDocsAssetWithSize, resolveDocsHref } from "../src/docs-source.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, "../../..");
@@ -44,6 +44,56 @@ test("collectDocumentationContent indexes docs as hosted content and skips templ
   assert.match(entries[1].contentHtml, /Public architecture/);
 });
 
+test("resolveDocsAsset maps relative docs/assets references to the served asset route", () => {
+  assert.equal(resolveDocsAsset("../assets/screenshots/admin.png", "docs/current/quickstart.md"), "/docs/assets/screenshots/admin.png");
+  assert.equal(resolveDocsAsset("../assets/diagrams/map.svg#wide", "docs/current/overview.md"), "/docs/assets/diagrams/map.svg#wide");
+  assert.equal(resolveDocsAsset("https://example.test/x.png", "docs/current/quickstart.md"), "https://example.test/x.png");
+  assert.equal(resolveDocsAsset("./local.png", "docs/current/quickstart.md"), "./local.png");
+});
+
+test("resolveDocsAssetWithSize reads intrinsic PNG and SVG dimensions from disk", async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "pk-docs-assets-"));
+  await fs.mkdir(path.join(root, "docs", "assets", "diagrams"), { recursive: true });
+  const png = Buffer.alloc(33);
+  png.write("\x89PNG\r\n\x1a\n", 0, "binary");
+  png.writeUInt32BE(13, 8);
+  png.write("IHDR", 12, "ascii");
+  png.writeUInt32BE(640, 16);
+  png.writeUInt32BE(480, 20);
+  await fs.writeFile(path.join(root, "docs", "assets", "shot.png"), png);
+  await fs.writeFile(path.join(root, "docs", "assets", "diagrams", "map.svg"), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 520"></svg>');
+
+  assert.deepEqual(resolveDocsAssetWithSize("../assets/shot.png", "docs/current/a.md", root), { src: "/docs/assets/shot.png", width: 640, height: 480 });
+  assert.deepEqual(resolveDocsAssetWithSize("../assets/diagrams/map.svg", "docs/current/a.md", root), { src: "/docs/assets/diagrams/map.svg", width: 1100, height: 520 });
+  assert.equal(resolveDocsAssetWithSize("../assets/missing.png", "docs/current/a.md", root), "/docs/assets/missing.png");
+});
+
+test("collectDocumentationContent honours description, group, and order frontmatter and collects headings", async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "pk-docs-order-"));
+  await fs.mkdir(path.join(root, "docs", "current"), { recursive: true });
+  await fs.writeFile(
+    path.join(root, "docs", "current", "b.md"),
+    "---\ntitle: Second\nslug: second\ncollection: guides\ngroup: Build\norder: 20\ndescription: The second page.\n---\n# Second\n\nBody.\n\n## 1. Step one\n\n### Detail\n",
+  );
+  await fs.writeFile(
+    path.join(root, "docs", "current", "a.md"),
+    "---\ntitle: First\nslug: first\ncollection: guides\ngroup: Start here\norder: 10\n---\n# First\n\nIntro paragraph.\n",
+  );
+
+  const entries = await collectDocumentationContent({ workspaceRoot: root });
+
+  assert.deepEqual(entries.map((entry) => entry.slug), ["first", "second"]);
+  assert.equal(entries[0].excerpt, "Intro paragraph.");
+  assert.equal(entries[0].metadata.group, "Start here");
+  assert.equal(entries[1].excerpt, "The second page.");
+  assert.equal(entries[1].metadata.group, "Build");
+  assert.deepEqual(
+    entries[1].headings.map((heading) => [heading.level, heading.id, heading.step]),
+    [[2, "1-step-one", 1], [3, "detail", null]],
+  );
+  assert.equal(entries[1].metadata.readingTime, 1);
+});
+
 test("resolveDocsHref maps relative markdown docs to preview routes", () => {
   assert.equal(
     resolveDocsHref("RELEASING.md", "docs/ARCHITECTURE.md"),
@@ -77,10 +127,14 @@ test("only current OSS guides are published as setup and capability truth", asyn
   const sources = entries.map((entry) => entry.sourcePath);
 
   for (const current of [
+    "docs/current/overview.md",
     "docs/current/quickstart.md",
     "docs/current/extensions.md",
+    "docs/current/design-system.md",
     "docs/current/runtime-surfaces.md",
     "docs/current/api-contract.md",
+    "docs/current/troubleshooting.md",
+    "docs/current/glossary.md",
   ]) {
     assert.ok(sources.includes(current), `missing current guide: ${current}`);
   }
@@ -106,6 +160,41 @@ test("only current OSS guides are published as setup and capability truth", asyn
   for (const claim of retiredClaims) {
     assert.equal(body.includes(claim), false, `published docs contain retired claim: ${claim}`);
   }
+});
+
+test("published guides read as a learning path and every referenced asset exists", async () => {
+  const entries = await collectDocumentationContent({ workspaceRoot: repoRoot });
+  const guides = entries.filter((entry) => entry.collection === "guides");
+
+  assert.deepEqual(
+    guides.map((entry) => entry.slug),
+    [
+      "current-overview",
+      "current-quickstart",
+      "current-extensions",
+      "current-design-system",
+      "current-api-contract",
+      "current-runtime-surfaces",
+      "current-troubleshooting",
+      "current-glossary",
+    ],
+  );
+
+  const missing = [];
+  for (const entry of entries) {
+    for (const match of entry.contentHtml.matchAll(/<img src="\/docs\/assets\/([^"#]+)/g)) {
+      const file = path.join(repoRoot, "docs", "assets", ...match[1].split("/"));
+      try {
+        await fs.access(file);
+      } catch {
+        missing.push(`${entry.sourcePath}: ${match[1]}`);
+      }
+    }
+    for (const match of entry.contentHtml.matchAll(/<img [^>]*alt="([^"]*)"/g)) {
+      assert.ok(match[1].trim().length > 0, `${entry.sourcePath} has an image without alt text`);
+    }
+  }
+  assert.deepEqual(missing, []);
 });
 
 test("historical v0.2 pages are explicitly archived and bannered", async () => {
