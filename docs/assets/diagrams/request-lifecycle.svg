@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 420" width="1100" height="420" role="img" aria-labelledby="title">
+  <title id="title">Request lifecycle: authenticate (401), authorize (403), resolve tenant from the credential (404 for cross-tenant ids), validate input (400/413), then do tenant-scoped work (2xx).</title>
+  <style>
+  .canvas { fill: #fffdf7; }
+  .ink { fill: #15221f; }
+  .muted { fill: #5f6b65; }
+  .line { stroke: #8f988f; }
+  .card { fill: #f2efe7; stroke: #cbc5b8; }
+  .card-strong { fill: #fffdf7; stroke: #8f988f; }
+  .accent { fill: #0f5d4e; }
+  .accent-on { fill: #f9fff9; }
+  .signal { fill: #d8f35d; }
+  .dark { fill: #12201d; }
+  .dark-text { fill: #eff4e9; }
+  .dark-muted { fill: #aebbb2; }
+  .ok { fill: #12715d; }
+  .okbg { fill: #dcf3e8; }
+  .warn { fill: #9a5318; }
+  .warnbg { fill: #fff0d2; }
+  .danger { fill: #9e3833; }
+  .dangerbg { fill: #fbe5e2; }
+  .focus { fill: #326de6; }
+  .infobg { fill: #e3ecfb; }
+  .arrow { stroke: #5f6b65; stroke-width: 2; fill: none; }
+  .arrow-dashed { stroke: #8f988f; stroke-width: 2; fill: none; stroke-dasharray: 6 6; }
+  .arrow-accent { stroke: #0f5d4e; stroke-width: 2.5; fill: none; }
+  .t { font-family: 'IBM Plex Sans', Inter, 'Segoe UI', system-ui, sans-serif; }
+  .m { font-family: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace; }
+  @media (prefers-color-scheme: dark) {
+    .canvas { fill: #15201d; }
+    .ink { fill: #eaf1ea; }
+    .muted { fill: #aebbb2; }
+    .line { stroke: #4a5c55; }
+    .card { fill: #1b2825; stroke: #2a3a35; }
+    .card-strong { fill: #0e1513; stroke: #4a5c55; }
+    .accent { fill: #5fc2a6; }
+    .accent-on { fill: #0b1a16; }
+    .okbg { fill: #16302a; } .ok { fill: #7ed3b5; }
+    .warnbg { fill: #33271a; } .warn { fill: #f0b36b; }
+    .dangerbg { fill: #3a1f1d; } .danger { fill: #f09a94; }
+    .infobg { fill: #1c2a3f; } .focus { fill: #7aa7ff; }
+    .arrow { stroke: #aebbb2; }
+    .arrow-dashed { stroke: #6f827a; }
+    .arrow-accent { stroke: #5fc2a6; }
+  }
+</style>
+  <defs>
+    <marker id="head" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#5f6b65"/></marker>
+    <marker id="head-accent" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#0f5d4e"/></marker>
+    <marker id="head-faint" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#8f988f"/></marker>
+  </defs>
+  <rect class="canvas" width="1100" height="420" rx="16"/>
+  <text x="40" y="42" class="ink t" font-size="22" font-weight="700" text-anchor="start" >What happens to every /api/v1 request</text><text x="40" y="66" class="muted t" font-size="14" font-weight="400" text-anchor="start" >Each gate fails closed. The status code tells you which gate stopped you.</text><rect x="40" y="96" width="198" height="150" rx="12" class="card-strong" stroke-width="1.5"/><circle cx="66" cy="124" r="16" class="dark"/><text x="66" y="129" class="signal m" font-size="14" font-weight="700" text-anchor="middle" >1</text><text x="90" y="129" class="ink t" font-size="14.5" font-weight="700" text-anchor="start" >Who are you?</text><text x="56" y="162" class="muted m" font-size="11.5" font-weight="400" text-anchor="start" >Bearer session id,</text>
+<text x="56" y="179" class="muted m" font-size="11.5" font-weight="400" text-anchor="start" >pk_ API key, or</text>
+<text x="56" y="196" class="muted m" font-size="11.5" font-weight="400" text-anchor="start" >pk_session cookie</text><rect x="40" y="262" width="198" height="60" rx="10" class="dangerbg" stroke-width="0"/><text x="54" y="287" class="danger m" font-size="18" font-weight="700" text-anchor="start" >401</text><text x="54" y="308" class="muted t" font-size="11" font-weight="400" text-anchor="start" >missing / invalid credential</text><line x1="139" y1="246" x2="139" y2="258" class="arrow-dashed" marker-end="url(#head-faint)"/><line x1="241" y1="171" x2="242.5" y2="171" class="arrow-accent" marker-end="url(#head-accent)"/><rect x="245.5" y="96" width="198" height="150" rx="12" class="card-strong" stroke-width="1.5"/><circle cx="271.5" cy="124" r="16" class="dark"/><text x="271.5" y="129" class="signal m" font-size="14" font-weight="700" text-anchor="middle" >2</text><text x="295.5" y="129" class="ink t" font-size="14.5" font-weight="700" text-anchor="start" >May you?</text><text x="261.5" y="162" class="muted m" font-size="11.5" font-weight="400" text-anchor="start" >capability check:</text>
+<text x="261.5" y="179" class="muted m" font-size="11.5" font-weight="400" text-anchor="start" >&lt;resource&gt;:read / :write</text>
+<text x="261.5" y="196" class="muted m" font-size="11.5" font-weight="400" text-anchor="start" >or interactive admin</text><rect x="245.5" y="262" width="198" height="60" rx="10" class="dangerbg" stroke-width="0"/><text x="259.5" y="287" class="danger m" font-size="18" font-weight="700" text-anchor="start" >403</text><text x="259.5" y="308" class="muted t" font-size="11" font-weight="400" text-anchor="start" >credential lacks the scope</text><line x1="344.5" y1="246" x2="344.5" y2="258" class="arrow-dashed" marker-end="url(#head-faint)"/><line x1="446.5" y1="171" x2="448" y2="171" class="arrow-accent" marker-end="url(#head-accent)"/><rect x="451" y="96" width="198" height="150" rx="12" class="card-strong" stroke-width="1.5"/><circle cx="477" cy="124" r="16" class="dark"/><text x="477" y="129" class="signal m" font-size="14" font-weight="700" text-anchor="middle" >3</text><text x="501" y="129" class="ink t" font-size="14.5" font-weight="700" text-anchor="start" >Which tenant?</text><text x="467" y="162" class="muted m" font-size="11.5" font-weight="400" text-anchor="start" >tenant + subject come</text>
+<text x="467" y="179" class="muted m" font-size="11.5" font-weight="400" text-anchor="start" >from the credential —</text>
+<text x="467" y="196" class="muted m" font-size="11.5" font-weight="400" text-anchor="start" >never from the body</text><rect x="451" y="262" width="198" height="60" rx="10" class="warnbg" stroke-width="0"/><text x="465" y="287" class="warn m" font-size="18" font-weight="700" text-anchor="start" >404</text><text x="465" y="308" class="muted t" font-size="11" font-weight="400" text-anchor="start" >other tenant's id → not found</text><line x1="550" y1="246" x2="550" y2="258" class="arrow-dashed" marker-end="url(#head-faint)"/><line x1="652" y1="171" x2="653.5" y2="171" class="arrow-accent" marker-end="url(#head-accent)"/><rect x="656.5" y="96" width="198" height="150" rx="12" class="card-strong" stroke-width="1.5"/><circle cx="682.5" cy="124" r="16" class="dark"/><text x="682.5" y="129" class="signal m" font-size="14" font-weight="700" text-anchor="middle" >4</text><text x="706.5" y="129" class="ink t" font-size="14.5" font-weight="700" text-anchor="start" >Is it well-formed?</text><text x="672.5" y="162" class="muted m" font-size="11.5" font-weight="400" text-anchor="start" >strict JSON, ≤ 1 MiB,</text>
+<text x="672.5" y="179" class="muted m" font-size="11.5" font-weight="400" text-anchor="start" >positive limit/offset,</text>
+<text x="672.5" y="196" class="muted m" font-size="11.5" font-weight="400" text-anchor="start" >canonical id-&lt;hex&gt; paths</text><rect x="656.5" y="262" width="198" height="60" rx="10" class="warnbg" stroke-width="0"/><text x="670.5" y="287" class="warn m" font-size="18" font-weight="700" text-anchor="start" >400 · 413</text><text x="670.5" y="308" class="muted t" font-size="11" font-weight="400" text-anchor="start" >unknown field, bad page, raw id</text><line x1="755.5" y1="246" x2="755.5" y2="258" class="arrow-dashed" marker-end="url(#head-faint)"/><line x1="857.5" y1="171" x2="859" y2="171" class="arrow-accent" marker-end="url(#head-accent)"/><rect x="862" y="96" width="198" height="150" rx="12" class="card-strong" stroke-width="1.5"/><circle cx="888" cy="124" r="16" class="dark"/><text x="888" y="129" class="signal m" font-size="14" font-weight="700" text-anchor="middle" >5</text><text x="912" y="129" class="ink t" font-size="14.5" font-weight="700" text-anchor="start" >Do the work</text><text x="878" y="162" class="muted m" font-size="11.5" font-weight="400" text-anchor="start" >tenant-scoped query,</text>
+<text x="878" y="179" class="muted m" font-size="11.5" font-weight="400" text-anchor="start" >server-owned ids + times,</text>
+<text x="878" y="196" class="muted m" font-size="11.5" font-weight="400" text-anchor="start" >audit event appended</text><rect x="862" y="262" width="198" height="60" rx="10" class="okbg" stroke-width="0"/><text x="876" y="287" class="ok m" font-size="18" font-weight="700" text-anchor="start" >2xx</text><text x="876" y="308" class="muted t" font-size="11" font-weight="400" text-anchor="start" >JSON body, or 204 on actions</text><line x1="961" y1="246" x2="961" y2="258" class="arrow-dashed" marker-end="url(#head-faint)"/><rect x="40" y="346" width="1020" height="48" rx="10" class="infobg" stroke-width="0"/><text x="58" y="366" class="ink t" font-size="12.5" font-weight="400" text-anchor="start" >Only one route is open without a credential: POST /api/v1/auth/sessions (log in). Everything else needs a bearer token or the session cookie.</text><text x="58" y="384" class="muted t" font-size="12.5" font-weight="400" text-anchor="start" >Errors are plain text, not JSON — the status code carries the meaning.</text>
+</svg>

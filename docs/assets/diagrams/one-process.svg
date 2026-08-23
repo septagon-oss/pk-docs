@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 560" width="1100" height="560" role="img" aria-labelledby="title">
+  <title id="title">Inside the PlatformKit process: an HTTP perimeter, ten modules, one shared database pool, and the WithModules extension seam.</title>
+  <style>
+  .canvas { fill: #fffdf7; }
+  .ink { fill: #15221f; }
+  .muted { fill: #5f6b65; }
+  .line { stroke: #8f988f; }
+  .card { fill: #f2efe7; stroke: #cbc5b8; }
+  .card-strong { fill: #fffdf7; stroke: #8f988f; }
+  .accent { fill: #0f5d4e; }
+  .accent-on { fill: #f9fff9; }
+  .signal { fill: #d8f35d; }
+  .dark { fill: #12201d; }
+  .dark-text { fill: #eff4e9; }
+  .dark-muted { fill: #aebbb2; }
+  .ok { fill: #12715d; }
+  .okbg { fill: #dcf3e8; }
+  .warn { fill: #9a5318; }
+  .warnbg { fill: #fff0d2; }
+  .danger { fill: #9e3833; }
+  .dangerbg { fill: #fbe5e2; }
+  .focus { fill: #326de6; }
+  .infobg { fill: #e3ecfb; }
+  .arrow { stroke: #5f6b65; stroke-width: 2; fill: none; }
+  .arrow-dashed { stroke: #8f988f; stroke-width: 2; fill: none; stroke-dasharray: 6 6; }
+  .arrow-accent { stroke: #0f5d4e; stroke-width: 2.5; fill: none; }
+  .t { font-family: 'IBM Plex Sans', Inter, 'Segoe UI', system-ui, sans-serif; }
+  .m { font-family: 'IBM Plex Mono', 'SFMono-Regular', Menlo, Consolas, monospace; }
+  @media (prefers-color-scheme: dark) {
+    .canvas { fill: #15201d; }
+    .ink { fill: #eaf1ea; }
+    .muted { fill: #aebbb2; }
+    .line { stroke: #4a5c55; }
+    .card { fill: #1b2825; stroke: #2a3a35; }
+    .card-strong { fill: #0e1513; stroke: #4a5c55; }
+    .accent { fill: #5fc2a6; }
+    .accent-on { fill: #0b1a16; }
+    .okbg { fill: #16302a; } .ok { fill: #7ed3b5; }
+    .warnbg { fill: #33271a; } .warn { fill: #f0b36b; }
+    .dangerbg { fill: #3a1f1d; } .danger { fill: #f09a94; }
+    .infobg { fill: #1c2a3f; } .focus { fill: #7aa7ff; }
+    .arrow { stroke: #aebbb2; }
+    .arrow-dashed { stroke: #6f827a; }
+    .arrow-accent { stroke: #5fc2a6; }
+  }
+</style>
+  <defs>
+    <marker id="head" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#5f6b65"/></marker>
+    <marker id="head-accent" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#0f5d4e"/></marker>
+    <marker id="head-faint" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" fill="#8f988f"/></marker>
+  </defs>
+  <rect class="canvas" width="1100" height="560" rx="16"/>
+  <text x="40" y="42" class="ink t" font-size="22" font-weight="700" text-anchor="start" >One process, one database, one perimeter</text><text x="40" y="66" class="muted t" font-size="14" font-weight="400" text-anchor="start" >Everything below runs from a single Go binary on 127.0.0.1:8080.</text><rect x="40" y="110" width="220" height="66" rx="12" class="card" stroke-width="1.5"/><text x="56" y="137" class="ink t" font-size="15" font-weight="700" text-anchor="start" >Browser</text><text x="56" y="159" class="muted m" font-size="12" font-weight="400" text-anchor="start" >GET /  ·  /admin</text><line x1="262" y1="143" x2="318" y2="143" class="arrow" marker-end="url(#head)"/><rect x="40" y="202" width="220" height="66" rx="12" class="card" stroke-width="1.5"/><text x="56" y="229" class="ink t" font-size="15" font-weight="700" text-anchor="start" >Your script</text><text x="56" y="251" class="muted m" font-size="12" font-weight="400" text-anchor="start" >curl -H 'Authorization: …'</text><line x1="262" y1="235" x2="318" y2="235" class="arrow" marker-end="url(#head)"/><rect x="40" y="294" width="220" height="66" rx="12" class="card" stroke-width="1.5"/><text x="56" y="321" class="ink t" font-size="15" font-weight="700" text-anchor="start" >Orchestrator</text><text x="56" y="343" class="muted m" font-size="12" font-weight="400" text-anchor="start" >GET /healthz  /live  /ready</text><line x1="262" y1="327" x2="318" y2="327" class="arrow" marker-end="url(#head)"/><rect x="324" y="96" width="736" height="430" rx="16" class="card-strong" stroke-width="2"/><rect x="340" y="110" width="154.8" height="22" rx="11" class="dark" stroke-width="0"/><text x="417.4" y="125" class="dark-text t" font-size="11" font-weight="600" text-anchor="middle" >platformkit process</text><text x="540" y="126" class="muted t" font-size="12.5" font-weight="400" text-anchor="start" >SQLite by default · Postgres for production</text><rect x="344" y="146" width="696" height="74" rx="10" class="infobg" stroke-width="0"/><text x="360" y="170" class="ink t" font-size="14" font-weight="700" text-anchor="start" >HTTP perimeter</text><text x="360" y="192" class="muted t" font-size="12" font-weight="400" text-anchor="start" >resolve credential → tenant + subject · reject anonymous writes · 1 MiB body cap · canonical {id} path segments</text><text x="1024" y="170" class="focus m" font-size="12" font-weight="600" text-anchor="end" >401 · 403 · 400</text><rect x="344" y="236" width="130" height="58" rx="8" class="card" stroke-width="1.5"/><text x="356" y="260" class="ink m" font-size="13" font-weight="700" text-anchor="start" >tenant</text><text x="356" y="279" class="muted t" font-size="11.5" font-weight="400" text-anchor="start" >isolation</text><rect x="485.5" y="236" width="130" height="58" rx="8" class="card" stroke-width="1.5"/><text x="497.5" y="260" class="ink m" font-size="13" font-weight="700" text-anchor="start" >user</text><text x="497.5" y="279" class="muted t" font-size="11.5" font-weight="400" text-anchor="start" >accounts</text><rect x="627" y="236" width="130" height="58" rx="8" class="card" stroke-width="1.5"/><text x="639" y="260" class="ink m" font-size="13" font-weight="700" text-anchor="start" >auth</text><text x="639" y="279" class="muted t" font-size="11.5" font-weight="400" text-anchor="start" >sessions</text><rect x="768.5" y="236" width="130" height="58" rx="8" class="card" stroke-width="1.5"/><text x="780.5" y="260" class="ink m" font-size="13" font-weight="700" text-anchor="start" >api_key</text><text x="780.5" y="279" class="muted t" font-size="11.5" font-weight="400" text-anchor="start" >machine scopes</text><rect x="910" y="236" width="130" height="58" rx="8" class="card" stroke-width="1.5"/><text x="922" y="260" class="ink m" font-size="13" font-weight="700" text-anchor="start" >audit</text><text x="922" y="279" class="muted t" font-size="11.5" font-weight="400" text-anchor="start" >append-only log</text><rect x="344" y="306" width="130" height="58" rx="8" class="card" stroke-width="1.5"/><text x="356" y="330" class="ink m" font-size="13" font-weight="700" text-anchor="start" >content</text><text x="356" y="349" class="muted t" font-size="11.5" font-weight="400" text-anchor="start" >draft → publish</text><rect x="485.5" y="306" width="130" height="58" rx="8" class="card" stroke-width="1.5"/><text x="497.5" y="330" class="ink m" font-size="13" font-weight="700" text-anchor="start" >notification</text><text x="497.5" y="349" class="muted t" font-size="11.5" font-weight="400" text-anchor="start" >in-app records</text><rect x="627" y="306" width="130" height="58" rx="8" class="card" stroke-width="1.5"/><text x="639" y="330" class="ink m" font-size="13" font-weight="700" text-anchor="start" >branding</text><text x="639" y="349" class="muted t" font-size="11.5" font-weight="400" text-anchor="start" >logo + palette</text><rect x="768.5" y="306" width="130" height="58" rx="8" class="card" stroke-width="1.5"/><text x="780.5" y="330" class="ink m" font-size="13" font-weight="700" text-anchor="start" >admin</text><text x="780.5" y="349" class="muted t" font-size="11.5" font-weight="400" text-anchor="start" >operator console</text><rect x="910" y="306" width="130" height="58" rx="8" class="card" stroke-width="1.5"/><text x="922" y="330" class="ink m" font-size="13" font-weight="700" text-anchor="start" >health</text><text x="922" y="349" class="muted t" font-size="11.5" font-weight="400" text-anchor="start" >probes + metrics</text><text x="360" y="385" class="muted t" font-size="12" font-weight="400" text-anchor="start" >10 modules · each with tenant-scoped queries, declared scopes, embedded migrations, conformance tests</text><rect x="344" y="404" width="696" height="48" rx="10" class="dark" stroke-width="0"/><text x="360" y="424" class="dark-text m" font-size="14" font-weight="700" text-anchor="start" >one shared *sql.DB pool</text><text x="360" y="442" class="dark-muted t" font-size="11.5" font-weight="400" text-anchor="start" >every module store carries WHERE tenant_id = ? — on SQLite and on Postgres</text><text x="1024" y="432" class="signal m" font-size="13" font-weight="600" text-anchor="end" >./pk.db</text><rect x="344" y="466" width="696" height="46" rx="10" class="okbg" stroke-width="0"/><text x="360" y="486" class="ok m" font-size="13.5" font-weight="700" text-anchor="start" >starterapp.WithModules(yourModule)</text><text x="360" y="503" class="muted t" font-size="11.5" font-weight="400" text-anchor="start" >the one supported seam: your modules join the same pool, identity perimeter, admin, health, and OpenAPI</text>
+</svg>

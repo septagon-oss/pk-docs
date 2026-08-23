@@ -7,6 +7,14 @@ const contentTypes = {
   ".html": "text/html; charset=utf-8",
   ".json": "application/json; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
+  ".svg": "image/svg+xml",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".webp": "image/webp",
+  ".gif": "image/gif",
+  ".ico": "image/x-icon",
+  ".woff2": "font/woff2",
 };
 
 export async function startDevServer({ rootDir, port, host = "127.0.0.1" }) {

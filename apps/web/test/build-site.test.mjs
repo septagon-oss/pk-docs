@@ -37,6 +37,30 @@ test("buildSite publishes docs as hosted content pages with page models", async 
   assert.match(pageHtml, /Public architecture/);
 });
 
+test("buildSite copies docs/assets, the favicon, and the site script into dist", async () => {
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "pk-docs-build-"));
+  await fs.mkdir(path.join(root, ".generated", "modules"), { recursive: true });
+  await fs.mkdir(path.join(root, "docs", "assets", "diagrams"), { recursive: true });
+  await fs.mkdir(path.join(root, "docs", "current"), { recursive: true });
+  await fs.writeFile(path.join(root, "docs", "assets", "diagrams", "map.svg"), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"></svg>');
+  await fs.writeFile(
+    path.join(root, "docs", "current", "guide.md"),
+    "---\ntitle: Guide\nslug: guide\ncollection: guides\n---\n# Guide\n\n![A map](../assets/diagrams/map.svg \"The map\")\n\n| A | B |\n|---|---|\n| 1 | 2 |\n",
+  );
+
+  const result = await buildSite({ workspaceRoot: root, basePath: "/pk-docs" });
+  const pageHtml = await fs.readFile(path.join(result.distRoot, "docs", "guide", "index.html"), "utf8");
+
+  await fs.access(path.join(result.distRoot, "docs", "assets", "diagrams", "map.svg"));
+  await fs.access(path.join(result.distRoot, "assets", "favicon.svg"));
+  await fs.access(path.join(result.distRoot, "assets", "site.js"));
+  assert.match(pageHtml, /<img src="\/pk-docs\/docs\/assets\/diagrams\/map\.svg" alt="A map" width="10" height="10"/);
+  assert.match(pageHtml, /<figcaption>The map<\/figcaption>/);
+  assert.match(pageHtml, /<div class="pk-table-wrap"><table>/);
+  assert.match(pageHtml, /<script src="\/pk-docs\/assets\/site\.js" defer><\/script>/);
+  assert.doesNotMatch(pageHtml, /(href|src)="\/(?!pk-docs\/)/);
+});
+
 test("buildSite prefixes root-absolute URLs with basePath for subpath hosting", async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), "pk-docs-build-"));
   await fs.mkdir(path.join(root, ".generated", "modules"), { recursive: true });

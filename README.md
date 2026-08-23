@@ -7,12 +7,23 @@ Public documentation source for PlatformKit OSS.
 
 ## Start here
 
-For the current runnable contract, start with the
-[current quickstart](docs/current/quickstart.md), then read the
-[runtime boundaries](docs/current/runtime-surfaces.md), [API contract](docs/current/api-contract.md),
-and [secure extension guide](docs/current/extensions.md). Executable facts are
-owned by the
+The published site is
+[septagon-oss.github.io/pk-docs](https://septagon-oss.github.io/pk-docs/).
+Read the guides in this order — each one states what the starter does today
+and shows the real output:
+
+1. [What is PlatformKit?](docs/current/overview.md) — the one-page picture
+2. [Quickstart](docs/current/quickstart.md) — run it, log in, call the API
+3. [Build a secure extension](docs/current/extensions.md) — your first module
+4. [Design system](docs/current/design-system.md) — the Go-end-to-end frontend stack
+5. [API contract](docs/current/api-contract.md) — every rule, with status codes
+6. [Runtime surfaces](docs/current/runtime-surfaces.md) — what ships and what deliberately does not
+7. [Troubleshooting](docs/current/troubleshooting.md) and [Glossary](docs/current/glossary.md)
+
+Executable facts are owned by the
 [PlatformKit front door](https://github.com/septagon-oss/platformkit).
+Screenshots live in `docs/assets/screenshots/`; diagrams are generated into
+`docs/assets/diagrams/` by `npm run docs:diagrams`.
 
 Version-named directories in this branch are maintained historical
 documentation: they may contain later corrections or backports and are not
@@ -82,6 +93,7 @@ make verify
 npm run docs:sync
 npm run docs:build
 npm run docs:dev
+npm run docs:diagrams
 npm run docs:antora:sync
 npm run docs:antora:build
 npm run docs:test
@@ -95,6 +107,15 @@ syncing module-owned docs bundles.
 Published docs live in `docs/` or opt in with `status: published` frontmatter.
 ADR, architecture, and requirement source material is available for rewrite
 work, but it is not published by default.
+
+Frontmatter the site understands: `title`, `slug`, `description` (the lede and
+card text), `group` (sidebar section, e.g. `Start here`, `Build`, `Reference`),
+and `order` (position within the reading list). The markdown renderer supports
+GitHub-flavoured tables, `> [!NOTE]`/`[!TIP]`/`[!IMPORTANT]`/`[!WARNING]`/`[!CAUTION]`
+callouts, images with captions (`![alt](../assets/x.png "Caption")`), task
+lists, nested lists, and `<details>` blocks; headings written as `## 1. Step`
+render with a step marker. Put images under `docs/assets/` and link them
+relatively so they work on GitHub and on the site.
 
 Copy `adr/0000-template.md` for new ADRs and
 `requirements/0000-template.md` for new platform requirements. Keep source docs

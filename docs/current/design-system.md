@@ -1,14 +1,21 @@
 ---
-title: Design System
+title: Design system
 slug: current-design-system
 collection: guides
+group: Build
+order: 40
 status: published
+description: The Go-end-to-end frontend stack — pk-design tokens, tw utility classes, the styleengine CSS engine, and pk-ui components — how a module ships an admin page with zero authored CSS, and the guarantees that keep variants from colliding.
 ---
 
 # The PlatformKit design system
 
-The frontend stack is Go end to end: no Node, no Tailwind build, no bundler.
-Four small pieces compose, and each is replaceable.
+The frontend stack is **Go end to end**: no Node, no Tailwind build, no
+bundler. Four small pieces compose, and each is replaceable. The operator
+console you saw in the [Quickstart](./quickstart.md) is built entirely from
+them — and so is every admin page a module adds.
+
+![Four layers in a row: pk-design (canonical theme, tokens as data), tw (typed utility classes and CSS emission), styleengine (typed CSS render/parse/sanitize), pk-ui (props contracts, ARIA builder, gomponents renderers). The admin shell serves one derived stylesheet.](../assets/diagrams/design-layers.svg "Tokens → classes → CSS → components. Classes are declared as values; the stylesheet is derived from them.")
 
 | Layer | Repository | What it owns |
 |---|---|---|
@@ -22,6 +29,8 @@ Four small pieces compose, and each is replaceable.
 Values are `themes.Default()` in `pk-design/pkg/themes/default.go` — the one
 source every consumer draws from. Changing the brand is layering a theme over
 it, not editing CSS.
+
+![Swatch grid of the default palette: warm paper canvas and surfaces, deep-green accent, lime signal, blue focus, status ok/warning/danger pairs, and the dark sidebar colours, each with token name and hex value.](../assets/diagrams/palette.svg "The default palette as swatches. The table below is the same data.")
 
 | Token | Value | Role |
 |---|---|---|
@@ -45,6 +54,23 @@ it, not editing CSS.
 Type: `font.display` — Iowan Old Style / Palatino (serif, headings);
 `font.body` — IBM Plex Sans; `font.mono` — IBM Plex Mono. Spacing is a 4px
 scale (`space.1`–`space.6`); radii are `4px / 8px / 999px`.
+
+> [!NOTE]
+> The generated artifact
+> [`pk-design/docs/palette.md`](https://github.com/septagon-oss/pk-design/blob/main/docs/palette.md)
+> is emitted from `themes.Default()` by a golden test and is the source of
+> truth if this page's table ever disagrees. (This documentation site is
+> styled with the same tokens, so what you are reading is itself an example.)
+
+## The living example
+
+Every screen of the operator console is these four layers and nothing else —
+the dark field navigation, the serif display headings, the lime primary
+action, the sortable `DataGrid`:
+
+![The operator console's Users page: the dark sidebar, a serif "Users" heading, a "New user" primary button, a filter field, and a sortable table showing the seeded operator with Edit and Delete actions.](../assets/screenshots/admin-users.png "Admin → Users. Zero authored CSS: tokens, utility classes, and components.")
+
+![The same operator console on a phone-sized screen: the sidebar collapses into a menu and the content stacks vertically.](../assets/screenshots/admin-mobile.png "The console on a 390px-wide viewport — the same components, responsive by default.")
 
 ## How a module ships an admin page
 
@@ -82,11 +108,11 @@ Composition runs the whole ladder, in Go:
 
 - **Atoms** — Button, Input, Textarea, Select, Checkbox, Badge, Tag, Alert,
   Heading, Text, Link, Spinner, Divider, EmptyState, Kbd.
-- **Molecules** — Table (sortable, striped, selectable), Pagination (numbered or
-  cursor), SearchBar, Card, Breadcrumb, Tabs.
-- **Organisms** — `DataGrid`: a whole data-management section (toolbar, filters,
-  actions, sortable table, pagination) with a children slot between table and
-  pagination where a page interleaves its own state.
+- **Molecules** — Table (sortable, striped, selectable), Pagination (numbered
+  or cursor), SearchBar, Card, Breadcrumb, Tabs.
+- **Organisms** — `DataGrid`: a whole data-management section (toolbar,
+  filters, actions, sortable table, pagination) with a children slot between
+  table and pagination where a page interleaves its own state.
 
 The admin console's resource list page is one `DataGrid` call. Its sortable
 headers are real buttons carrying `aria-sort`, and sort state lives in the URL
@@ -94,10 +120,10 @@ hash so a sorted view is shareable.
 
 ## Variants cannot collide
 
-Two single-class utilities that set the same property tie on specificity, so the
-emitted sheet's order — alphabetical, an implementation detail — would silently
-pick the winner. That bug class once left secondary buttons borderless and
-selected tags unselected.
+Two single-class utilities that set the same property tie on specificity, so
+the emitted sheet's order — alphabetical, an implementation detail — would
+silently pick the winner. That bug class once left secondary buttons
+borderless and selected tags unselected.
 
 The rule is structural: a base fragment never declares a property any of its
 variants declares, and every variant is a complete state.
@@ -108,8 +134,8 @@ any property is declared twice at the same variant prefix.
 ## Styling markup you build yourself
 
 Scripts that create rows, pills, or controls in the browser must wear the same
-classes the renderers produce. `pk-ui/render/web` exports the compiled lists for
-exactly that:
+classes the renderers produce. `pk-ui/render/web` exports the compiled lists
+for exactly that:
 
 ```go
 web.ButtonClasses("secondary", "xs")  // a row action
@@ -118,8 +144,8 @@ web.TableClasses().TdPrimary          // an emphasized identity cell
 ```
 
 PlatformKit's admin embeds these as JSON (`#pk-classnames`) and its script
-assigns them wholesale — never stacking two lists onto one element, mirroring the
-same variant discipline. Classes stay declared exactly once, in Go.
+assigns them wholesale — never stacking two lists onto one element, mirroring
+the same variant discipline. Classes stay declared exactly once, in Go.
 
 ## Deriving a stylesheet outside the shell
 
@@ -137,22 +163,12 @@ is never emitted.
 
 ## Guarantees, and where they are enforced
 
-- Every color role maps to a theme token — `tw/emission` role tests.
-- Every enumerable class has a rule — the exhaustiveness test drives tw's own
-  enumerators through the builder.
-- Every class a pk-ui renderer emits is backed by the derived sheet — the
-  class-closure test in `pk-ui/render/web`.
-- All four stylesheet layers reach the browser — the served-stylesheet test in
-  `pk-modules/pkg/admin`.
-- No variant collides with its base — the collision guard in
-  `pk-ui/render/web`.
-- Every contract field a renderer claims to honor is exercised by the gallery
-  golden, and contracts without a renderer are listed explicitly so the scope
-  statement cannot drift.
-- Escape hatches fail closed: `Raw` classes, arbitrary values, and `peer:`
-  error instead of guessing.
-
-The generated artifact
-[`pk-design/docs/palette.md`](https://github.com/septagon-oss/pk-design/blob/main/docs/palette.md)
-is emitted from `themes.Default()` by a golden test and is the source of truth
-if this page's table ever disagrees.
+| Guarantee | Enforced by |
+|---|---|
+| Every color role maps to a theme token | `tw/emission` role tests |
+| Every enumerable class has a rule | the exhaustiveness test drives tw's own enumerators through the builder |
+| Every class a pk-ui renderer emits is backed by the derived sheet | the class-closure test in `pk-ui/render/web` |
+| All four stylesheet layers reach the browser | the served-stylesheet test in `pk-modules/pkg/admin` |
+| No variant collides with its base | the collision guard in `pk-ui/render/web` |
+| Every contract field a renderer claims to honor is exercised | the gallery golden; contracts without a renderer are listed explicitly so the scope statement cannot drift |
+| Escape hatches fail closed | `Raw` classes, arbitrary values, and `peer:` error instead of guessing |
