@@ -1,0 +1,219 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "PlatformKit OSS System Architecture",
+    "quality_profile": "showcase",
+    "viewBox": [1340, 720],
+    "views": [
+      {
+        "id": "request-path",
+        "label": "Running request",
+        "focus": ["callers", "frontdoor", "starter", "runtime", "reference_modules", "database"],
+        "note": "Follow a request through the single Go process to tenant-scoped state."
+      },
+      {
+        "id": "composition",
+        "label": "Starter composition",
+        "focus": ["contracts", "ui_foundations", "starter", "runtime", "reference_modules"],
+        "note": "See how the released packages assemble the runnable starter."
+      },
+      {
+        "id": "extension-path",
+        "label": "Your extension path",
+        "focus": ["toolchain", "custom_modules", "starter"],
+        "note": "Scaffold and verify application modules, then attach them through WithModules."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "callers",
+      "type": "external",
+      "label": "Users & clients",
+      "sublabel": "browser · API client",
+      "pos": [34, 310],
+      "size": [156, 70]
+    },
+    {
+      "id": "frontdoor",
+      "type": "backend",
+      "label": "platformkit",
+      "sublabel": "CLI + runnable binary",
+      "tag": "front door",
+      "pos": [238, 310],
+      "size": [170, 70]
+    },
+    {
+      "id": "starter",
+      "type": "backend",
+      "label": "pk-apps",
+      "sublabel": "pkg/starterapp",
+      "tag": "composition",
+      "pos": [456, 310],
+      "size": [170, 70]
+    },
+    {
+      "id": "runtime",
+      "type": "backend",
+      "label": "pk-runtime",
+      "sublabel": "HTTP + health host",
+      "tag": "host",
+      "pos": [674, 310],
+      "size": [170, 70]
+    },
+    {
+      "id": "reference_modules",
+      "type": "backend",
+      "label": "pk-modules",
+      "sublabel": "routes + stores + admin",
+      "tag": "capabilities",
+      "pos": [892, 310],
+      "size": [180, 70]
+    },
+    {
+      "id": "database",
+      "type": "database",
+      "label": "SQLite / Postgres",
+      "sublabel": "tenant-scoped state",
+      "pos": [1130, 310],
+      "size": [176, 70]
+    },
+    {
+      "id": "contracts",
+      "type": "backend",
+      "label": "pk-core + pk-shared",
+      "sublabel": "typed contracts",
+      "pos": [456, 112],
+      "size": [170, 70]
+    },
+    {
+      "id": "ui_foundations",
+      "type": "frontend",
+      "label": "UI foundations",
+      "sublabel": "pk-design · pk-ui · tw",
+      "pos": [892, 112],
+      "size": [180, 70]
+    },
+    {
+      "id": "custom_modules",
+      "type": "backend",
+      "label": "Your modules",
+      "sublabel": "domain + migrations",
+      "tag": "your repository",
+      "pos": [456, 510],
+      "size": [170, 70]
+    },
+    {
+      "id": "toolchain",
+      "type": "external",
+      "label": "Build-time gates",
+      "sublabel": "tools · guard · testkit",
+      "pos": [164, 510],
+      "size": [188, 70]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Single Go process",
+      "wraps": ["frontdoor", "starter", "runtime", "reference_modules", "contracts", "ui_foundations", "custom_modules"],
+      "pad": 24
+    }
+  ],
+  "connections": [
+    {
+      "id": "request-entry",
+      "from": "callers",
+      "to": "frontdoor",
+      "label": "run / HTTP",
+      "variant": "emphasis",
+      "labelAt": [214, 394]
+    },
+    {
+      "id": "boot-starter",
+      "from": "frontdoor",
+      "to": "starter",
+      "label": "boots",
+      "variant": "emphasis"
+    },
+    {
+      "id": "host-input",
+      "from": "starter",
+      "to": "runtime",
+      "label": "host input",
+      "variant": "emphasis",
+      "labelAt": [650, 394]
+    },
+    {
+      "id": "route-dispatch",
+      "from": "runtime",
+      "to": "reference_modules",
+      "label": "dispatch routes",
+      "variant": "emphasis",
+      "labelAt": [868, 394]
+    },
+    {
+      "id": "module-state",
+      "from": "reference_modules",
+      "to": "database",
+      "label": "tenant-scoped SQL",
+      "variant": "emphasis",
+      "labelAt": [1101, 394]
+    },
+    {
+      "id": "contract-composition",
+      "from": "contracts",
+      "to": "starter",
+      "label": "module + identity contracts",
+      "labelAt": [541, 196]
+    },
+    {
+      "id": "admin-rendering",
+      "from": "ui_foundations",
+      "to": "reference_modules",
+      "label": "admin UI + tokens",
+      "labelAt": [982, 196]
+    },
+    {
+      "id": "extension-seam",
+      "from": "custom_modules",
+      "to": "starter",
+      "label": "WithModules",
+      "variant": "dashed"
+    },
+    {
+      "id": "verify-extension",
+      "from": "toolchain",
+      "to": "custom_modules",
+      "label": "scaffold + verify",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Runtime truth",
+      "items": [
+        "Released packages link into one Go process",
+        "Only the configured database sits outside the process"
+      ]
+    },
+    {
+      "dot": "violet",
+      "title": "Extension seam",
+      "items": [
+        "Application modules remain in your repository",
+        "starterapp.WithModules joins them to the canonical composition"
+      ]
+    },
+    {
+      "dot": "orange",
+      "title": "Build-time guardrails",
+      "items": [
+        "pk-tools scaffolds the supported shape",
+        "pk-guard and pk-testkit verify it without entering the runtime"
+      ]
+    }
+  ]
+}

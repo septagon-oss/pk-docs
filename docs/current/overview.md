@@ -94,6 +94,12 @@ You will see a dozen `pk-*` repositories on GitHub. You do not need to learn
 them all — the front door pins an exact, boot-tested set of them, and you
 depend only on that.
 
+> [!TIP]
+> **Explore the architecture, not just the picture.** Open the
+> [interactive Archify map](../assets/archify/platformkit-oss-architecture.html)
+> for guided request, composition, and extension views, plus search, focus,
+> presentation, theme switching, and export.
+
 ![PlatformKit OSS system architecture: users and API clients reach the platformkit front door, which boots the pk-apps starter composition hosted by pk-runtime. Typed contracts from pk-core and pk-shared, reference modules from pk-modules, and the UI foundations feed that composition. Your modules join through WithModules, build-time tools scaffold and verify them, and module stores use SQLite or Postgres.](../assets/diagrams/architecture.svg "The running request is the main rail; composition and verification enter from the side rails.")
 
 These boxes show package ownership and composition, not separately deployed

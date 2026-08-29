@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "type": "architecture",
+  "specification": {
+    "path": "docs/assets/archify/platformkit-oss-architecture.json",
+    "sha256": "2e8b712fb5f9197cd0bfc3a0879407ea296097287858e757655348e9d8356ad1",
+    "bytes": 5498
+  },
+  "artifact": {
+    "path": "docs/assets/archify/platformkit-oss-architecture.html",
+    "sha256": "8ae61d27bc802c05d56650a072a562d036ed32eaeb24ec83b848431561331312",
+    "bytes": 716159
+  },
+  "validation": {
+    "checksPassed": 9,
+    "checkCount": 9,
+    "compositionProfile": "showcase",
+    "compositionStatus": "pass",
+    "errors": 0,
+    "warnings": 0
+  }
+}

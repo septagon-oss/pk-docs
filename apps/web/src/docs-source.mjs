@@ -100,7 +100,7 @@ export function resolveDocsHref(href, fromSourcePath) {
   }
   const [target, fragment = ""] = raw.split("#", 2);
   if (!target.endsWith(".md")) {
-    return raw;
+    return resolveDocsAsset(raw, fromSourcePath);
   }
   const normalized = path.posix.normalize(path.posix.join(path.posix.dirname(fromSourcePath), target));
   if (!DOC_SECTIONS.some((section) => normalized.startsWith(`${section}/`))) {

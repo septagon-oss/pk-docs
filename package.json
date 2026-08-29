@@ -11,6 +11,7 @@
     "docs:dev": "node ./scripts/docs-dev.mjs",
     "docs:diagrams": "node ./scripts/docs-diagrams.mjs",
     "docs:diagrams:check": "node ./scripts/docs-diagrams.mjs --check",
+    "docs:archify:check": "node ./scripts/docs-archify-check.mjs",
     "docs:antora:sync": "node ./scripts/docs-antora-sync.mjs",
     "docs:antora:build": "node ./scripts/docs-antora-build.mjs",
     "docs:antora:dev": "node ./scripts/docs-antora-dev.mjs",

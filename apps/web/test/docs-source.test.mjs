@@ -51,6 +51,13 @@ test("resolveDocsAsset maps relative docs/assets references to the served asset 
   assert.equal(resolveDocsAsset("./local.png", "docs/current/quickstart.md"), "./local.png");
 });
 
+test("resolveDocsHref maps interactive docs assets to their published route", () => {
+  assert.equal(
+    resolveDocsHref("../assets/archify/platformkit-oss-architecture.html", "docs/current/overview.md"),
+    "/docs/assets/archify/platformkit-oss-architecture.html",
+  );
+});
+
 test("resolveDocsAssetWithSize reads intrinsic PNG and SVG dimensions from disk", async () => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), "pk-docs-assets-"));
   await fs.mkdir(path.join(root, "docs", "assets", "diagrams"), { recursive: true });
