@@ -94,7 +94,11 @@ You will see a dozen `pk-*` repositories on GitHub. You do not need to learn
 them all — the front door pins an exact, boot-tested set of them, and you
 depend only on that.
 
-![Repository map: foundations (pk-design, tw, styleengine, pk-ui, pk-client) feed the released set (pk-core/pk-shared/pk-runtime contracts → pk-modules → pk-apps starterapp → the platformkit front door); your product extends the starter through WithModules; the toolchain (pk-guard, pk-tools, pk-testkit) gates it.](../assets/diagrams/architecture.svg "The released set is what you run; foundations and toolchain support it.")
+![PlatformKit OSS system architecture: users and API clients reach the platformkit front door, which boots the pk-apps starter composition hosted by pk-runtime. Typed contracts from pk-core and pk-shared, reference modules from pk-modules, and the UI foundations feed that composition. Your modules join through WithModules, build-time tools scaffold and verify them, and module stores use SQLite or Postgres.](../assets/diagrams/architecture.svg "The running request is the main rail; composition and verification enter from the side rails.")
+
+These boxes show package ownership and composition, not separately deployed
+services. At runtime the released set is linked into the single Go process
+shown above; only the configured database sits outside that process.
 
 | Tier | Repositories | What it means for you |
 |---|---|---|

@@ -216,79 +216,122 @@ function onePprocess() {
 }
 
 function architecture() {
-  const w = 1100;
-  const h = 640;
+  const w = 1240;
+  const h = 620;
   let body = "";
-  body += text(40, 42, "How the repositories fit together", { size: 22, weight: 700 });
-  body += text(40, 66, "Arrows point from what is used to what uses it. You only ever depend on the released set.", { size: 14, cls: "muted t" });
+  body += `<style>
+    .arch-grid { stroke: #dfe7e3; stroke-width: 1; opacity: .55; }
+    .arch-boundary { fill: #fff8e8; fill-opacity: .62; stroke: #d97706; stroke-width: 2; stroke-dasharray: 9 7; }
+    .arch-node-external { fill: #eef2f7; stroke: #64748b; }
+    .arch-node-frontdoor { fill: #fff4dc; stroke: #d97706; }
+    .arch-node-contract { fill: #fff0f3; stroke: #e11d48; }
+    .arch-node-capability { fill: #e3f7ef; stroke: #059669; }
+    .arch-node-composition { fill: #ddf7ef; stroke: #059669; }
+    .arch-node-runtime { fill: #e1f6f1; stroke: #059669; }
+    .arch-node-foundation { fill: #e0f7fb; stroke: #0891b2; }
+    .arch-node-extension { fill: #f1ecff; stroke: #7c3aed; }
+    .arch-node-tooling { fill: #fff0df; stroke: #ea580c; }
+    .arch-node-data { fill: #f1ecff; stroke: #7c3aed; }
+    .arch-edge { fill: none; stroke: #059669; stroke-width: 2.5; }
+    .arch-edge-muted { fill: none; stroke: #64748b; stroke-width: 2; }
+    .arch-edge-side { fill: none; stroke: #7c3aed; stroke-width: 2; stroke-dasharray: 6 6; }
+    .arch-edge-contract { fill: none; stroke: #e11d48; stroke-width: 2; stroke-dasharray: 6 6; }
+    .arch-head { fill: #059669; }
+    .arch-head-muted { fill: #64748b; }
+    .arch-head-side { fill: #7c3aed; }
+    .arch-head-contract { fill: #e11d48; }
+    @media (prefers-color-scheme: dark) {
+      .arch-grid { stroke: #2a3a35; opacity: .6; }
+      .arch-boundary { fill: #262016; fill-opacity: .44; stroke: #f0b36b; }
+      .arch-node-external { fill: #172033; stroke: #94a3b8; }
+      .arch-node-frontdoor { fill: #30261c; stroke: #f0b36b; }
+      .arch-node-contract { fill: #371c28; stroke: #fb7185; }
+      .arch-node-capability { fill: #12312a; stroke: #5fc2a6; }
+      .arch-node-composition { fill: #10372d; stroke: #5fc2a6; }
+      .arch-node-runtime { fill: #123531; stroke: #5fc2a6; }
+      .arch-node-foundation { fill: #102d35; stroke: #67d4e7; }
+      .arch-node-extension { fill: #271b46; stroke: #a78bfa; }
+      .arch-node-tooling { fill: #38251b; stroke: #fb923c; }
+      .arch-node-data { fill: #2d1d54; stroke: #a78bfa; }
+      .arch-edge { stroke: #5fc2a6; }
+      .arch-edge-muted { stroke: #94a3b8; }
+      .arch-edge-side { stroke: #a78bfa; }
+      .arch-edge-contract { stroke: #fb7185; }
+      .arch-head { fill: #5fc2a6; }
+      .arch-head-muted { fill: #94a3b8; }
+      .arch-head-side { fill: #a78bfa; }
+      .arch-head-contract { fill: #fb7185; }
+    }
+  </style>`;
+  body += `<defs>
+    <pattern id="architecture-grid" width="52" height="52" patternUnits="userSpaceOnUse"><path d="M 52 0 L 0 0 0 52" class="arch-grid" fill="none"/></pattern>
+    <marker id="arch-head" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" class="arch-head"/></marker>
+    <marker id="arch-head-muted" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" class="arch-head-muted"/></marker>
+    <marker id="arch-head-side" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" class="arch-head-side"/></marker>
+    <marker id="arch-head-contract" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L10,5 L0,10 z" class="arch-head-contract"/></marker>
+  </defs>`;
+  body += `<rect x="18" y="82" width="1204" height="520" rx="14" fill="url(#architecture-grid)"/>`;
+  body += text(40, 40, "PlatformKit OSS system architecture", { size: 22, weight: 700 });
+  body += text(40, 64, "The main rail follows a running request. Side rails show what the application composes and verifies.", { size: 14, cls: "muted t" });
 
-  const col = (x, y, wdt, hgt, kicker, title, desc, cls = "card-strong") => {
-    let out = card(x, y, wdt, hgt, { cls });
-    out += text(x + 18, y + 24, kicker, { size: 11, cls: "accent t", weight: 700, extra: 'letter-spacing="1.5"' });
-    out += text(x + 18, y + 50, title, { size: 16, cls: "ink m", weight: 700 });
-    out += lines(x + 18, y + 72, desc, { size: 12, cls: "muted t", leading: 16 });
+  const boundary = (x, y, width, height, label) => {
+    const labelWidth = label.length * 7.2 + 22;
+    return `<rect x="${x}" y="${y}" width="${width}" height="${height}" rx="16" class="arch-boundary"/>${card(x + 12, y - 10, labelWidth, 24, { cls: "canvas", rx: 5, strokeWidth: 0 })}${text(x + 22, y + 7, label, { size: 11, cls: "warn t", weight: 700, extra: 'letter-spacing="1.3"' })}`;
+  };
+  const node = (x, y, width, height, { cls, kicker, title, detail }) => {
+    let out = card(x, y, width, height, { cls, rx: 10, strokeWidth: 2 });
+    out += text(x + 14, y + 21, kicker, { size: 9.5, cls: "muted t", weight: 700, extra: 'letter-spacing="1.1"' });
+    out += text(x + 14, y + 47, title, { size: 15, cls: "ink m", weight: 700 });
+    out += text(x + 14, y + height - 13, detail, { size: 10.5, cls: "muted t" });
     return out;
   };
+  const routeLabel = (x, y, value, cls = "accent") => {
+    const width = value.length * 6.7 + 16;
+    return `${card(x - width / 2, y - 13, width, 21, { cls: "canvas", rx: 4, strokeWidth: 0 })}${text(x, y + 2, value, { size: 10, cls: `${cls} m`, weight: 600, anchor: "middle" })}`;
+  };
 
-  // Foundations (left column)
-  body += card(40, 96, 250, 512, { cls: "card", rx: 14 });
-  body += text(58, 124, "FOUNDATIONS", { size: 11, cls: "muted t", weight: 700, extra: 'letter-spacing="1.5"' });
-  body += text(58, 142, "move fastest · design system", { size: 11.5, cls: "muted t" });
-  const foundations = [
-    ["pk-design", "tokens, themes, WCAG contrast"],
-    ["tw", "typed utility classes + CSS"],
-    ["styleengine", "typed CSS build + sanitize"],
-    ["pk-ui", "accessible Go components"],
-    ["pk-client", "call a PlatformKit API"],
-  ];
-  foundations.forEach(([name, desc], index) => {
-    const y = 164 + index * 78;
-    body += card(56, y, 218, 60, { cls: "card-strong", rx: 8 });
-    body += text(70, y + 25, name, { size: 13.5, cls: "ink m", weight: 700 });
-    body += text(70, y + 45, desc, { size: 11.5, cls: "muted t" });
+  body += boundary(210, 102, 720, 342, "COMPOSED OSS STARTER");
+  body += boundary(450, 488, 480, 108, "YOUR EXTENSION PATH");
+
+  body += node(30, 288, 150, 82, { cls: "arch-node-external", kicker: "CALLER", title: "Users & clients", detail: "browser · API client" });
+  body += node(240, 288, 170, 82, { cls: "arch-node-frontdoor", kicker: "FRONT DOOR", title: "platformkit", detail: "CLI + runnable binary" });
+  body += node(480, 288, 180, 82, { cls: "arch-node-composition", kicker: "COMPOSITION", title: "pk-apps", detail: "pkg/starterapp" });
+  body += node(730, 288, 170, 82, { cls: "arch-node-runtime", kicker: "HOST", title: "pk-runtime", detail: "HTTP + health contracts" });
+  body += node(990, 288, 180, 82, { cls: "arch-node-data", kicker: "STATE", title: "SQLite / Postgres", detail: "tenant-scoped stores" });
+
+  body += node(240, 128, 170, 76, { cls: "arch-node-contract", kicker: "CONTRACTS", title: "Typed contracts", detail: "pk-core + pk-shared" });
+  body += node(480, 128, 180, 76, { cls: "arch-node-capability", kicker: "CAPABILITIES", title: "Reference modules", detail: "pk-modules" });
+  body += node(730, 128, 170, 76, { cls: "arch-node-foundation", kicker: "UI FOUNDATIONS", title: "Design + render", detail: "pk-design · pk-ui · tw" });
+
+  body += node(480, 510, 180, 68, { cls: "arch-node-extension", kicker: "YOUR REPOSITORY", title: "Your modules", detail: "domain + migrations" });
+  body += node(730, 510, 170, 68, { cls: "arch-node-tooling", kicker: "TOOLCHAIN", title: "Build-time gates", detail: "tools · guard · testkit" });
+
+  body += `<line x1="180" y1="329" x2="238" y2="329" class="arch-edge" marker-end="url(#arch-head)"/>`;
+  body += routeLabel(209, 314, "run / HTTP");
+  body += `<line x1="410" y1="329" x2="478" y2="329" class="arch-edge" marker-end="url(#arch-head)"/>`;
+  body += routeLabel(444, 314, "boots");
+  body += `<line x1="660" y1="329" x2="728" y2="329" class="arch-edge" marker-end="url(#arch-head)"/>`;
+  body += routeLabel(694, 314, "host input");
+  body += `<line x1="900" y1="329" x2="988" y2="329" class="arch-edge-muted" marker-end="url(#arch-head-muted)"/>`;
+  body += routeLabel(944, 314, "store calls", "muted");
+
+  body += `<line x1="410" y1="166" x2="478" y2="166" class="arch-edge-contract" marker-end="url(#arch-head-contract)"/>`;
+  body += routeLabel(444, 151, "contracts", "danger");
+  body += `<line x1="570" y1="204" x2="570" y2="286" class="arch-edge" marker-end="url(#arch-head)"/>`;
+  body += routeLabel(570, 246, "module set");
+  body += `<path d="M 730 166 H 690 V 246 H 612 V 286" class="arch-edge-muted" marker-end="url(#arch-head-muted)"/>`;
+  body += routeLabel(681, 232, "UI + tokens", "muted");
+
+  body += `<line x1="570" y1="510" x2="570" y2="372" class="arch-edge-side" marker-end="url(#arch-head-side)"/>`;
+  body += routeLabel(570, 460, "WithModules", "focus");
+  body += `<line x1="730" y1="544" x2="662" y2="544" class="arch-edge-muted" marker-end="url(#arch-head-muted)"/>`;
+
+  return svg({
+    width: w,
+    height: h,
+    title: "PlatformKit OSS system architecture: users and clients reach the platformkit front door, which boots the pk-apps starter composition hosted by pk-runtime. Typed contracts, reference modules, and UI foundations feed the composition; application modules join through WithModules; build-time tools scaffold and verify them; module stores use SQLite or Postgres.",
+    body,
   });
-
-  // Released set (middle)
-  body += card(330, 96, 430, 512, { cls: "card", rx: 14 });
-  body += text(348, 124, "RELEASED SET", { size: 11, cls: "muted t", weight: 700, extra: 'letter-spacing="1.5"' });
-  body += text(348, 142, "tagged together · boot-tested as a whole", { size: 11.5, cls: "muted t" });
-  body += col(348, 160, 394, 98, "CONTRACTS", "pk-core · pk-shared · pk-runtime", ["module, identity, and runtime contracts;", "shared vocabulary; hosting and health"]);
-  body += arrow(545, 260, 545, 280);
-  body += col(348, 284, 394, 98, "IMPLEMENTATION", "pk-modules", ["the ten reference modules and the admin console;", "every store passes the same conformance suite"]);
-  body += arrow(545, 384, 545, 404);
-  body += col(348, 408, 394, 98, "COMPOSITION", "pk-apps / pkg/starterapp", ["the one canonical starter composition", "and the WithModules seam"]);
-  body += arrow(545, 508, 545, 528);
-  body += col(348, 532, 394, 62, "FRONT DOOR", "platformkit  →  go run .", []);
-
-  // Your product (right)
-  body += card(800, 96, 260, 190, { cls: "okbg", rx: 14, strokeWidth: 0 });
-  body += text(818, 124, "YOUR PRODUCT", { size: 11, cls: "ok t", weight: 700, extra: 'letter-spacing="1.5"' });
-  body += text(818, 150, "acme/", { size: 16, cls: "ink m", weight: 700 });
-  body += lines(818, 176, ["main.go boots the starter", "mod_invoice.go, migrations,", "tests — all in your repo"], { size: 12.5, cls: "muted t", leading: 17 });
-  body += text(818, 262, "platformkit new app acme", { size: 12, cls: "ok m", weight: 600 });
-  body += pathArrow("M 742 449 C 790 449, 770 200, 798 200", { cls: "arrow-accent", marker: "head-accent" });
-  body += card(742, 300, 100, 22, { cls: "dark", rx: 11, strokeWidth: 0 });
-  body += text(792, 315, "WithModules", { size: 10.5, cls: "signal m", weight: 700, anchor: "middle" });
-
-  // Toolchain (right bottom)
-  body += card(800, 330, 260, 278, { cls: "card", rx: 14 });
-  body += text(818, 358, "TOOLCHAIN", { size: 11, cls: "muted t", weight: 700, extra: 'letter-spacing="1.5"' });
-  body += text(818, 376, "gates and generates · not linked in", { size: 11.5, cls: "muted t" });
-  const tools = [
-    ["pk-guard", "go/analysis guardrails"],
-    ["pk-tools", "pk new module · pk explain"],
-    ["pk-testkit", "conformance + flow tests"],
-  ];
-  tools.forEach(([name, desc], index) => {
-    const y = 398 + index * 64;
-    body += card(818, y, 224, 50, { cls: "card-strong", rx: 8 });
-    body += text(832, y + 19, name, { size: 13, cls: "ink m", weight: 700 });
-    body += text(832, y + 36, desc, { size: 11.5, cls: "muted t" });
-  });
-
-  body += pathArrow("M 292 340 C 312 340, 312 333, 330 333", { cls: "arrow-dashed", marker: "head-faint" });
-  body += text(300, 322, "consumed", { size: 9.5, cls: "muted t" });
-  return svg({ width: w, height: h, title: "Repository map: foundations feed the released set (pk-core, pk-modules, pk-apps, platformkit); your product extends the starter through WithModules; the toolchain gates it.", body });
 }
 
 function requestLifecycle() {
@@ -580,8 +623,32 @@ const diagrams = {
   "credentials.svg": credentials,
 };
 
+const checkMode = process.argv.includes("--check");
+const stale = [];
+
 await fs.mkdir(outDir, { recursive: true });
 for (const [name, render] of Object.entries(diagrams)) {
-  await fs.writeFile(path.join(outDir, name), render());
+  const outputPath = path.join(outDir, name);
+  const rendered = render();
+  if (!checkMode) {
+    await fs.writeFile(outputPath, rendered);
+    continue;
+  }
+
+  let current = "";
+  try {
+    current = await fs.readFile(outputPath, "utf8");
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+  }
+  if (current !== rendered) stale.push(name);
 }
-console.log(`Wrote ${Object.keys(diagrams).length} diagrams to ${path.relative(workspaceRoot, outDir)}.`);
+
+if (stale.length > 0) {
+  console.error(`Generated diagrams are stale: ${stale.join(", ")}. Run npm run docs:diagrams.`);
+  process.exitCode = 1;
+} else if (checkMode) {
+  console.log(`Verified ${Object.keys(diagrams).length} generated diagrams.`);
+} else {
+  console.log(`Wrote ${Object.keys(diagrams).length} diagrams to ${path.relative(workspaceRoot, outDir)}.`);
+}

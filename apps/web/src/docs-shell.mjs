@@ -732,6 +732,22 @@ export function renderDocsStyles() {
   .pk-pager { grid-template-columns: 1fr; }
   .pk-pager__link--next { text-align: left; align-items: flex-start; }
   .pk-prose { font-size: 1rem; }
+  .pk-figure--diagram {
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+  .pk-figure--diagram img {
+    width: 100%;
+    min-width: 900px;
+    max-width: none;
+  }
+  .pk-figure--diagram figcaption {
+    position: sticky;
+    inset-inline-start: 0;
+    max-width: calc(100vw - 2.5rem);
+  }
 }
 @media (max-width: 560px) {
   .pk-topnav { display: none; }
